@@ -452,19 +452,47 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     gap: 16px;
   }
 
-  /* Плавающая элегантная панель навигации (Floating Dock) */
+  /* Плавающая панель навигации на десктопе */
   .tabbar {
-    max-width: 480px;
+    width: auto;
     left: 50%;
     right: auto;
     transform: translateX(-50%);
-    bottom: 20px;
+    bottom: 24px;
     border-radius: 20px;
-    border: 1px solid rgba(255,255,255,.12);
-    box-shadow: 0 10px 35px rgba(0,0,0,.6);
-    padding: 8px 14px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(20,20,32,.92);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 14px 40px rgba(0,0,0,.75);
+    padding: 6px 8px;
+    gap: 6px;
+  }
+  .tabbar .tab {
+    flex: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .tabbar .tab svg {
+    width: 20px;
+    height: 20px;
+  }
+  .tabbar .tab:hover {
+    background: rgba(255,255,255,.08);
+    color: #fff;
+  }
+  .tabbar .tab.active {
+    background: linear-gradient(135deg, rgba(124,58,237,.35), rgba(59,130,246,.25));
+    color: #fff;
+    border: 1px solid rgba(124,58,237,.4);
   }
 }
+
 </style>
 
 </head>
@@ -646,14 +674,15 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 <!-- Нижняя навигация -->
 <nav class="tabbar">
   <button class="tab active" data-scr="home" onclick="showTab('home')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Главная</button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Главная</span></button>
   <button class="tab" data-scr="fx" onclick="showTab('fx')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z"/></svg>Эффекты</button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z"/></svg><span>Эффекты</span></button>
   <button class="tab" data-scr="fav" onclick="showTab('fav')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>Избранное</button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>Избранное</span></button>
   <button class="tab" data-scr="set" onclick="showTab('set')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.3l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2.2-1.3L14 2h-4l-.3 2.4a7 7 0 0 0-2.2 1.3l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.3l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2.2 1.3L10 22h4l.3-2.4a7 7 0 0 0 2.2-1.3l2.4 1 2-3.4-2-1.6A7 7 0 0 0 19 12z"/></svg>Настройки</button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.3l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2.2-1.3L14 2h-4l-.3 2.4a7 7 0 0 0-2.2 1.3l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.3l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2.2 1.3L10 22h4l.3-2.4a7 7 0 0 0 2.2-1.3l2.4 1 2-3.4-2-1.6A7 7 0 0 0 19 12z"/></svg><span>Настройки</span></button>
 </nav>
+
 
 <div id="toast"></div>
 
