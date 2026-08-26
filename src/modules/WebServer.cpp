@@ -1,4 +1,4 @@
-﻿// =====================================================================
+// =====================================================================
 //  WebServer.cpp — REST API + WebSocket + UI
 // =====================================================================
 #include "WebServer.h"
@@ -235,6 +235,23 @@ void WebServerManager::setupRoutes() {
     resp->addHeader("Cache-Control", "no-store");
     req->send(resp);
   });
+
+  // --- PWA Manifest ---
+  _server.on("/manifest.json", HTTP_GET, [](AsyncWebServerRequest* req) {
+    AsyncWebServerResponse* resp =
+      req->beginResponse(200, "application/manifest+json", MANIFEST_JSON);
+    resp->addHeader("Cache-Control", "public, max-age=86400");
+    req->send(resp);
+  });
+
+  // --- PWA Icon (SVG с адаптивной темой) ---
+  _server.on("/icon.svg", HTTP_GET, [](AsyncWebServerRequest* req) {
+    AsyncWebServerResponse* resp =
+      req->beginResponse(200, "image/svg+xml", ICON_SVG);
+    resp->addHeader("Cache-Control", "public, max-age=86400");
+    req->send(resp);
+  });
+
 
   // --- GET /api/status ---
   _server.on("/api/status", HTTP_GET, [this](AsyncWebServerRequest* req) {

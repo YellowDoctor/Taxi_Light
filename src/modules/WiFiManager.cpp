@@ -4,6 +4,8 @@
 #include "WiFiManager.h"
 #include "SettingsManager.h"
 #include <time.h>
+#include <ESPmDNS.h>
+#include <NetBIOS.h>
 
 WiFiManager Wifi;   // глобальный экземпляр
 
@@ -60,9 +62,12 @@ void WiFiManager::forget() {
   Config.data.wifiSSID     = "";
   Config.data.wifiPassword = "";
   Config.save();
+  MDNS.end();
+  NBNS.end();
   WiFi.disconnect(true, true);
   startAP();
 }
+
 
 void WiFiManager::syncNTP() {
   if (_state != WifiState::CONNECTED) return;
@@ -88,6 +93,12 @@ void WiFiManager::loop() {
         _retryCount = 0;
         Serial.printf("[WiFi] Подключено, IP: %s\n", WiFi.localIP().toString().c_str());
         syncNTP();
+        if (MDNS.begin("taxilight")) {
+          MDNS.addService("http", "tcp", 80);
+          Serial.println(F("[WiFi] mDNS запущен: http://taxilight.local"));
+        }
+        NBNS.begin("taxilight");
+        Serial.println(F("[WiFi] NetBIOS запущен: http://taxilight"));
       } else if (millis() - _connectStart > WIFI_CONNECT_TIMEOUT) {
         Serial.println(F("[WiFi] Таймаут подключения"));
         if (++_retryCount >= WIFI_MAX_RETRIES) {
@@ -105,11 +116,14 @@ void WiFiManager::loop() {
     case WifiState::CONNECTED:
       if (WiFi.status() != WL_CONNECTED) {
         Serial.println(F("[WiFi] Соединение потеряно"));
+        MDNS.end();
+        NBNS.end();
         _state     = WifiState::DISCONNECTED;
         _lastRetry = millis();
         _timeSynced = false;
       }
       break;
+
 
     case WifiState::DISCONNECTED:
       if (millis() - _lastRetry > WIFI_RETRY_INTERVAL) {

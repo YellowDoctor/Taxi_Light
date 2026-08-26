@@ -17,6 +17,12 @@ const char INDEX_HTML[] PROGMEM = R"HTMLPAGE(<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0a0a0f">
 <title>Такси Шашка</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="apple-touch-icon" href="/icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TaxiLight">
 <style>
 :root{
   --bg:#0a0a0f; --card:#141420; --card2:#1b1b2b;
@@ -393,7 +399,74 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 .muted{color:var(--muted);font-size:13px}
 .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#a78bfa;border-radius:50%;animation:sp 1s linear infinite;vertical-align:middle}
 @keyframes sp{to{transform:rotate(360deg)}}
+
+/* Десктопная адаптация для мониторов */
+.home-col, .set-col { display: contents; }
+
+@media (min-width: 768px) {
+  .wrap { max-width: 980px; padding: 32px 28px 100px; }
+  header { margin-bottom: 26px; }
+  header h1 { font-size: 24px; }
+  
+  /* Главная: 2 колонки */
+  #scr-home.active {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .home-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  #scr-home .power-card {
+    min-height: 290px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Эффекты: гибкая сетка от 3 до 5 колонок */
+  .fx-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  /* Избранное: адаптивная сетка */
+  .fav-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  /* Настройки: 2 колонки */
+  #scr-set.active {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .set-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Плавающая элегантная панель навигации (Floating Dock) */
+  .tabbar {
+    max-width: 480px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    bottom: 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 10px 35px rgba(0,0,0,.6);
+    padding: 8px 14px;
+  }
+}
 </style>
+
 </head>
 <body>
 <div class="sunrise-bar" id="sunriseBar" style="width:0%"></div>
@@ -408,86 +481,89 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 
   <!-- ================= ГЛАВНАЯ ================= -->
   <section class="screen active" id="scr-home">
-    <div class="card power-card">
-      <div class="power-wrap">
-        <button class="power-btn" id="powerBtn" onclick="togglePower()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <path d="M12 3v9"/><path d="M6.4 6.4a8 8 0 1 0 11.2 0"/>
-          </svg>
-        </button>
-        <div class="power-label" id="powerLabel">Выключено</div>
-      </div>
-      <div class="power-batt">
-        <div class="batt-ico"><div class="batt-fill" id="battFill" style="width:0%"></div></div>
-        <div class="batt-info">
-          <div class="batt-row"><span id="battPct">—</span>% <span id="battChg"></span></div>
-          <div class="batt-volt"><span id="battVolt">—</span> В</div>
+    <div class="home-col">
+      <div class="card power-card">
+        <div class="power-wrap">
+          <button class="power-btn" id="powerBtn" onclick="togglePower()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M12 3v9"/><path d="M6.4 6.4a8 8 0 1 0 11.2 0"/>
+            </svg>
+          </button>
+          <div class="power-label" id="powerLabel">Выключено</div>
         </div>
+        <div class="power-batt">
+          <div class="batt-ico"><div class="batt-fill" id="battFill" style="width:0%"></div></div>
+          <div class="batt-info">
+            <div class="batt-row"><span id="battPct">—</span>% <span id="battChg"></span></div>
+            <div class="batt-volt"><span id="battVolt">—</span> В</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="info-line"><span class="k">Текущий режим</span><span class="v" id="curEffect">—</span></div>
+        <div class="info-line"><span class="k">Сеть Wi-Fi</span><span class="v" id="curWifi">—</span></div>
+        <div class="info-line"><span class="k">IP-адрес</span><span class="v" id="curIp">—</span></div>
       </div>
     </div>
 
-
-    <div class="card">
-      <h3>Яркость</h3>
-      <div class="slider-row">
-        <span class="ico">🔅</span>
-        <input type="range" id="bright" min="1" max="255" value="150" oninput="onBrightInput(this.value)">
-        <span class="ico">🔆</span>
-        <span class="val" id="brightVal">59%</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Цвет</h3>
-      <div class="color-row">
-        <div style="position:relative">
-          <div class="color-prev" id="colorPrev" style="background:#ffb000"></div>
-          <input type="color" id="colorPick" value="#ffb000" oninput="onColorInput(this.value)">
-        </div>
-        <div>
-          <div style="font-weight:600">Основной цвет</div>
-          <div class="color-hex" id="colorHex">#FFB000</div>
+    <div class="home-col">
+      <div class="card">
+        <h3>Яркость</h3>
+        <div class="slider-row">
+          <span class="ico">🔅</span>
+          <input type="range" id="bright" min="1" max="255" value="150" oninput="onBrightInput(this.value)">
+          <span class="ico">🔆</span>
+          <span class="val" id="brightVal">59%</span>
         </div>
       </div>
-      <div class="swatches" id="swatches"></div>
-    </div>
 
-    <div class="card">
-      <h3>Таймер сна <span class="timer-badge" id="timerBadge" style="display:none"></span></h3>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn ghost small" onclick="setTimer(15)">15 мин</button>
-        <button class="btn ghost small" onclick="setTimer(30)">30 мин</button>
-        <button class="btn ghost small" onclick="setTimer(60)">1 час</button>
-        <button class="btn danger small" onclick="setTimer(0)">✕ Отменить</button>
-      </div>
-    </div>
-
-    <div class="card" id="sunriseCard">
-      <h3>🌅 Будильник-рассвет</h3>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
-        <div style="flex:1;min-width:120px">
-          <label class="fld" style="margin-top:0">Длительность (мин):</label>
-          <input type="number" id="srMin" min="1" max="60" value="20">
+      <div class="card">
+        <h3>Цвет</h3>
+        <div class="color-row">
+          <div style="position:relative">
+            <div class="color-prev" id="colorPrev" style="background:#ffb000"></div>
+            <input type="color" id="colorPick" value="#ffb000" oninput="onColorInput(this.value)">
+          </div>
+          <div>
+            <div style="font-weight:600">Основной цвет</div>
+            <div class="color-hex" id="colorHex">#FFB000</div>
+          </div>
         </div>
-        <div style="flex:1;min-width:120px">
-          <label class="fld" style="margin-top:0">Яркость (1–255):</label>
-          <input type="number" id="srBri" min="1" max="255" value="200">
+        <div class="swatches" id="swatches"></div>
+      </div>
+
+      <div class="card">
+        <h3>Таймер сна <span class="timer-badge" id="timerBadge" style="display:none"></span></h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn ghost small" onclick="setTimer(15)">15 мин</button>
+          <button class="btn ghost small" onclick="setTimer(30)">30 мин</button>
+          <button class="btn ghost small" onclick="setTimer(60)">1 час</button>
+          <button class="btn danger small" onclick="setTimer(0)">✕ Отменить</button>
         </div>
       </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn" style="flex:2" onclick="startSunrise()">🌅 Запустить</button>
-        <button class="btn ghost" style="flex:1" onclick="cancelSunrise()">Отмена</button>
+
+      <div class="card" id="sunriseCard">
+        <h3>🌅 Будильник-рассвет</h3>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+          <div style="flex:1;min-width:120px">
+            <label class="fld" style="margin-top:0">Длительность (мин):</label>
+            <input type="number" id="srMin" min="1" max="60" value="20">
+          </div>
+          <div style="flex:1;min-width:120px">
+            <label class="fld" style="margin-top:0">Яркость (1–255):</label>
+            <input type="number" id="srBri" min="1" max="255" value="200">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" style="flex:2" onclick="startSunrise()">🌅 Запустить</button>
+          <button class="btn ghost" style="flex:1" onclick="cancelSunrise()">Отмена</button>
+        </div>
+        <div id="sunriseInfo" style="margin-top:10px;font-size:13px;color:var(--muted);display:none"></div>
       </div>
-      <div id="sunriseInfo" style="margin-top:10px;font-size:13px;color:var(--muted);display:none"></div>
-    </div>
-
-
-    <div class="card">
-      <div class="info-line"><span class="k">Текущий режим</span><span class="v" id="curEffect">—</span></div>
-      <div class="info-line"><span class="k">Сеть Wi-Fi</span><span class="v" id="curWifi">—</span></div>
-      <div class="info-line"><span class="k">IP-адрес</span><span class="v" id="curIp">—</span></div>
     </div>
   </section>
+
 
 
   <!-- ================= ЭФФЕКТЫ ================= -->
@@ -516,49 +592,54 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 
   <!-- ================= НАСТРОЙКИ ================= -->
   <section class="screen" id="scr-set">
-    <div class="card">
-      <h3>Wi-Fi</h3>
-      <div class="info-line"><span class="k">Текущая сеть</span><span class="v" id="setWifi">—</span></div>
-      <button class="btn ghost small" style="margin-top:12px" onclick="scanWifi()">Сменить сеть / сканировать</button>
-      <div id="netList"></div>
+    <div class="set-col">
+      <div class="card">
+        <h3>Wi-Fi</h3>
+        <div class="info-line"><span class="k">Текущая сеть</span><span class="v" id="setWifi">—</span></div>
+        <button class="btn ghost small" style="margin-top:12px" onclick="scanWifi()">Сменить сеть / сканировать</button>
+        <div id="netList"></div>
+      </div>
+
+      <div class="card">
+        <h3>Устройство</h3>
+        <label class="fld">Имя устройства</label>
+        <input type="text" id="setName" placeholder="Такси Шашка">
+        <label class="fld">Часовой пояс</label>
+        <select id="setTz"></select>
+        <label class="fld">Поведение при включении</label>
+        <select id="setPom">
+          <option value="0">Восстановить последнее</option>
+          <option value="1">Всегда выключено</option>
+          <option value="2">Всегда включено</option>
+        </select>
+        <button class="btn" style="margin-top:16px" onclick="saveSettings()">Сохранить</button>
+      </div>
     </div>
 
-    <div class="card">
-      <h3>Устройство</h3>
-      <label class="fld">Имя устройства</label>
-      <input type="text" id="setName" placeholder="Такси Шашка">
-      <label class="fld">Часовой пояс</label>
-      <select id="setTz"></select>
-      <label class="fld">Поведение при включении</label>
-      <select id="setPom">
-        <option value="0">Восстановить последнее</option>
-        <option value="1">Всегда выключено</option>
-        <option value="2">Всегда включено</option>
-      </select>
-      <button class="btn" style="margin-top:16px" onclick="saveSettings()">Сохранить</button>
-    </div>
+    <div class="set-col">
+      <div class="card">
+        <h3>Расписание</h3>
+        <div id="schedGrid"></div>
+      </div>
 
-    <div class="card">
-      <h3>Расписание</h3>
-      <div id="schedGrid"></div>
-    </div>
+      <div class="card">
+        <h3>Информация о системе</h3>
+        <div class="info-line"><span class="k">Версия прошивки</span><span class="v" id="iVer">—</span></div>
+        <div class="info-line"><span class="k">IP-адрес</span><span class="v" id="iIp">—</span></div>
+        <div class="info-line"><span class="k">MAC-адрес</span><span class="v" id="iMac">—</span></div>
+        <div class="info-line"><span class="k">Уровень сигнала</span><span class="v" id="iRssi">—</span></div>
+        <div class="info-line"><span class="k">Свободная память</span><span class="v" id="iHeap">—</span></div>
+        <div class="info-line"><span class="k">NTP синхронизация</span><span class="v" id="iNtp">—</span></div>
+      </div>
 
-    <div class="card">
-      <h3>Информация о системе</h3>
-      <div class="info-line"><span class="k">Версия прошивки</span><span class="v" id="iVer">—</span></div>
-      <div class="info-line"><span class="k">IP-адрес</span><span class="v" id="iIp">—</span></div>
-      <div class="info-line"><span class="k">MAC-адрес</span><span class="v" id="iMac">—</span></div>
-      <div class="info-line"><span class="k">Уровень сигнала</span><span class="v" id="iRssi">—</span></div>
-      <div class="info-line"><span class="k">Свободная память</span><span class="v" id="iHeap">—</span></div>
-      <div class="info-line"><span class="k">NTP синхронизация</span><span class="v" id="iNtp">—</span></div>
-    </div>
-
-    <div class="card">
-      <h3>Обслуживание</h3>
-      <a href="/dev" style="text-decoration:none"><button class="btn ghost" style="margin-bottom:10px">Режим разработчика</button></a>
-      <button class="btn danger" onclick="resetSettings()">Сбросить настройки</button>
+      <div class="card">
+        <h3>Обслуживание</h3>
+        <a href="/dev" style="text-decoration:none"><button class="btn ghost" style="margin-bottom:10px">Режим разработчика</button></a>
+        <button class="btn danger" onclick="resetSettings()">Сбросить настройки</button>
+      </div>
     </div>
   </section>
+
 </div>
 
 
@@ -1008,3 +1089,91 @@ setInterval(loadLog,3000);
 </body>
 </html>
 )HTMLDEV";
+
+// ---------------------------------------------------------------------
+//  PWA MANIFEST (/manifest.json)
+// ---------------------------------------------------------------------
+const char MANIFEST_JSON[] PROGMEM = R"JSON({
+  "name": "Такси Шашка",
+  "short_name": "TaxiLight",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+})JSON";
+
+// ---------------------------------------------------------------------
+//  ФИРМЕННАЯ ИКОНКА С АДАПТИВНОЙ ТЕМОЙ (/icon.svg)
+// ---------------------------------------------------------------------
+const char ICON_SVG[] PROGMEM = R"SVG(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181829"/>
+      <stop offset="100%" stop-color="#0a0a0f"/>
+    </linearGradient>
+    <linearGradient id="bgLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0f0f8"/>
+    </linearGradient>
+    <linearGradient id="taxiGrad" x1="0%" y1="0%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#ffb800"/>
+      <stop offset="100%" stop-color="#ff7700"/>
+    </linearGradient>
+    <linearGradient id="neonGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <style>
+    .bg { fill: url(#bgDark); }
+    .border { stroke: #7c3aed; stroke-width: 6; stroke-opacity: 0.7; }
+    .glow-ring { fill: none; stroke: url(#neonGlow); stroke-width: 8; opacity: 0.85; filter: url(#glow); }
+    .check-dark { fill: #101018; }
+    .check-yellow { fill: #ffb800; }
+    .taxi-text { fill: #14141f; }
+    @media (prefers-color-scheme: light) {
+      .bg { fill: url(#bgLight); }
+      .border { stroke: #ff9900; stroke-width: 8; stroke-opacity: 0.9; }
+      .glow-ring { stroke: #ff9900; opacity: 0.35; filter: none; }
+      .check-dark { fill: #202028; }
+      .check-yellow { fill: #ffaa00; }
+    }
+  </style>
+  <rect width="512" height="512" rx="112" class="bg"/>
+  <rect width="512" height="512" rx="112" fill="none" class="border"/>
+  <circle cx="256" cy="256" r="195" class="glow-ring"/>
+  <g transform="translate(0, 15)">
+    <rect x="120" y="325" width="272" height="24" rx="12" fill="url(#neonGlow)" opacity="0.95"/>
+    <path d="M 170 190 Q 256 160 342 190 L 376 320 Q 256 335 136 320 Z" fill="url(#taxiGrad)" filter="url(#glow)"/>
+    <path d="M 170 190 Q 256 160 342 190 L 376 320 Q 256 335 136 320 Z" fill="url(#taxiGrad)"/>
+    <g transform="translate(166, 234)">
+      <rect x="0" y="0" width="30" height="24" rx="3" class="check-dark"/>
+      <rect x="30" y="0" width="30" height="24" rx="3" class="check-yellow"/>
+      <rect x="60" y="0" width="30" height="24" rx="3" class="check-dark"/>
+      <rect x="90" y="0" width="30" height="24" rx="3" class="check-yellow"/>
+      <rect x="120" y="0" width="30" height="24" rx="3" class="check-dark"/>
+      <rect x="150" y="0" width="30" height="24" rx="3" class="check-yellow"/>
+      <rect x="0" y="24" width="30" height="24" rx="3" class="check-yellow"/>
+      <rect x="30" y="24" width="30" height="24" rx="3" class="check-dark"/>
+      <rect x="60" y="24" width="30" height="24" rx="3" class="check-yellow"/>
+      <rect x="90" y="24" width="30" height="24" rx="3" class="check-dark"/>
+      <rect x="120" y="24" width="30" height="24" rx="3" class="check-yellow"/>
+      <rect x="150" y="24" width="30" height="24" rx="3" class="check-dark"/>
+    </g>
+    <text x="256" y="218" text-anchor="middle" font-family="'Arial Black', Impact, sans-serif" font-weight="900" font-size="28" class="taxi-text" letter-spacing="4">TAXI</text>
+  </g>
+</svg>
+)SVG";
