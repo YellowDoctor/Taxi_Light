@@ -403,6 +403,15 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#a78bfa;border-radius:50%;animation:sp 1s linear infinite;vertical-align:middle}
 @keyframes sp{to{transform:rotate(360deg)}}
 
+.fs-btn{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;width:34px;height:34px;display:flex;align-items:center;
+  justify-content:center;color:var(--muted);cursor:pointer;transition:.2s;
+}
+.fs-btn:hover{color:#fff;background:rgba(255,255,255,.15)}
+.fs-btn svg{width:18px;height:18px}
+
+
 /* Десктопная адаптация для мониторов */
 .home-col, .set-col { display: contents; }
 
@@ -507,8 +516,16 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
       <h1 id="devName">Такси Шашка</h1>
       <div class="sub"><span class="dot" id="wifiDot"></span><span id="wifiTxt">—</span></div>
     </div>
-    <div class="sub" id="verTxt">v—</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="fs-btn" onclick="toggleFs()" title="Во весь экран">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+      </button>
+      <div class="sub" id="verTxt">v—</div>
+    </div>
   </header>
+
 
   <!-- ================= ГЛАВНАЯ ================= -->
   <section class="screen active" id="scr-home">
@@ -1012,7 +1029,19 @@ function loadAll(){
   loadSettings();
 }
 
+function toggleFs(){
+  if(!document.fullscreenElement){
+    var el=document.documentElement;
+    if(el.requestFullscreen)el.requestFullscreen().catch(function(){});
+    else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
+  }else{
+    if(document.exitFullscreen)document.exitFullscreen().catch(function(){});
+    else if(document.webkitExitFullscreen)document.webkitExitFullscreen();
+  }
+}
+
 // ============ Инициализация ============
+
 (function init(){
   var sw=$("swatches");SWATCHES.forEach(function(c){var d=document.createElement("div");d.className="sw";d.style.background=c;d.onclick=function(){pickSwatch(c);};sw.appendChild(d);});
   buildTz();
@@ -1133,7 +1162,8 @@ const char MANIFEST_JSON[] PROGMEM = R"JSON({
   "start_url": "/",
   "scope": "/",
   "id": "/",
-  "display": "standalone",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone", "minimal-ui"],
   "background_color": "#0c0c14",
   "theme_color": "#0c0c14",
   "orientation": "portrait-primary",
