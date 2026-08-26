@@ -5,7 +5,7 @@
 // =====================================================================
 
 // ---------- Версия прошивки ----------
-#define FIRMWARE_VERSION      "1.0.0"
+#define FIRMWARE_VERSION      "1.1.0"
 
 // ---------- Светодиодная лента ----------
 #define LED_PIN               5          // GPIO05 — вывод данных WS2812B
@@ -25,7 +25,7 @@
 #define BATTERY_DIVIDER_RATIO 2.0f       // делитель 100к / 100к
 #define BATTERY_SAMPLES       16         // усреднение замеров
 #define BATTERY_MIN_VOLTAGE   3.0f       // 0%
-#define BATTERY_MAX_VOLTAGE   4.2f       // 100%
+#define BATTERY_MAX_VOLTAGE   3.9f       // 100%
 #define BATTERY_UPDATE_MS     10000UL    // период обновления, мс
 
 // ---------- Точка доступа (AP) ----------
@@ -45,13 +45,20 @@
 #define DEVICE_DEFAULT_NAME   "Такси Шашка"
 
 // ---------- Эффекты ----------
-#define EFFECT_STATIC         0
-#define EFFECT_BREATHE        1
-#define EFFECT_RAINBOW        2
-#define EFFECT_FIRE           3
-#define EFFECT_CANDLE         4
-#define EFFECT_COLORFLOW      5
-#define EFFECT_COUNT          6
+ // ---------- Эффекты ----------
+
+#define EFFECT_STATIC         0   // Статический цвет
+#define EFFECT_BREATHE        1   // Дыхание
+#define EFFECT_RAINBOW        2   // Радуга
+#define EFFECT_FIRE           3   // Огонь
+#define EFFECT_CANDLE         4   // Свеча
+#define EFFECT_COLORFLOW      5   // Цветовой поток
+#define EFFECT_AURORA         6   // Северное сияние
+#define EFFECT_OCEAN          7   // Океан
+#define EFFECT_POLICE         8   // Полиция: красный/синий
+#define EFFECT_POLICE_FLASH   9   // Полицейская мигалка
+
+#define EFFECT_COUNT          10
 
 // ---------- Прочее ----------
 #define SERIAL_BAUD           115200

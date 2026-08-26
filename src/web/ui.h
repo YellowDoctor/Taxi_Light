@@ -132,6 +132,156 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 .p-flow{animation:pflow 6s linear infinite}
 @keyframes pflow{0%{background:#ff0055}25%{background:#7c3aed}50%{background:#0af}75%{background:#0f5}100%{background:#ff0055}}
 
+/* -------------------------------------------------------
+   Новые превью эффектов
+   ------------------------------------------------------- */
+
+/* Северное сияние */
+.p-aurora{
+  background:
+    linear-gradient(
+      120deg,
+      #063b35,
+      #00a878,
+      #00d4aa,
+      #3155d9,
+      #7c3aed,
+      #063b35
+    );
+  background-size:300% 100%;
+  animation:paurora 5s ease-in-out infinite;
+}
+
+@keyframes paurora{
+  0%{
+    background-position:0% 50%;
+    filter:brightness(.65);
+  }
+  50%{
+    background-position:100% 50%;
+    filter:brightness(1.25);
+  }
+  100%{
+    background-position:0% 50%;
+    filter:brightness(.65);
+  }
+}
+
+
+/* Океан */
+.p-ocean{
+  background:
+    linear-gradient(
+      90deg,
+      #003b73,
+      #006994,
+      #00a6a6,
+      #0077b6,
+      #003b73
+    );
+  background-size:300% 100%;
+  animation:pocean 3s ease-in-out infinite;
+}
+
+@keyframes pocean{
+  0%{
+    background-position:0% 50%;
+    filter:brightness(.7);
+  }
+  50%{
+    background-position:100% 50%;
+    filter:brightness(1.2);
+  }
+  100%{
+    background-position:0% 50%;
+    filter:brightness(.7);
+  }
+}
+
+
+/* Полиция — красный / синий */
+.p-police{
+  background:
+    linear-gradient(
+      90deg,
+      #ff0000 0%,
+      #ff0000 20%,
+      #101020 20%,
+      #101020 80%,
+      #0055ff 80%,
+      #0055ff 100%
+    );
+  animation:ppolice 1.2s infinite;
+}
+
+@keyframes ppolice{
+  0%, 35%{
+    filter:brightness(1.4);
+  }
+
+  50%, 85%{
+    filter:brightness(.65);
+  }
+
+  100%{
+    filter:brightness(1.4);
+  }
+}
+
+
+/* Полицейская мигалка */
+.p-police-flash{
+  background:
+    linear-gradient(
+      90deg,
+      #ff0000 0%,
+      #ff0000 20%,
+      #050510 20%,
+      #050510 80%,
+      #0055ff 80%,
+      #0055ff 100%
+    );
+  animation:ppoliceflash .8s steps(1,end) infinite;
+}
+
+@keyframes ppoliceflash{
+  0%{
+    filter:brightness(1.6);
+  }
+
+  12%{
+    filter:brightness(.25);
+  }
+
+  25%{
+    filter:brightness(1.6);
+  }
+
+  37%{
+    filter:brightness(.25);
+  }
+
+  50%{
+    filter:brightness(.15);
+  }
+
+  62%{
+    filter:brightness(1.6);
+  }
+
+  75%{
+    filter:brightness(.25);
+  }
+
+  87%{
+    filter:brightness(1.6);
+  }
+
+  100%{
+    filter:brightness(.15);
+  }
+}
+
 /* Кнопки */
 .btn{
   width:100%;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:600;
@@ -345,7 +495,11 @@ var FX=[
   {id:2,name:"Радуга",cls:"p-rainbow"},
   {id:3,name:"Огонь",cls:"p-fire"},
   {id:4,name:"Свеча",cls:"p-candle"},
-  {id:5,name:"Перелив",cls:"p-flow"}
+  {id:5,name:"Перелив",cls:"p-flow"},
+  {id:6,name:"Северное сияние",cls:"p-aurora"},
+  {id:7,name:"Океан",cls:"p-ocean"},
+  {id:8,name:"Полиция",cls:"p-police"},
+  {id:9,name:"Полицейская мигалка",cls:"p-police-flash"}
 ];
 var FXNAME={};FX.forEach(function(f){FXNAME[f.id]=f.name;});
 var SWATCHES=["#ffffff","#ffb000","#ff3b30","#ff2d92","#7c3aed","#3b82f6","#00d4ff","#22c55e"];

@@ -23,6 +23,10 @@ private:
   uint32_t _lastTick = 0;
   uint8_t  _hue = 0;               // общий счётчик оттенка
   byte     _heat[LED_COUNT];       // тепловая карта для эффекта «огонь»
+  
+  // Состояние полицейской мигалки
+  uint8_t _policeStep = 0;
+  uint32_t _policeLastChange = 0;
 
   // Возвращает интервал обновления (мс) в зависимости от скорости
   uint16_t frameInterval();
@@ -34,6 +38,10 @@ private:
   void effFire();
   void effCandle();
   void effColorflow();
+  void effAurora();
+  void effOcean();
+  void effPolice();
+  void effPoliceFlash();
 };
 
 extern EffectsManager Effects;   // глобальный экземпляр
