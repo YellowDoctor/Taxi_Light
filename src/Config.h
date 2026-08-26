@@ -24,8 +24,8 @@
 #define BATTERY_PIN           34         // GPIO34 (только ADC)
 #define BATTERY_DIVIDER_RATIO 2.0f       // делитель 100к / 100к
 #define BATTERY_SAMPLES       16         // усреднение замеров
-#define BATTERY_MIN_VOLTAGE   3.0f       // 0%
-#define BATTERY_MAX_VOLTAGE   3.9f       // 100%
+#define BATTERY_MIN_VOLTAGE   3.2f       // 0% (безопасный минимум Li-Ion)
+#define BATTERY_MAX_VOLTAGE   4.2f       // 100% (полный заряд Li-Ion)
 #define BATTERY_UPDATE_MS     10000UL    // период обновления, мс
 
 // ---------- Точка доступа (AP) ----------

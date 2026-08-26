@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 // =====================================================================
 //  ui.h — встроенный веб-интерфейс (PROGMEM).
 //  INDEX_HTML — основное SPA-приложение.
@@ -52,6 +52,7 @@ header .sub{font-size:12px;color:var(--muted)}
 .card h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px;font-weight:600}
 
 /* Кнопка питания */
+.power-card{position:relative;overflow:hidden}
 .power-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0}
 .power-btn{
   width:150px;height:150px;border-radius:50%;border:none;cursor:pointer;
@@ -68,11 +69,27 @@ header .sub{font-size:12px;color:var(--muted)}
 @keyframes pulse{0%{box-shadow:0 0 30px rgba(124,58,237,.5)}50%{box-shadow:0 0 55px rgba(59,130,246,.75)}100%{box-shadow:0 0 30px rgba(124,58,237,.5)}}
 .power-label{font-size:14px;color:var(--muted);font-weight:600}
 
+/* Батарея в правом нижнем углу карточки питания */
+.power-batt{
+  position:absolute;right:14px;bottom:14px;
+  display:flex;align-items:center;gap:8px;
+  background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);
+  padding:5px 10px;border-radius:12px;backdrop-filter:blur(8px);
+}
+.batt-ico{position:relative;width:24px;height:13px;border:1.5px solid var(--muted);border-radius:3px;padding:1.5px}
+.batt-ico:after{content:"";position:absolute;right:-4px;top:3px;width:2px;height:5px;background:var(--muted);border-radius:0 1px 1px 0}
+.batt-fill{height:100%;border-radius:1px;background:var(--ok);transition:width .5s ease,background .5s}
+.batt-info{line-height:1.2;text-align:right}
+.batt-row{font-size:12px;font-weight:700}
+.batt-chg{color:var(--warn);font-size:11px;margin-left:2px}
+.batt-volt{font-size:10px;color:var(--muted)}
+
 /* Ползунок */
 .slider-row{display:flex;align-items:center;gap:12px}
 .slider-row .ico{font-size:18px;width:24px;text-align:center}
 input[type=range]{
   -webkit-appearance:none;appearance:none;flex:1;height:10px;border-radius:8px;
+
   background:#26263a;outline:none;
 }
 input[type=range]::-webkit-slider-thumb{
@@ -99,15 +116,6 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 .info-line:last-child{border-bottom:none}
 .info-line .k{color:var(--muted)}
 .info-line .v{font-weight:600}
-
-/* Батарея */
-.batt{display:flex;align-items:center;gap:14px}
-.batt-ico{position:relative;width:52px;height:26px;border:2px solid var(--muted);border-radius:5px;padding:2px}
-.batt-ico:after{content:"";position:absolute;right:-6px;top:7px;width:4px;height:10px;background:var(--muted);border-radius:0 2px 2px 0}
-.batt-fill{height:100%;border-radius:2px;background:var(--ok);transition:width .5s ease,background .5s}
-.batt-info{flex:1}
-.batt-pct{font-size:24px;font-weight:700}
-.batt-volt{font-size:12px;color:var(--muted)}
 
 /* Сетка эффектов */
 .fx-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -400,7 +408,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 
   <!-- ================= ГЛАВНАЯ ================= -->
   <section class="screen active" id="scr-home">
-    <div class="card">
+    <div class="card power-card">
       <div class="power-wrap">
         <button class="power-btn" id="powerBtn" onclick="togglePower()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -409,7 +417,15 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
         </button>
         <div class="power-label" id="powerLabel">Выключено</div>
       </div>
+      <div class="power-batt">
+        <div class="batt-ico"><div class="batt-fill" id="battFill" style="width:0%"></div></div>
+        <div class="batt-info">
+          <div class="batt-row"><span id="battPct">—</span>% <span id="battChg"></span></div>
+          <div class="batt-volt"><span id="battVolt">—</span> В</div>
+        </div>
+      </div>
     </div>
+
 
     <div class="card">
       <h3>Яркость</h3>
@@ -465,16 +481,6 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
       <div id="sunriseInfo" style="margin-top:10px;font-size:13px;color:var(--muted);display:none"></div>
     </div>
 
-    <div class="card">
-      <h3>Заряд аккумулятора</h3>
-      <div class="batt">
-        <div class="batt-ico"><div class="batt-fill" id="battFill" style="width:0%"></div></div>
-        <div class="batt-info">
-          <div class="batt-pct"><span id="battPct">—</span>%</div>
-          <div class="batt-volt"><span id="battVolt">—</span> В <span id="battChg"></span></div>
-        </div>
-      </div>
-    </div>
 
     <div class="card">
       <div class="info-line"><span class="k">Текущий режим</span><span class="v" id="curEffect">—</span></div>
@@ -848,8 +854,9 @@ function applyStatus(s){
   // батарея
   $("battPct").textContent=s.battery;$("battFill").style.width=s.battery+"%";
   $("battVolt").textContent=(s.voltage||0).toFixed(2);
-  $("battChg").textContent=s.charging?"⚡ зарядка":"";
+  $("battChg").textContent=s.charging?"⚡":"";
   var f=$("battFill");f.style.background=s.battery>50?"#22c55e":(s.battery>20?"#f59e0b":"#ef4444");
+
   // wi-fi: теперь machine-readable коды
   var wLabel=WIFI_LABELS[s.wifiStatus]||s.wifiStatus||"—";
   $("devName").textContent=s.deviceName;$("verTxt").textContent="v"+s.version;
