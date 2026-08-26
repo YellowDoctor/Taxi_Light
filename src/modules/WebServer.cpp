@@ -252,6 +252,24 @@ void WebServerManager::setupRoutes() {
     req->send(resp);
   });
 
+  // --- PNG Icon (растровый для Android Chrome PWA) ---
+  _server.on("/icon.png", HTTP_GET, [](AsyncWebServerRequest* req) {
+    AsyncWebServerResponse* resp =
+      req->beginResponse(200, "image/png", ICON_PNG, ICON_PNG_LEN);
+    resp->addHeader("Cache-Control", "public, max-age=86400");
+    req->send(resp);
+  });
+
+
+  // --- Service Worker (требуется Chrome для standalone WebAPK) ---
+  _server.on("/sw.js", HTTP_GET, [](AsyncWebServerRequest* req) {
+    AsyncWebServerResponse* resp =
+      req->beginResponse(200, "application/javascript", SW_JS);
+    resp->addHeader("Cache-Control", "no-cache");
+    req->send(resp);
+  });
+
+
 
   // --- GET /api/status ---
   _server.on("/api/status", HTTP_GET, [this](AsyncWebServerRequest* req) {

@@ -15,14 +15,17 @@ const char INDEX_HTML[] PROGMEM = R"HTMLPAGE(<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0a0a0f">
+<meta name="theme-color" content="#0c0c14">
 <title>Такси Шашка</title>
 <link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon.png">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="apple-touch-icon" href="/icon.svg">
+<link rel="apple-touch-icon" href="/icon.png">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="TaxiLight">
+<meta name="apple-mobile-web-app-title" content="Такси Шашка">
+
 <style>
 :root{
   --bg:#0a0a0f; --card:#141420; --card2:#1b1b2b;
@@ -1019,8 +1022,10 @@ function loadAll(){
   loadFavorites();
   loadSchedules();
   loadAll();
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
 })();
 </script>
+
 )HTMLPAGE";
 
 // ---------------------------------------------------------------------
@@ -1126,14 +1131,22 @@ const char MANIFEST_JSON[] PROGMEM = R"JSON({
   "name": "Такси Шашка",
   "short_name": "TaxiLight",
   "start_url": "/",
+  "scope": "/",
+  "id": "/",
   "display": "standalone",
-  "background_color": "#0a0a0f",
-  "theme_color": "#0a0a0f",
+  "background_color": "#0c0c14",
+  "theme_color": "#0c0c14",
   "orientation": "portrait-primary",
   "icons": [
     {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
       "src": "/icon.svg",
-      "sizes": "any",
+      "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
@@ -1141,68 +1154,53 @@ const char MANIFEST_JSON[] PROGMEM = R"JSON({
 })JSON";
 
 // ---------------------------------------------------------------------
-//  ФИРМЕННАЯ ИКОНКА С АДАПТИВНОЙ ТЕМОЙ (/icon.svg)
+//  SERVICE WORKER (/sw.js)
+// ---------------------------------------------------------------------
+const char SW_JS[] PROGMEM = R"JS(
+self.addEventListener('install', function(e) { self.skipWaiting(); });
+self.addEventListener('activate', function(e) { e.waitUntil(clients.claim()); });
+self.addEventListener('fetch', function(e) {
+  e.respondWith(fetch(e.request).catch(function() { return caches.match(e.request); }));
+});
+)JS";
+
+// ---------------------------------------------------------------------
+//  РАСТРОВАЯ ИКОНКА PNG (/icon.png)
+// ---------------------------------------------------------------------
+#include "icon_png.inl"
+
+// ---------------------------------------------------------------------
+//  МИНИМАЛИСТИЧНАЯ ВЕКТОРНАЯ ИКОНКА (/icon.svg)
 // ---------------------------------------------------------------------
 const char ICON_SVG[] PROGMEM = R"SVG(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs>
-    <linearGradient id="bgDark" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#181829"/>
-      <stop offset="100%" stop-color="#0a0a0f"/>
-    </linearGradient>
-    <linearGradient id="bgLight" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#f0f0f8"/>
-    </linearGradient>
-    <linearGradient id="taxiGrad" x1="0%" y1="0%" x2="100%" y2="50%">
-      <stop offset="0%" stop-color="#ffb800"/>
-      <stop offset="100%" stop-color="#ff7700"/>
-    </linearGradient>
-    <linearGradient id="neonGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#7c3aed"/>
-      <stop offset="100%" stop-color="#3b82f6"/>
-    </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="14" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-    </filter>
-  </defs>
   <style>
-    .bg { fill: url(#bgDark); }
-    .border { stroke: #7c3aed; stroke-width: 6; stroke-opacity: 0.7; }
-    .glow-ring { fill: none; stroke: url(#neonGlow); stroke-width: 8; opacity: 0.85; filter: url(#glow); }
-    .check-dark { fill: #101018; }
-    .check-yellow { fill: #ffb800; }
-    .taxi-text { fill: #14141f; }
+    .bg { fill: #0c0c14; }
+    .sq-y { fill: #ffb800; }
+    .sq-d { fill: #222234; }
     @media (prefers-color-scheme: light) {
-      .bg { fill: url(#bgLight); }
-      .border { stroke: #ff9900; stroke-width: 8; stroke-opacity: 0.9; }
-      .glow-ring { stroke: #ff9900; opacity: 0.35; filter: none; }
-      .check-dark { fill: #202028; }
-      .check-yellow { fill: #ffaa00; }
+      .bg { fill: #f4f4f8; }
+      .sq-y { fill: #e69500; }
+      .sq-d { fill: #2c2c3e; }
     }
   </style>
-  <rect width="512" height="512" rx="112" class="bg"/>
-  <rect width="512" height="512" rx="112" fill="none" class="border"/>
-  <circle cx="256" cy="256" r="195" class="glow-ring"/>
-  <g transform="translate(0, 15)">
-    <rect x="120" y="325" width="272" height="24" rx="12" fill="url(#neonGlow)" opacity="0.95"/>
-    <path d="M 170 190 Q 256 160 342 190 L 376 320 Q 256 335 136 320 Z" fill="url(#taxiGrad)" filter="url(#glow)"/>
-    <path d="M 170 190 Q 256 160 342 190 L 376 320 Q 256 335 136 320 Z" fill="url(#taxiGrad)"/>
-    <g transform="translate(166, 234)">
-      <rect x="0" y="0" width="30" height="24" rx="3" class="check-dark"/>
-      <rect x="30" y="0" width="30" height="24" rx="3" class="check-yellow"/>
-      <rect x="60" y="0" width="30" height="24" rx="3" class="check-dark"/>
-      <rect x="90" y="0" width="30" height="24" rx="3" class="check-yellow"/>
-      <rect x="120" y="0" width="30" height="24" rx="3" class="check-dark"/>
-      <rect x="150" y="0" width="30" height="24" rx="3" class="check-yellow"/>
-      <rect x="0" y="24" width="30" height="24" rx="3" class="check-yellow"/>
-      <rect x="30" y="24" width="30" height="24" rx="3" class="check-dark"/>
-      <rect x="60" y="24" width="30" height="24" rx="3" class="check-yellow"/>
-      <rect x="90" y="24" width="30" height="24" rx="3" class="check-dark"/>
-      <rect x="120" y="24" width="30" height="24" rx="3" class="check-yellow"/>
-      <rect x="150" y="24" width="30" height="24" rx="3" class="check-dark"/>
-    </g>
-    <text x="256" y="218" text-anchor="middle" font-family="'Arial Black', Impact, sans-serif" font-weight="900" font-size="28" class="taxi-text" letter-spacing="4">TAXI</text>
+  <rect width="512" height="512" class="bg"/>
+  <g transform="translate(106, 175)">
+    <rect x="0" y="0" width="56" height="50" rx="8" class="sq-y"/>
+    <rect x="61" y="0" width="56" height="50" rx="8" class="sq-d"/>
+    <rect x="122" y="0" width="56" height="50" rx="8" class="sq-y"/>
+    <rect x="183" y="0" width="56" height="50" rx="8" class="sq-d"/>
+    <rect x="244" y="0" width="56" height="50" rx="8" class="sq-y"/>
+    <rect x="0" y="56" width="56" height="50" rx="8" class="sq-d"/>
+    <rect x="61" y="56" width="56" height="50" rx="8" class="sq-y"/>
+    <rect x="122" y="56" width="56" height="50" rx="8" class="sq-d"/>
+    <rect x="183" y="56" width="56" height="50" rx="8" class="sq-y"/>
+    <rect x="244" y="56" width="56" height="50" rx="8" class="sq-d"/>
+    <rect x="0" y="112" width="56" height="50" rx="8" class="sq-y"/>
+    <rect x="61" y="112" width="56" height="50" rx="8" class="sq-d"/>
+    <rect x="122" y="112" width="56" height="50" rx="8" class="sq-y"/>
+    <rect x="183" y="112" width="56" height="50" rx="8" class="sq-d"/>
+    <rect x="244" y="112" width="56" height="50" rx="8" class="sq-y"/>
   </g>
 </svg>
 )SVG";
+
