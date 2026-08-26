@@ -1,0 +1,58 @@
+#pragma once
+// =====================================================================
+//  Config.h — все константы проекта «Такси Шашка»
+//  Умный ночник на ESP32 + WS2812B
+// =====================================================================
+
+// ---------- Версия прошивки ----------
+#define FIRMWARE_VERSION      "1.0.0"
+
+// ---------- Светодиодная лента ----------
+#define LED_PIN               5          // GPIO05 — вывод данных WS2812B
+#define LED_COUNT             34         // количество светодиодов в шашке
+#define LED_TYPE              WS2812B
+#define LED_COLOR_ORDER       GRB
+#define LED_MAX_MILLIAMPS     2000       // ограничение по току блока питания
+
+// ---------- Сенсорная кнопка ----------
+#define USE_TTP223            true       // (true) если использовать TTP223 
+#define BUTTON_PIN            4          // Пин для TTP223
+#define TOUCH_PIN             T0         // GPIO4 (touch-канал T0)
+#define TOUCH_THRESHOLD       40         // порог срабатывания (меньше = касание)
+
+// ---------- Измерение аккумулятора ----------
+#define BATTERY_PIN           34         // GPIO34 (только ADC)
+#define BATTERY_DIVIDER_RATIO 2.0f       // делитель 100к / 100к
+#define BATTERY_SAMPLES       16         // усреднение замеров
+#define BATTERY_MIN_VOLTAGE   3.0f       // 0%
+#define BATTERY_MAX_VOLTAGE   4.2f       // 100%
+#define BATTERY_UPDATE_MS     10000UL    // период обновления, мс
+
+// ---------- Точка доступа (AP) ----------
+#define AP_SSID               "TaxiLight"
+#define AP_PASSWORD           "12345678"
+#define AP_IP_ADDR            192,168,4,1
+
+// ---------- Wi-Fi ----------
+#define WIFI_CONNECT_TIMEOUT  10000UL    // таймаут подключения к сети, мс
+#define WIFI_RETRY_INTERVAL   30000UL    // период попыток переподключения
+
+// ---------- OTA ----------
+#define OTA_HOSTNAME          "taxilight"
+#define OTA_PASSWORD          "taxilight_ota"
+
+// ---------- Устройство по умолчанию ----------
+#define DEVICE_DEFAULT_NAME   "Такси Шашка"
+
+// ---------- Эффекты ----------
+#define EFFECT_STATIC         0
+#define EFFECT_BREATHE        1
+#define EFFECT_RAINBOW        2
+#define EFFECT_FIRE           3
+#define EFFECT_CANDLE         4
+#define EFFECT_COLORFLOW      5
+#define EFFECT_COUNT          6
+
+// ---------- Прочее ----------
+#define SERIAL_BAUD           115200
+#define STATUS_LOG_SIZE       20         // размер кольцевого лога событий
