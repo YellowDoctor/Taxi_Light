@@ -1,5 +1,5 @@
-// =====================================================================
-//  WebServer.cpp — реализация REST API и отдачи UI
+﻿// =====================================================================
+//  WebServer.cpp — REST API + WebSocket + UI
 // =====================================================================
 #include "WebServer.h"
 #include <ArduinoJson.h>
@@ -11,6 +11,7 @@
 #include "BatteryManager.h"
 #include "WiFiManager.h"
 #include "OtaManager.h"
+#include "SunriseManager.h"
 #include "../web/ui.h"
 
 WebServerManager Web;   // глобальный экземпляр
@@ -18,8 +19,6 @@ WebServerManager Web;   // глобальный экземпляр
 // ---------------------------------------------------------------------
 //  Вспомогательное: накопление тела POST-запроса и разбор JSON
 // ---------------------------------------------------------------------
-// Собирает тело запроса (возможно, по частям) в request->_tempObject (String*)
-// и по завершении вызывает пользовательский обработчик с распарсенным JSON.
 typedef std::function<void(AsyncWebServerRequest*, JsonDocument&)> JsonHandler;
 
 static void handleJsonBody(AsyncWebServerRequest* request, uint8_t* data,
@@ -69,7 +68,52 @@ String WebServerManager::buildLogJson() {
 }
 
 // ---------------------------------------------------------------------
-//  Формирование JSON состояния
+//  WebSocket: push-обновление всем клиентам
+// ---------------------------------------------------------------------
+void WebServerManager::notifyClients() {
+  if (_ws.count() > 0) {
+    _ws.textAll(buildStatusJson());
+  }
+}
+
+// ---------------------------------------------------------------------
+//  Таймер сна
+// ---------------------------------------------------------------------
+void WebServerManager::setSleepTimer(uint32_t minutes) {
+  if (minutes == 0) { cancelSleepTimer(); return; }
+  _sleepActive = true;
+  _sleepEnd    = millis() + minutes * 60UL * 1000UL;
+  Serial.printf("[Web] Таймер сна: %u мин\n", minutes);
+}
+
+void WebServerManager::cancelSleepTimer() {
+  _sleepActive = false;
+  _sleepEnd    = 0;
+  Serial.println(F("[Web] Таймер сна отменён"));
+}
+
+int32_t WebServerManager::sleepTimerLeft() const {
+  if (!_sleepActive) return -1;
+  uint32_t now = millis();
+  if (now >= _sleepEnd) return 0;
+  return (int32_t)((_sleepEnd - now) / 1000UL);
+}
+
+void WebServerManager::tickSleepTimer() {
+  if (!_sleepActive) return;
+  if (millis() >= _sleepEnd) {
+    _sleepActive = false;
+    Config.data.isOn = false;
+    applyCurrentState();
+    Config.save();
+    addLog("Таймер сна: выключение");
+    notifyClients();
+    Serial.println(F("[Web] Таймер сна: устройство выключено"));
+  }
+}
+
+// ---------------------------------------------------------------------
+//  Формирование JSON
 // ---------------------------------------------------------------------
 String WebServerManager::buildStatusJson() {
   JsonDocument doc;
@@ -93,6 +137,10 @@ String WebServerManager::buildStatusJson() {
   doc["freeHeap"]   = ESP.getFreeHeap();
   doc["mac"]        = WiFi.macAddress();
   doc["apMode"]     = Wifi.isAP();
+  doc["timeSynced"] = Wifi.isTimeSynced();
+  doc["timerLeft"]  = sleepTimerLeft();
+  doc["sunriseActive"]  = Sunrise.isActive();
+  doc["sunriseLeft"]    = (int32_t)Sunrise.secondsLeft();
 
   String out;
   serializeJson(doc, out);
@@ -101,22 +149,61 @@ String WebServerManager::buildStatusJson() {
 
 String WebServerManager::buildSettingsJson() {
   JsonDocument doc;
-  doc["deviceName"]   = Config.data.deviceName;
-  doc["brightness"]   = Config.data.brightness;
-  doc["isOn"]         = Config.data.isOn;
-  doc["currentEffect"]= Config.data.currentEffect;
+  doc["deviceName"]    = Config.data.deviceName;
+  doc["brightness"]    = Config.data.brightness;
+  doc["isOn"]          = Config.data.isOn;
+  doc["currentEffect"] = Config.data.currentEffect;
   char hex[8];
   snprintf(hex, sizeof(hex), "#%06X", Config.data.color & 0xFFFFFF);
-  doc["color"]        = hex;
-  doc["effectSpeed"]  = Config.data.effectSpeed;
-  doc["wifiSSID"]     = Config.data.wifiSSID;
-  doc["timezone"]     = Config.data.timezone;
-  doc["powerOnMode"]  = Config.data.powerOnMode;
-  doc["touchAction1"] = Config.data.touchAction1;
-  doc["touchAction2"] = Config.data.touchAction2;
-  doc["touchAction3"] = Config.data.touchAction3;
+  doc["color"]         = hex;
+  doc["effectSpeed"]   = Config.data.effectSpeed;
+  doc["wifiSSID"]      = Config.data.wifiSSID;
+  doc["timezone"]      = Config.data.timezone;
+  doc["powerOnMode"]   = Config.data.powerOnMode;
+  doc["touchAction1"]  = Config.data.touchAction1;
+  doc["touchAction2"]  = Config.data.touchAction2;
+  doc["touchAction3"]  = Config.data.touchAction3;
   String out;
   serializeJson(doc, out);
+  return out;
+}
+
+String WebServerManager::buildFavoritesJson() {
+  JsonDocument doc;
+  JsonArray arr = doc.to<JsonArray>();
+  for (uint8_t i = 0; i < FAVORITES_COUNT; i++) {
+    JsonObject o = arr.add<JsonObject>();
+    o["slot"]   = i;
+    o["used"]   = Config.data.favorites[i].used;
+    if (Config.data.favorites[i].used) {
+      o["name"]       = Config.data.favorites[i].name;
+      char hex[8];
+      snprintf(hex, sizeof(hex), "#%06X", Config.data.favorites[i].color & 0xFFFFFF);
+      o["color"]      = hex;
+      o["effect"]     = Config.data.favorites[i].effect;
+      o["brightness"] = Config.data.favorites[i].brightness;
+      o["speed"]      = Config.data.favorites[i].speed;
+    }
+  }
+  String out;
+  serializeJson(arr, out);
+  return out;
+}
+
+String WebServerManager::buildSchedulesJson() {
+  JsonDocument doc;
+  JsonArray arr = doc.to<JsonArray>();
+  for (uint8_t i = 0; i < SCHEDULE_COUNT; i++) {
+    JsonObject o = arr.add<JsonObject>();
+    o["slot"]    = i;
+    o["enabled"] = Config.data.schedules[i].enabled;
+    o["hour"]    = Config.data.schedules[i].hour;
+    o["minute"]  = Config.data.schedules[i].minute;
+    o["action"]  = Config.data.schedules[i].action;
+    o["days"]    = Config.data.schedules[i].days;
+  }
+  String out;
+  serializeJson(arr, out);
   return out;
 }
 
@@ -125,10 +212,18 @@ String WebServerManager::buildSettingsJson() {
 // ---------------------------------------------------------------------
 void WebServerManager::setupRoutes() {
 
+  // --- WebSocket ---
+  _ws.onEvent([](AsyncWebSocket*, AsyncWebSocketClient*, AwsEventType type,
+                 void*, uint8_t*, size_t) {
+    // При подключении нового клиента он сразу получит статус
+    if (type == WS_EVT_CONNECT) Web.notifyClients();
+  });
+  _server.addHandler(&_ws);
+
   // --- Главная страница (SPA) ---
   _server.on("/", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
-      req->beginResponse_P(200, "text/html", INDEX_HTML);
+      req->beginResponse(200, "text/html", INDEX_HTML);
     resp->addHeader("Cache-Control", "no-store");
     req->send(resp);
   });
@@ -136,7 +231,7 @@ void WebServerManager::setupRoutes() {
   // --- Страница разработчика ---
   _server.on("/dev", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
-      req->beginResponse_P(200, "text/html", DEV_HTML);
+      req->beginResponse(200, "text/html", DEV_HTML);
     resp->addHeader("Cache-Control", "no-store");
     req->send(resp);
   });
@@ -151,7 +246,7 @@ void WebServerManager::setupRoutes() {
     req->send(200, "application/json", buildSettingsJson());
   });
 
-  // --- GET /api/log (для страницы /dev) ---
+  // --- GET /api/log ---
   _server.on("/api/log", HTTP_GET, [this](AsyncWebServerRequest* req) {
     req->send(200, "application/json", buildLogJson());
   });
@@ -168,6 +263,7 @@ void WebServerManager::setupRoutes() {
           Config.save();
           applyCurrentState();
           addLog(String("Питание: ") + (Config.data.isOn ? "ВКЛ" : "ВЫКЛ"));
+          notifyClients();
           r->send(200, "application/json", buildStatusJson());
         });
     });
@@ -185,6 +281,7 @@ void WebServerManager::setupRoutes() {
           Config.data.brightness = (uint8_t)v;
           Config.save();
           applyCurrentState();
+          notifyClients();
           r->send(200, "application/json", buildStatusJson());
         });
     });
@@ -204,6 +301,7 @@ void WebServerManager::setupRoutes() {
           Config.save();
           applyCurrentState();
           addLog("Цвет изменён");
+          notifyClients();
           r->send(200, "application/json", buildStatusJson());
         });
     });
@@ -224,6 +322,7 @@ void WebServerManager::setupRoutes() {
           Config.save();
           applyCurrentState();
           addLog(String("Эффект: ") + id);
+          notifyClients();
           r->send(200, "application/json", buildStatusJson());
         });
     });
@@ -234,7 +333,7 @@ void WebServerManager::setupRoutes() {
     JsonArray arr = doc.to<JsonArray>();
     int n = WiFi.scanComplete();
     if (n == WIFI_SCAN_FAILED || n == -2) {
-      WiFi.scanNetworks(true);   // асинхронный запуск
+      WiFi.scanNetworks(true);
     } else if (n >= 0) {
       for (int i = 0; i < n; i++) {
         JsonObject o = arr.add<JsonObject>();
@@ -243,7 +342,7 @@ void WebServerManager::setupRoutes() {
         o["secure"] = (WiFi.encryptionType(i) != WIFI_AUTH_OPEN);
       }
       WiFi.scanDelete();
-      WiFi.scanNetworks(true);   // обновление для следующего запроса
+      WiFi.scanNetworks(true);
     }
     String out;
     serializeJson(arr, out);
@@ -261,7 +360,7 @@ void WebServerManager::setupRoutes() {
           String ssid = doc["ssid"] | "";
           String pass = doc["pass"] | "";
           addLog("Подключение к Wi-Fi: " + ssid);
-          // Ответ отправляем сразу, само подключение — после
+          // Отвечаем сразу, само подключение — асинхронно
           JsonDocument res;
           res["ok"] = (ssid.length() > 0);
           String out; serializeJson(res, out);
@@ -327,19 +426,18 @@ void WebServerManager::setupRoutes() {
             return;
           }
           r->send(200, "application/json", "{\"ok\":true}");
-          Ota.updateFromUrl(url);   // при успехе устройство перезагрузится
+          Ota.updateFromUrl(url);
         });
     });
 
-  // --- POST /api/reboot ---
+  // --- POST /api/reboot (асинхронно, через флаг) ---
   _server.on("/api/reboot", HTTP_POST, [this](AsyncWebServerRequest* req) {
     addLog("Перезагрузка устройства");
     req->send(200, "application/json", "{\"ok\":true}");
-    delay(200);
-    ESP.restart();
+    _pendingReboot = true;   // реальный restart — в loop()
   });
 
-  // --- POST /api/test/led (тест ленты — радуга) ---
+  // --- POST /api/test/led ---
   _server.on("/api/test/led", HTTP_POST, [this](AsyncWebServerRequest* req) {
     addLog("Тест LED: радуга 5с");
     Config.data.isOn = true;
@@ -348,12 +446,200 @@ void WebServerManager::setupRoutes() {
     req->send(200, "application/json", "{\"ok\":true}");
   });
 
+  // ===================================================================
+  //  ИЗБРАННЫЕ СЦЕНЫ (Favorites)
+  // ===================================================================
+
+  // --- GET /api/favorites ---
+  _server.on("/api/favorites", HTTP_GET, [this](AsyncWebServerRequest* req) {
+    req->send(200, "application/json", buildFavoritesJson());
+  });
+
+  // --- POST /api/favorites/save ---
+  _server.on("/api/favorites/save", HTTP_POST,
+    [](AsyncWebServerRequest* req) {},
+    NULL,
+    [this](AsyncWebServerRequest* req, uint8_t* data, size_t len,
+           size_t index, size_t total) {
+      handleJsonBody(req, data, len, index, total,
+        [this](AsyncWebServerRequest* r, JsonDocument& doc) {
+          int slot = doc["slot"] | -1;
+          if (slot < 0 || slot >= FAVORITES_COUNT) {
+            r->send(400, "application/json", "{\"ok\":false,\"error\":\"bad slot\"}");
+            return;
+          }
+          FavoriteScene& f = Config.data.favorites[slot];
+          f.used       = true;
+          f.color      = Config.data.color;
+          f.effect     = Config.data.currentEffect;
+          f.brightness = Config.data.brightness;
+          f.speed      = Config.data.effectSpeed;
+          // Имя
+          const char* name = doc["name"] | "";
+          strncpy(f.name, (name[0] ? name : (String("Сцена ") + (slot+1)).c_str()),
+                  FAVORITES_NAME_LEN - 1);
+          f.name[FAVORITES_NAME_LEN - 1] = '\0';
+          Config.saveFavoriteSlot(slot);
+          addLog(String("Сохранено в слот ") + slot);
+          r->send(200, "application/json", buildFavoritesJson());
+        });
+    });
+
+  // --- POST /api/favorites/load ---
+  _server.on("/api/favorites/load", HTTP_POST,
+    [](AsyncWebServerRequest* req) {},
+    NULL,
+    [this](AsyncWebServerRequest* req, uint8_t* data, size_t len,
+           size_t index, size_t total) {
+      handleJsonBody(req, data, len, index, total,
+        [this](AsyncWebServerRequest* r, JsonDocument& doc) {
+          int slot = doc["slot"] | -1;
+          if (slot < 0 || slot >= FAVORITES_COUNT || !Config.data.favorites[slot].used) {
+            r->send(400, "application/json", "{\"ok\":false,\"error\":\"bad slot\"}");
+            return;
+          }
+          const FavoriteScene& f = Config.data.favorites[slot];
+          Config.data.color          = f.color;
+          Config.data.currentEffect  = f.effect;
+          Config.data.brightness     = f.brightness;
+          Config.data.effectSpeed    = f.speed;
+          Config.data.isOn           = true;
+          Config.save();
+          applyCurrentState();
+          addLog(String("Загружена сцена: ") + f.name);
+          notifyClients();
+          r->send(200, "application/json", buildStatusJson());
+        });
+    });
+
+  // --- POST /api/favorites/delete ---
+  _server.on("/api/favorites/delete", HTTP_POST,
+    [](AsyncWebServerRequest* req) {},
+    NULL,
+    [this](AsyncWebServerRequest* req, uint8_t* data, size_t len,
+           size_t index, size_t total) {
+      handleJsonBody(req, data, len, index, total,
+        [this](AsyncWebServerRequest* r, JsonDocument& doc) {
+          int slot = doc["slot"] | -1;
+          if (slot < 0 || slot >= FAVORITES_COUNT) {
+            r->send(400, "application/json", "{\"ok\":false,\"error\":\"bad slot\"}");
+            return;
+          }
+          Config.deleteFavoriteSlot(slot);
+          addLog(String("Слот ") + slot + " удалён");
+          r->send(200, "application/json", buildFavoritesJson());
+        });
+    });
+
+  // ===================================================================
+  //  ТАЙМЕР СНА
+  // ===================================================================
+
+  // --- POST /api/timer ---
+  _server.on("/api/timer", HTTP_POST,
+    [](AsyncWebServerRequest* req) {},
+    NULL,
+    [this](AsyncWebServerRequest* req, uint8_t* data, size_t len,
+           size_t index, size_t total) {
+      handleJsonBody(req, data, len, index, total,
+        [this](AsyncWebServerRequest* r, JsonDocument& doc) {
+          int minutes = doc["minutes"] | 0;
+          setSleepTimer((uint32_t)max(0, minutes));
+          if (minutes > 0)
+            addLog(String("Таймер сна: ") + minutes + " мин");
+          else
+            addLog("Таймер сна отменён");
+          r->send(200, "application/json", buildStatusJson());
+        });
+    });
+
+  // ===================================================================
+  //  SUNRISE ALARM
+  // ===================================================================
+
+  // --- POST /api/sunrise ---
+  _server.on("/api/sunrise", HTTP_POST,
+    [](AsyncWebServerRequest* req) {},
+    NULL,
+    [this](AsyncWebServerRequest* req, uint8_t* data, size_t len,
+           size_t index, size_t total) {
+      handleJsonBody(req, data, len, index, total,
+        [this](AsyncWebServerRequest* r, JsonDocument& doc) {
+          int minutes    = doc["minutes"]    | 20;
+          int brightness = doc["brightness"] | Config.data.brightness;
+          if (minutes < 1) minutes = 1;
+          if (minutes > SUNRISE_MAX_MINUTES) minutes = SUNRISE_MAX_MINUTES;
+          Sunrise.start((uint8_t)minutes, (uint8_t)brightness);
+          addLog(String("Рассвет: ") + minutes + " мин");
+          r->send(200, "application/json", buildStatusJson());
+        });
+    });
+
+  // --- POST /api/sunrise/cancel ---
+  _server.on("/api/sunrise/cancel", HTTP_POST, [this](AsyncWebServerRequest* req) {
+    Sunrise.cancel();
+    addLog("Рассвет отменён");
+    req->send(200, "application/json", "{\"ok\":true}");
+  });
+
+  // ===================================================================
+  //  РАСПИСАНИЕ
+  // ===================================================================
+
+  // --- GET /api/schedules ---
+  _server.on("/api/schedules", HTTP_GET, [this](AsyncWebServerRequest* req) {
+    req->send(200, "application/json", buildSchedulesJson());
+  });
+
+  // --- POST /api/schedules ---
+  _server.on("/api/schedules", HTTP_POST,
+    [](AsyncWebServerRequest* req) {},
+    NULL,
+    [this](AsyncWebServerRequest* req, uint8_t* data, size_t len,
+           size_t index, size_t total) {
+      handleJsonBody(req, data, len, index, total,
+        [this](AsyncWebServerRequest* r, JsonDocument& doc) {
+          int slot = doc["slot"] | -1;
+          if (slot < 0 || slot >= SCHEDULE_COUNT) {
+            r->send(400, "application/json", "{\"ok\":false,\"error\":\"bad slot\"}");
+            return;
+          }
+          Schedule& s    = Config.data.schedules[slot];
+          s.enabled = doc["enabled"] | s.enabled;
+          s.hour    = (uint8_t)((int)(doc["hour"]   | s.hour));
+          s.minute  = (uint8_t)((int)(doc["minute"] | s.minute));
+          s.action  = doc["action"]  | s.action;
+          s.days    = (uint8_t)((int)(doc["days"]   | s.days));
+          Config.saveScheduleSlot(slot);
+          addLog(String("Расписание слот ") + slot + " обновлено");
+          r->send(200, "application/json", buildSchedulesJson());
+        });
+    });
+
+  // --- POST /api/schedules/delete ---
+  _server.on("/api/schedules/delete", HTTP_POST,
+    [](AsyncWebServerRequest* req) {},
+    NULL,
+    [this](AsyncWebServerRequest* req, uint8_t* data, size_t len,
+           size_t index, size_t total) {
+      handleJsonBody(req, data, len, index, total,
+        [this](AsyncWebServerRequest* r, JsonDocument& doc) {
+          int slot = doc["slot"] | -1;
+          if (slot < 0 || slot >= SCHEDULE_COUNT) {
+            r->send(400, "application/json", "{\"ok\":false,\"error\":\"bad slot\"}");
+            return;
+          }
+          Config.deleteScheduleSlot(slot);
+          addLog(String("Расписание слот ") + slot + " удалён");
+          r->send(200, "application/json", buildSchedulesJson());
+        });
+    });
+
   // --- Captive portal: неизвестные маршруты -> главная ---
   _server.onNotFound([](AsyncWebServerRequest* req) {
     if (Wifi.isAP()) {
-      // редирект на корень для captive portal
       AsyncWebServerResponse* resp =
-        req->beginResponse_P(200, "text/html", INDEX_HTML);
+        req->beginResponse(200, "text/html", INDEX_HTML);
       req->send(resp);
     } else {
       req->send(404, "text/plain", "Not found");
@@ -365,5 +651,6 @@ void WebServerManager::begin() {
   setupRoutes();
   _server.begin();
   addLog("Веб-сервер запущен");
-  Serial.println(F("[Web] HTTP-сервер запущен на порту 80"));
+  Serial.println(F("[Web] HTTP/WebSocket сервер запущен на порту 80"));
 }
+

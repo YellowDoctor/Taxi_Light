@@ -5,7 +5,7 @@
 // =====================================================================
 
 // ---------- Версия прошивки ----------
-#define FIRMWARE_VERSION      "1.1.0"
+#define FIRMWARE_VERSION      "1.2.0"
 
 // ---------- Светодиодная лента ----------
 #define LED_PIN               5          // GPIO05 — вывод данных WS2812B
@@ -36,6 +36,7 @@
 // ---------- Wi-Fi ----------
 #define WIFI_CONNECT_TIMEOUT  10000UL    // таймаут подключения к сети, мс
 #define WIFI_RETRY_INTERVAL   30000UL    // период попыток переподключения
+#define WIFI_MAX_RETRIES      3          // попыток перед переходом в AP
 
 // ---------- OTA ----------
 #define OTA_HOSTNAME          "taxilight"
@@ -45,8 +46,6 @@
 #define DEVICE_DEFAULT_NAME   "Такси Шашка"
 
 // ---------- Эффекты ----------
- // ---------- Эффекты ----------
-
 #define EFFECT_STATIC         0   // Статический цвет
 #define EFFECT_BREATHE        1   // Дыхание
 #define EFFECT_RAINBOW        2   // Радуга
@@ -57,8 +56,28 @@
 #define EFFECT_OCEAN          7   // Океан
 #define EFFECT_POLICE         8   // Полиция: красный/синий
 #define EFFECT_POLICE_FLASH   9   // Полицейская мигалка
+#define EFFECT_METEOR         10  // Метеор (бегущий хвост)
+#define EFFECT_STROBE         11  // Стробоскоп
+#define EFFECT_RUNNING        12  // Бегущие огни (гирлянда)
+#define EFFECT_NIGHTSKY       13  // Ночное небо (мерцающие звёзды)
+#define EFFECT_LASER          14  // Лазер (сканирующая точка)
+#define EFFECT_FLASH          15  // Случайные вспышки
 
-#define EFFECT_COUNT          10
+#define EFFECT_COUNT          16
+
+// ---------- Избранные сцены ----------
+#define FAVORITES_COUNT       5
+#define FAVORITES_NAME_LEN    16
+
+// ---------- Расписание ----------
+#define SCHEDULE_COUNT        4
+
+// ---------- Sunrise Alarm ----------
+#define SUNRISE_MAX_MINUTES   60         // максимальная длительность рассвета, мин
+
+// ---------- NTP ----------
+#define NTP_SERVER1           "pool.ntp.org"
+#define NTP_SERVER2           "time.cloudflare.com"
 
 // ---------- Прочее ----------
 #define SERIAL_BAUD           115200

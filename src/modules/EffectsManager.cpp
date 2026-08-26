@@ -35,6 +35,10 @@ void EffectsManager::setEffect(uint8_t id)
   {
     _hue = 0;
   }
+
+  if (id == EFFECT_METEOR)  { _meteorPos = 0; }
+  if (id == EFFECT_LASER)   { _laserPos = 0; _laserDir = 1; }
+  if (id == EFFECT_STROBE)  { _strobeOn = false; }
 }
 
 void EffectsManager::setSpeed(uint8_t v)
@@ -97,6 +101,12 @@ void EffectsManager::tick()
   case EFFECT_POLICE_FLASH:
     effPoliceFlash();
     break;
+  case EFFECT_METEOR:     effMeteor();    break;
+  case EFFECT_STROBE:     effStrobe();    break;
+  case EFFECT_RUNNING:    effRunning();   break;
+  case EFFECT_NIGHTSKY:   effNightsky();  break;
+  case EFFECT_LASER:      effLaser();     break;
+  case EFFECT_FLASH:      effFlash();     break;
   default:
     effStatic();
     break;
@@ -484,6 +494,118 @@ void EffectsManager::effPoliceFlash()
           blueFlash
               ? CRGB(0, 0, brightness)
               : CRGB::Black;
+    }
+  }
+}
+
+// =====================================================================
+// 10. МЕТЕОР — яркая точка с затухающим хвостом
+// =====================================================================
+void EffectsManager::effMeteor()
+{
+  const uint8_t TAIL = 8;      // длина хвоста
+  const uint8_t FADE = 80;     // скорость затухания хвоста (0..255)
+
+  // Плавное затухание всех пикселей
+  for (int i = 0; i < LED_COUNT; i++)
+    Led.leds[i].nscale8(255 - FADE);
+
+  // Голова метеора — полный цвет
+  Led.leds[_meteorPos] = _color;
+
+  // Хвост — убывающая яркость
+  for (uint8_t t = 1; t < TAIL && (int)_meteorPos - t >= 0; t++) {
+    uint8_t b = 255 - (uint8_t)((255.0f / TAIL) * t);
+    CRGB c = _color;
+    c.nscale8(b);
+    Led.leds[_meteorPos - t] = blend(Led.leds[_meteorPos - t], c, 180);
+  }
+
+  _meteorPos++;
+  if (_meteorPos >= LED_COUNT) _meteorPos = 0;
+}
+
+// =====================================================================
+// 11. СТРОБОСКОП — быстрые вспышки заданного цвета
+// =====================================================================
+void EffectsManager::effStrobe()
+{
+  _strobeOn = !_strobeOn;
+  if (_strobeOn)
+    fill_solid(Led.leds, LED_COUNT, _color);
+  else
+    fill_solid(Led.leds, LED_COUNT, CRGB::Black);
+}
+
+// =====================================================================
+// 12. БЕГУЩИЕ ОГНИ — несколько ярких точек движутся по ленте
+// =====================================================================
+void EffectsManager::effRunning()
+{
+  _hue++;
+  const uint8_t SPACING = LED_COUNT / 4;   // 4 огня
+
+  fill_solid(Led.leds, LED_COUNT, CRGB::Black);
+  for (uint8_t i = 0; i < 4; i++) {
+    uint8_t pos = (_hue / 2 + i * SPACING) % LED_COUNT;
+    Led.leds[pos] = _color;
+    // Мягкий ореол вокруг точки
+    if (pos > 0)           Led.leds[pos - 1] = blend(CRGB::Black, _color, 80);
+    if (pos < LED_COUNT-1) Led.leds[pos + 1] = blend(CRGB::Black, _color, 80);
+  }
+}
+
+// =====================================================================
+// 13. НОЧНОЕ НЕБО — редкие мерцающие «звёзды» на тёмном фоне
+// =====================================================================
+void EffectsManager::effNightsky()
+{
+  // Медленное угасание всех пикселей
+  for (int i = 0; i < LED_COUNT; i++)
+    Led.leds[i].nscale8(220);
+
+  // Случайно зажигаем новую «звезду» — вероятность зависит от скорости
+  uint8_t chance = map(_speed, 0, 255, 3, 40);
+  if (random8() < chance) {
+    uint8_t pos = random8(LED_COUNT);
+    uint8_t bright = random8(150, 255);
+    Led.leds[pos] = CRGB(bright, bright, bright);   // белая звезда
+  }
+}
+
+// =====================================================================
+// 14. ЛАЗЕР — одна яркая точка, сканирующая ленту туда-обратно
+// =====================================================================
+void EffectsManager::effLaser()
+{
+  // Затухание шлейфа
+  for (int i = 0; i < LED_COUNT; i++)
+    Led.leds[i].nscale8(180);
+
+  // Позиция луча
+  Led.leds[(uint8_t)_laserPos] = _color;
+
+  // Движение
+  _laserPos += _laserDir;
+  if (_laserPos >= LED_COUNT) { _laserPos = LED_COUNT - 2; _laserDir = -1; }
+  if (_laserPos < 0)           { _laserPos = 1;             _laserDir =  1; }
+}
+
+// =====================================================================
+// 15. СЛУЧАЙНЫЕ ВСПЫШКИ — внезапные яркие импульсы отдельных LED
+// =====================================================================
+void EffectsManager::effFlash()
+{
+  // Угасание
+  for (int i = 0; i < LED_COUNT; i++)
+    Led.leds[i].nscale8(200);
+
+  // Случайные вспышки
+  uint8_t chance = map(_speed, 0, 255, 5, 60);
+  for (uint8_t i = 0; i < 3; i++) {
+    if (random8() < chance) {
+      uint8_t pos = random8(LED_COUNT);
+      Led.leds[pos] = _color;
     }
   }
 }

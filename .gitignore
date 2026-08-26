@@ -1,5 +1,4 @@
 .pio
 .vscode/
 .abacus*
-.DS_Store
-Thumbs.db
+*.log

@@ -13,6 +13,7 @@ public:
   std::function<void()> onDouble;       // двойное касание
   std::function<void()> onHold;         // удержание 400–2000мс
   std::function<void()> onLongHold;     // долгое удержание > 5000мс
+  std::function<void()> onRelease = nullptr;   // вызывается при отпускании после удержания
 
   void begin();
   void tick();                          // неблокирующая обработка
@@ -24,6 +25,7 @@ private:
   bool     _waitDouble   = false;       // ожидание второго касания
   bool     _holdFired    = false;       // сработало ли удержание
   bool     _longFired    = false;       // сработало ли долгое удержание
+  bool     _holdEnded    = false;       // удержание завершилось при отпускании
   uint32_t _lastHoldStep = 0;           // для повторов при удержании
 
   bool readTouch();                     // true, если палец на сенсоре

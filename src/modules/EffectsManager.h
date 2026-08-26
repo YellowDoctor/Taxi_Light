@@ -28,6 +28,14 @@ private:
   uint8_t _policeStep = 0;
   uint32_t _policeLastChange = 0;
 
+  // Метеор
+  uint8_t  _meteorPos = 0;
+  // Лазер
+  int8_t   _laserPos  = 0;
+  int8_t   _laserDir  = 1;
+  // Стробоскоп
+  bool     _strobeOn  = false;
+
   // Возвращает интервал обновления (мс) в зависимости от скорости
   uint16_t frameInterval();
 
@@ -42,6 +50,12 @@ private:
   void effOcean();
   void effPolice();
   void effPoliceFlash();
+  void effMeteor();     // 10 — метеор с хвостом угасания
+  void effStrobe();     // 11 — стробоскоп
+  void effRunning();    // 12 — бегущие огни (гирлянда)
+  void effNightsky();   // 13 — ночное небо (мерцающие звёзды)
+  void effLaser();      // 14 — лазер (сканирующая точка)
+  void effFlash();      // 15 — случайные вспышки
 };
 
 extern EffectsManager Effects;   // глобальный экземпляр

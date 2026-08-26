@@ -67,12 +67,13 @@ void ButtonManager::tick() {
 
   // ----- Отпускание -----
   if (!touched && _pressed) {
-    _pressed = true; // сбросим ниже
-    _pressed = false;
+    _pressed = false;  // исправлен баг: убрано лишнее _pressed = true
     uint32_t held = now - _pressStart;
 
     if (_holdFired || _longFired) {
-      // жест удержания уже обработан — ничего не делаем
+      // жест удержания уже обработан
+      // уведомляем о завершении удержания для сохранения яркости и т.п.
+      if (_holdFired && !_longFired && onRelease) onRelease();
       _waitDouble = false;
     } else if (held < TAP_MAX) {
       // это касание-«тап»

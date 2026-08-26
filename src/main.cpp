@@ -1,6 +1,6 @@
 // =====================================================================
 //  main.cpp — умный ночник «Такси Шашка» на ESP32
-//  Итерация 1. Неблокирующий loop(), модульная архитектура.
+//  Версия 1.2. Неблокирующий loop(), модульная архитектура.
 // =====================================================================
 #include <Arduino.h>
 #include "Config.h"
@@ -12,6 +12,8 @@
 #include "modules/WiFiManager.h"
 #include "modules/OtaManager.h"
 #include "modules/WebServer.h"
+#include "modules/SunriseManager.h"
+#include "modules/ScheduleManager.h"
 
 // ---------------------------------------------------------------------
 //  Применение текущих настроек к железу (LED + эффекты)
@@ -22,8 +24,8 @@ void applyCurrentState() {
     Led.turnOn();
     Led.setBrightness(Config.data.brightness);
     Effects.setColor((Config.data.color >> 16) & 0xFF,
-                     (Config.data.color >> 8) & 0xFF,
-                      Config.data.color & 0xFF);
+                     (Config.data.color >>  8) & 0xFF,
+                      Config.data.color        & 0xFF);
     Effects.setSpeed(Config.data.effectSpeed);
     Effects.setEffect(Config.data.currentEffect);
   } else {
@@ -44,6 +46,7 @@ void doAction(uint8_t action) {
       applyCurrentState();
       Config.save();
       Web.addLog("Кнопка: питание");
+      Web.notifyClients();
       break;
     case 1:  // следующий эффект
       Config.data.currentEffect = (Config.data.currentEffect + 1) % EFFECT_COUNT;
@@ -51,6 +54,7 @@ void doAction(uint8_t action) {
       applyCurrentState();
       Config.save();
       Web.addLog("Кнопка: смена эффекта");
+      Web.notifyClients();
       break;
     default: break;
   }
@@ -60,6 +64,9 @@ void onSingleTap() { doAction(Config.data.touchAction1); }
 void onDoubleTap() { doAction(Config.data.touchAction2); }
 
 void onHold() {
+  // Sunrise: при удержании отменяем активный рассвет
+  if (Sunrise.isActive()) Sunrise.cancel();
+
   // Плавная регулировка яркости вверх/вниз
   int v = Config.data.brightness + brightDir * 8;
   if (v >= 255) { v = 255; brightDir = -1; }
@@ -67,6 +74,12 @@ void onHold() {
   Config.data.brightness = (uint8_t)v;
   if (!Config.data.isOn) { Config.data.isOn = true; Led.turnOn(); }
   Led.setBrightness(Config.data.brightness);
+}
+
+void onRelease() {
+  // Вызывается при отпускании после удержания — сохраняем яркость
+  Config.save();
+  Web.notifyClients();
 }
 
 void onLongHold() {
@@ -102,6 +115,7 @@ void setup() {
   Button.onSingle   = onSingleTap;
   Button.onDouble   = onDoubleTap;
   Button.onHold     = onHold;
+  Button.onRelease  = onRelease;
   Button.onLongHold = onLongHold;
 
   // 5. Wi-Fi
@@ -113,19 +127,34 @@ void setup() {
   // 7. Веб-сервер
   Web.begin();
 
+  // 8. Sunrise + Scheduler
+  Sunrise.begin();
+  Scheduler.begin();
+
   Serial.printf("[SYS] Инициализация завершена, свободно heap: %u байт\n",
                 ESP.getFreeHeap());
 }
 
 // ---------------------------------------------------------------------
-//  loop() — только неблокирующие вызовы .tick()/.loop()/.handle()
+//  loop() — только неблокирующие вызовы
 // ---------------------------------------------------------------------
 void loop() {
-  Wifi.loop();      // обслуживание Wi-Fi и captive DNS
-  Ota.handle();     // ArduinoOTA
-  Button.tick();    // сенсорная кнопка
-  Battery.tick();   // измерение аккумулятора (раз в 10с)
-  Effects.tick();   // отрисовка эффектов
+  Wifi.loop();        // обслуживание Wi-Fi и captive DNS
+  Ota.handle();       // ArduinoOTA
+  Button.tick();      // сенсорная кнопка
+  Battery.tick();     // измерение аккумулятора (раз в 10с)
+  Sunrise.tick();     // будильник-рассвет
+  Scheduler.tick();   // расписание (раз в 30с)
+  Web.tickSleepTimer(); // таймер сна
+
+  // Эффекты (если sunrise не рисует сам)
+  if (!Sunrise.isActive()) Effects.tick();
+
+  // Асинхронная перезагрузка (из /api/reboot)
+  if (Web.pendingReboot()) {
+    delay(200);
+    ESP.restart();
+  }
 
   // Защита от переполнения при экстремально низкой памяти
   static uint32_t lastHeapCheck = 0;

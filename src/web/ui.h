@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // =====================================================================
 //  ui.h — встроенный веб-интерфейс (PROGMEM).
 //  INDEX_HTML — основное SPA-приложение.
@@ -282,6 +282,52 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
   }
 }
 
+/* Метеор */
+.p-meteor{background:#000;position:relative;overflow:hidden}
+.p-meteor::after{content:"";position:absolute;width:12px;height:100%;background:linear-gradient(90deg,transparent,#fff,#7c3aed);animation:pmeteor 1.2s linear infinite;left:-12px;top:0}
+@keyframes pmeteor{0%{left:-12px}100%{left:100%}}
+
+/* Стробоскоп */
+.p-strobe{background:#fff;animation:pstrobe .3s steps(1,end) infinite}
+@keyframes pstrobe{0%{background:#fff}50%{background:#000}}
+
+/* Бегущие огни */
+.p-running{background:#111;position:relative;overflow:hidden}
+.p-running::after{content:"";position:absolute;width:8px;height:100%;border-radius:50%;background:#7c3aed;box-shadow:0 0 10px #7c3aed;animation:prun 1s linear infinite;left:-8px}
+@keyframes prun{0%{left:-8px}100%{left:100%}}
+
+/* Ночное небо */
+.p-nightsky{background:#000814;animation:pnightsky 3s ease infinite}
+@keyframes pnightsky{0%,100%{box-shadow:inset 10px 10px 2px 0px #fff,inset 30px 5px 2px 0px rgba(255,255,255,.3),inset 50px 20px 1px 0px #fff}50%{box-shadow:inset 10px 10px 2px 0px rgba(255,255,255,.2),inset 30px 5px 2px 0px #fff,inset 50px 20px 1px 0px rgba(255,255,255,.5)}}
+
+/* Лазер */
+.p-laser{background:#000;position:relative;overflow:hidden}
+.p-laser::after{content:"";position:absolute;width:4px;height:100%;background:#f00;box-shadow:0 0 8px #f00;animation:plaser .8s ease-in-out infinite alternate;left:0}
+@keyframes plaser{0%{left:0}100%{left:calc(100% - 4px)}}
+
+/* Вспышки */
+.p-flash{background:#111;animation:pflash .5s steps(1,end) infinite}
+@keyframes pflash{0%{background:#111}10%{background:#3b82f6}20%{background:#111}35%{background:#7c3aed}50%{background:#111}70%{background:#22c55e}100%{background:#111}}
+
+/* Избранное */
+.fav-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fav-card{background:var(--card2);border:2px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;transition:all .25s}
+.fav-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:120px;cursor:pointer;border-style:dashed !important;opacity:.6}
+.fav-color-dot{width:40px;height:40px;border-radius:12px;margin-bottom:8px;border:2px solid rgba(255,255,255,.2)}
+.fav-name{font-weight:600;font-size:14px}
+.fav-meta{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* Таймер сна */
+.timer-badge{display:inline-block;background:rgba(124,58,237,.25);border:1px solid rgba(124,58,237,.5);color:#a78bfa;border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600;margin-left:8px}
+
+/* Sunrise bar */
+.sunrise-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,#ff6b00,#ffcc00);z-index:200;transition:width 1s;pointer-events:none}
+
+/* Расписание */
+.sched-row{background:var(--card2);border-radius:12px;padding:12px;margin-bottom:10px}
+input[type=number]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#0f0f18;color:var(--txt);font-size:15px;margin-top:6px;outline:none}
+input[type=number]:focus{border-color:#7c3aed}
+
 /* Кнопки */
 .btn{
   width:100%;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:600;
@@ -342,6 +388,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 </style>
 </head>
 <body>
+<div class="sunrise-bar" id="sunriseBar" style="width:0%"></div>
 <div class="wrap">
   <header>
     <div>
@@ -390,6 +437,35 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     </div>
 
     <div class="card">
+      <h3>Таймер сна <span class="timer-badge" id="timerBadge" style="display:none"></span></h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ghost small" onclick="setTimer(15)">15 мин</button>
+        <button class="btn ghost small" onclick="setTimer(30)">30 мин</button>
+        <button class="btn ghost small" onclick="setTimer(60)">1 час</button>
+        <button class="btn danger small" onclick="setTimer(0)">✕ Отменить</button>
+      </div>
+    </div>
+
+    <div class="card" id="sunriseCard">
+      <h3>🌅 Будильник-рассвет</h3>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+        <div style="flex:1;min-width:120px">
+          <label class="fld" style="margin-top:0">Длительность (мин):</label>
+          <input type="number" id="srMin" min="1" max="60" value="20">
+        </div>
+        <div style="flex:1;min-width:120px">
+          <label class="fld" style="margin-top:0">Яркость (1–255):</label>
+          <input type="number" id="srBri" min="1" max="255" value="200">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" style="flex:2" onclick="startSunrise()">🌅 Запустить</button>
+        <button class="btn ghost" style="flex:1" onclick="cancelSunrise()">Отмена</button>
+      </div>
+      <div id="sunriseInfo" style="margin-top:10px;font-size:13px;color:var(--muted);display:none"></div>
+    </div>
+
+    <div class="card">
       <h3>Заряд аккумулятора</h3>
       <div class="batt">
         <div class="batt-ico"><div class="batt-fill" id="battFill" style="width:0%"></div></div>
@@ -407,6 +483,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     </div>
   </section>
 
+
   <!-- ================= ЭФФЕКТЫ ================= -->
   <section class="screen" id="scr-fx">
     <div class="card">
@@ -423,12 +500,11 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     </div>
   </section>
 
-  <!-- ================= ИЗБРАННОЕ (заглушка) ================= -->
+  <!-- ================= ИЗБРАННОЕ ================= -->
   <section class="screen" id="scr-fav">
-    <div class="card soon">
-      <div class="big">⭐</div>
-      <div style="font-size:18px;font-weight:600;color:var(--txt);margin-bottom:6px">Избранное</div>
-      <div>Сохранение любимых сцен появится<br>в следующем обновлении</div>
+    <div class="card">
+      <h3>Избранные сцены</h3>
+      <div class="fav-grid" id="favGrid"></div>
     </div>
   </section>
 
@@ -457,12 +533,18 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     </div>
 
     <div class="card">
+      <h3>Расписание</h3>
+      <div id="schedGrid"></div>
+    </div>
+
+    <div class="card">
       <h3>Информация о системе</h3>
       <div class="info-line"><span class="k">Версия прошивки</span><span class="v" id="iVer">—</span></div>
       <div class="info-line"><span class="k">IP-адрес</span><span class="v" id="iIp">—</span></div>
       <div class="info-line"><span class="k">MAC-адрес</span><span class="v" id="iMac">—</span></div>
       <div class="info-line"><span class="k">Уровень сигнала</span><span class="v" id="iRssi">—</span></div>
       <div class="info-line"><span class="k">Свободная память</span><span class="v" id="iHeap">—</span></div>
+      <div class="info-line"><span class="k">NTP синхронизация</span><span class="v" id="iNtp">—</span></div>
     </div>
 
     <div class="card">
@@ -472,6 +554,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     </div>
   </section>
 </div>
+
 
 <!-- Нижняя навигация -->
 <nav class="tabbar">
@@ -488,7 +571,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 <div id="toast"></div>
 
 <script>
-// ============ Состояние и утилиты ============
+// ============ FX справочник (теперь 16 эффектов) ============
 var FX=[
   {id:0,name:"Статика",cls:"p-static"},
   {id:1,name:"Дыхание",cls:"p-breathe"},
@@ -496,15 +579,22 @@ var FX=[
   {id:3,name:"Огонь",cls:"p-fire"},
   {id:4,name:"Свеча",cls:"p-candle"},
   {id:5,name:"Перелив",cls:"p-flow"},
-  {id:6,name:"Северное сияние",cls:"p-aurora"},
+  {id:6,name:"Сев. сияние",cls:"p-aurora"},
   {id:7,name:"Океан",cls:"p-ocean"},
   {id:8,name:"Полиция",cls:"p-police"},
-  {id:9,name:"Полицейская мигалка",cls:"p-police-flash"}
+  {id:9,name:"Мигалка",cls:"p-police-flash"},
+  {id:10,name:"Метеор",cls:"p-meteor"},
+  {id:11,name:"Стробоскоп",cls:"p-strobe"},
+  {id:12,name:"Гирлянда",cls:"p-running"},
+  {id:13,name:"Ночное небо",cls:"p-nightsky"},
+  {id:14,name:"Лазер",cls:"p-laser"},
+  {id:15,name:"Вспышки",cls:"p-flash"}
 ];
 var FXNAME={};FX.forEach(function(f){FXNAME[f.id]=f.name;});
 var SWATCHES=["#ffffff","#ffb000","#ff3b30","#ff2d92","#7c3aed","#3b82f6","#00d4ff","#22c55e"];
+var WIFI_LABELS={connected:"Подключено",connecting:"Подключение...",ap_mode:"Точка доступа",disconnected:"Не подключено"};
 var state={on:false,brightness:150,effect:0,speed:128};
-var pollTimer=null;
+var ws=null;
 
 function $(id){return document.getElementById(id);}
 function toast(msg,type){var t=$("toast");t.textContent=msg;t.className="show "+(type||"");setTimeout(function(){t.className="";},2200);}
@@ -517,6 +607,16 @@ function api(path,method,body){
 }
 function debounce(fn,ms){var t;return function(){var a=arguments,c=this;clearTimeout(t);t=setTimeout(function(){fn.apply(c,a);},ms);};}
 
+// ============ WebSocket ============
+function connectWS(){
+  try{
+    ws=new WebSocket("ws://"+location.host+"/ws");
+    ws.onmessage=function(e){try{applyStatus(JSON.parse(e.data));}catch(ex){}};
+    ws.onclose=function(){ws=null;setTimeout(connectWS,3000);};
+    ws.onerror=function(){if(ws)ws.close();};
+  }catch(e){setTimeout(connectWS,3000);}
+}
+
 // ============ Навигация ============
 function showTab(name){
   document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
@@ -525,12 +625,13 @@ function showTab(name){
     t.classList.toggle("active",t.getAttribute("data-scr")===name);});
   localStorage.setItem("tab",name);
   if(name==="fx")renderFx();
+  if(name==="fav")loadFavorites();
+  if(name==="set"){loadSettings();loadSchedules();}
 }
 
 // ============ Питание ============
 function togglePower(){
-  state.on=!state.on;
-  renderPower();
+  state.on=!state.on;renderPower();
   api("/api/power","POST",{on:state.on}).then(applyStatus);
 }
 function renderPower(){
@@ -543,22 +644,16 @@ function renderPower(){
 var sendBright=debounce(function(v){api("/api/brightness","POST",{value:parseInt(v)});},400);
 function onBrightInput(v){
   $("brightVal").textContent=Math.round(v/255*100)+"%";
-  state.brightness=parseInt(v);
-  sendBright(v);
+  state.brightness=parseInt(v);sendBright(v);
 }
 
 // ============ Цвет ============
 function hexToRgb(h){h=h.replace("#","");return{r:parseInt(h.substr(0,2),16),g:parseInt(h.substr(2,2),16),b:parseInt(h.substr(4,2),16)};}
 var sendColor=debounce(function(rgb){api("/api/color","POST",rgb);},400);
 function onColorInput(hex){
-  $("colorPrev").style.background=hex;
-  $("colorHex").textContent=hex.toUpperCase();
-  sendColor(hexToRgb(hex));
+  $("colorPrev").style.background=hex;$("colorHex").textContent=hex.toUpperCase();sendColor(hexToRgb(hex));
 }
-function pickSwatch(hex){
-  $("colorPick").value=hex;
-  onColorInput(hex);
-}
+function pickSwatch(hex){$("colorPick").value=hex;onColorInput(hex);}
 
 // ============ Эффекты ============
 function renderFx(){
@@ -568,6 +663,10 @@ function renderFx(){
     var d=document.createElement("div");
     d.className="fx-card";d.setAttribute("data-fx",f.id);
     d.innerHTML='<div class="fx-prev"><div class="'+f.cls+'" style="width:100%;height:100%"></div></div><div class="fx-name">'+f.name+'</div>';
+    // Превью при долгом нажатии (500 мс)
+    var tmr;
+    d.addEventListener("touchstart",function(){tmr=setTimeout(function(){previewEffect(f.id);},500);},{passive:true});
+    d.addEventListener("touchend",function(){clearTimeout(tmr);});
     d.onclick=function(){setEffect(f.id);};
     g.appendChild(d);
   });
@@ -577,6 +676,7 @@ function updateFxSel(){
   document.querySelectorAll(".fx-card").forEach(function(c){
     c.classList.toggle("sel",parseInt(c.getAttribute("data-fx"))===state.effect);});
 }
+function previewEffect(id){api("/api/effect","POST",{id:id,speed:state.speed});}
 function setEffect(id){
   state.effect=id;updateFxSel();
   if(!state.on){state.on=true;renderPower();}
@@ -595,17 +695,125 @@ function scanWifi(){
     nets.sort(function(a,b){return b.rssi-a.rssi;}).forEach(function(n){
       var d=document.createElement("div");d.className="net";
       d.innerHTML='<div><div class="n-ssid">'+(n.secure?"🔒 ":"")+n.ssid+'</div><div class="n-rssi">'+n.rssi+' dBm</div></div><div class="muted">→</div>';
-      d.onclick=function(){connectWifi(n.ssid,n.secure);};
+      d.onclick=function(){connectWifiNet(n.ssid,n.secure);};
       l.appendChild(d);
     });
   });
 }
-function connectWifi(ssid,secure){
+function connectWifiNet(ssid,secure){
   var pass="";
-  if(secure){pass=prompt("Пароль для сети \""+ssid+"\":");if(pass===null)return;}
+  if(secure){pass=prompt('Пароль для сети "'+ssid+'":',[]);if(pass===null)return;}
   toast("Подключение к "+ssid+"...");
   api("/api/wifi/connect","POST",{ssid:ssid,pass:pass}).then(function(r){
-    toast(r.ok?"Данные сохранены, устройство подключается":"Ошибка",r.ok?"ok":"err");
+    toast(r.ok?"Данные сохранены, подключаемся":"Ошибка",r.ok?"ok":"err");
+  });
+}
+
+// ============ Таймер сна ============
+function setTimer(min){
+  api("/api/timer","POST",{minutes:min}).then(applyStatus);
+  toast(min?"Таймер: "+min+" мин":"Таймер отменён","ok");
+}
+
+// ============ Sunrise Alarm ============
+function startSunrise(){
+  var min=parseInt($("srMin").value)||20;
+  var bri=parseInt($("srBri").value)||200;
+  api("/api/sunrise","POST",{minutes:min,brightness:bri}).then(applyStatus);
+  toast("Рассвет запущен","ok");
+}
+function cancelSunrise(){
+  api("/api/sunrise/cancel","POST").then(applyStatus);
+  toast("Рассвет отменён","ok");
+}
+
+// ============ Избранное ============
+function loadFavorites(){
+  api("/api/favorites").then(renderFavorites);
+}
+function renderFavorites(favs){
+  var g=$("favGrid");if(!g)return;
+  g.innerHTML="";
+  favs.forEach(function(f){
+    var d=document.createElement("div");
+    d.className="fav-card";
+    if(f.used){
+      d.innerHTML='<div class="fav-color-dot" style="background:'+f.color+'"></div>'+
+        '<div class="fav-name">'+(f.name||"Сцена "+(f.slot+1))+'</div>'+
+        '<div class="fav-meta">'+(FXNAME[f.effect]||"")+" · "+Math.round(f.brightness/2.55)+"%</div>"+
+        '<div style="display:flex;gap:8px;margin-top:10px">'+
+        '<button class="btn small" onclick="favLoad('+f.slot+')">▶ Применить</button>'+
+        '<button class="btn ghost small" onclick="favDelete('+f.slot+')">удалить</button></div>';
+    }else{
+      d.className+=" fav-empty";
+      d.innerHTML='<div style="font-size:28px">+</div>'+
+        '<div style="font-size:13px;color:var(--muted);margin-top:4px">Слот '+(f.slot+1)+"</div>"+
+        '<button class="btn small" style="margin-top:10px" onclick="favSave('+f.slot+')">Сохранить сцену</button>';
+    }
+    g.appendChild(d);
+  });
+}
+function favLoad(slot){
+  api("/api/favorites/load","POST",{slot:slot}).then(function(s){applyStatus(s);loadFavorites();});
+  toast("Загружена сцена","ok");
+}
+function favSave(slot){
+  var name=prompt("Название сцены:","Сцена "+(slot+1));
+  if(name===null)return;
+  api("/api/favorites/save","POST",{slot:slot,name:name}).then(renderFavorites);
+  toast("Сцена сохранена","ok");
+}
+function favDelete(slot){
+  if(!confirm("Удалить слот "+(slot+1)+"?"))return;
+  api("/api/favorites/delete","POST",{slot:slot}).then(renderFavorites);
+}
+
+// ============ Расписание ============
+function loadSchedules(){
+  api("/api/schedules").then(renderSchedules);
+}
+function renderSchedules(scheds){
+  var g=$("schedGrid");if(!g)return;
+  g.innerHTML="";
+  var days=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
+  scheds.forEach(function(s){
+    var daysHtml=days.map(function(d,i){
+      return '<label style="font-size:11px;display:inline-flex;align-items:center;gap:3px">'+
+        '<input type="checkbox"'+(s.days&(1<<i)?" checked":"")+
+        ' onchange="schedDayToggle('+s.slot+','+i+',this.checked)"> '+d+"</label>";
+    }).join(" ");
+    var row=document.createElement("div");
+    row.className="sched-row";
+    row.innerHTML=
+      '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
+      '<input type="checkbox"'+(s.enabled?" checked":"")+' onchange="schedToggle('+s.slot+',this.checked)" style="width:auto;margin:0">'+
+      '<input type="number" min="0" max="23" value="'+s.hour+'" style="width:60px;margin:0" id="sh'+s.slot+'" placeholder="Ч">'+
+      '<span style="color:var(--muted)">:</span>'+
+      '<input type="number" min="0" max="59" value="'+s.minute+'" style="width:60px;margin:0" id="sm'+s.slot+'" placeholder="М">'+
+      '<select id="sa'+s.slot+'" style="width:auto;margin:0">'+
+        '<option value="1"'+(s.action?" selected":"")+'>ВКЛ</option>'+
+        '<option value="0"'+(!s.action?" selected":"")+'>ВЫКЛ</option>'+
+      "</select>"+
+      '<button class="btn small" onclick="schedSave('+s.slot+')">Сохранить</button>'+
+      '</div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">'+daysHtml+"</div>";
+    g.appendChild(row);
+  });
+}
+function schedToggle(slot,enabled){api("/api/schedules","POST",{slot:slot,enabled:enabled});}
+function schedSave(slot){
+  var h=parseInt($("sh"+slot).value)||0;
+  var m=parseInt($("sm"+slot).value)||0;
+  var a=parseInt($("sa"+slot).value);
+  api("/api/schedules","POST",{slot:slot,enabled:true,hour:h,minute:m,action:!!a}).then(renderSchedules);
+  toast("Расписание сохранено","ok");
+}
+function schedDayToggle(slot,day,checked){
+  api("/api/schedules").then(function(scheds){
+    var s=scheds.find(function(x){return x.slot===slot;});
+    if(!s)return;
+    var d=s.days;if(checked)d|=(1<<day);else d&=~(1<<day);
+    api("/api/schedules","POST",{slot:slot,days:d});
   });
 }
 
@@ -619,7 +827,7 @@ function saveSettings(){
 }
 function resetSettings(){
   if(!confirm("Сбросить все настройки к заводским?"))return;
-  api("/api/settings/reset","POST").then(function(){toast("Сброшено, перезагрузка настроек","ok");setTimeout(loadAll,1200);});
+  api("/api/settings/reset","POST").then(function(){toast("Сброшено","ok");setTimeout(loadAll,1200);});
 }
 function loadSettings(){
   api("/api/settings").then(function(s){
@@ -642,38 +850,60 @@ function applyStatus(s){
   $("battVolt").textContent=(s.voltage||0).toFixed(2);
   $("battChg").textContent=s.charging?"⚡ зарядка":"";
   var f=$("battFill");f.style.background=s.battery>50?"#22c55e":(s.battery>20?"#f59e0b":"#ef4444");
-  // wi-fi / инфо
+  // wi-fi: теперь machine-readable коды
+  var wLabel=WIFI_LABELS[s.wifiStatus]||s.wifiStatus||"—";
   $("devName").textContent=s.deviceName;$("verTxt").textContent="v"+s.version;
-  $("wifiTxt").textContent=s.wifiStatus;
-  var dot=$("wifiDot");dot.className="dot"+(s.apMode?" ap":(s.wifiStatus==="Подключено"?" on":""));
+  $("wifiTxt").textContent=wLabel;
+  var dot=$("wifiDot");dot.className="dot"+(s.apMode?" ap":(s.wifiStatus==="connected"?" on":""));
   $("curEffect").textContent=FXNAME[s.effect]||"—";
-  $("curWifi").textContent=s.wifiStatus;$("curIp").textContent=s.ip;
-  $("setWifi").textContent=s.apMode?"Режим точки доступа":(s.wifiStatus==="Подключено"?s.ip:"Не подключено");
+  $("curWifi").textContent=wLabel;$("curIp").textContent=s.ip;
+  $("setWifi").textContent=s.apMode?"Режим точки доступа":(s.wifiStatus==="connected"?s.ip:"Не подключено");
   $("iVer").textContent=s.version;$("iIp").textContent=s.ip;$("iMac").textContent=s.mac;
   $("iRssi").textContent=s.rssi?s.rssi+" dBm":"—";
   $("iHeap").textContent=Math.round(s.freeHeap/1024)+" КБ";
+  $("iNtp").textContent=s.timeSynced?"✓ Синхронизировано":"✗ Нет связи";
   updateFxSel();
+  // таймер сна
+  var tb=$("timerBadge");
+  if(s.timerLeft>=0){
+    var mm=Math.floor(s.timerLeft/60),ss=s.timerLeft%60;
+    tb.textContent=mm+":"+(ss<10?"0":"")+ss;
+    tb.style.display="";
+  }else{
+    tb.style.display="none";
+  }
+  // sunrise bar
+  var sb=$("sunriseBar"),si=$("sunriseInfo");
+  if(s.sunriseActive&&s.sunriseLeft>0){
+    var totalSec=(parseInt($("srMin").value)||20)*60;
+    var prog=Math.max(0,Math.min(100,100-(s.sunriseLeft/totalSec*100)));
+    sb.style.width=prog+"%";
+    si.style.display="";
+    var rm=Math.floor(s.sunriseLeft/60),rs=s.sunriseLeft%60;
+    si.textContent="Осталось: "+rm+" мин "+rs+" с";
+  }else{
+    sb.style.width="0%";
+    if(si)si.style.display="none";
+  }
 }
 
-function poll(){api("/api/status").then(applyStatus);}
-
 function loadAll(){
-  poll();loadSettings();
+  api("/api/status").then(applyStatus);
+  loadSettings();
 }
 
 // ============ Инициализация ============
 (function init(){
-  // свотчи
   var sw=$("swatches");SWATCHES.forEach(function(c){var d=document.createElement("div");d.className="sw";d.style.background=c;d.onclick=function(){pickSwatch(c);};sw.appendChild(d);});
   buildTz();
   renderFx();
   var t=localStorage.getItem("tab");if(t)showTab(t);
+  connectWS();
+  loadFavorites();
+  loadSchedules();
   loadAll();
-  pollTimer=setInterval(poll,3000);
 })();
 </script>
-</body>
-</html>
 )HTMLPAGE";
 
 // ---------------------------------------------------------------------
