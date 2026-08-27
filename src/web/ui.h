@@ -337,10 +337,8 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 /* Таймер сна */
 .timer-badge{display:inline-block;background:rgba(124,58,237,.25);border:1px solid rgba(124,58,237,.5);color:#a78bfa;border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600;margin-left:8px}
 
-/* Sunrise bar */
-.sunrise-bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,#ff6b00,#ffcc00);z-index:200;transition:width 1s;pointer-events:none}
-
 /* Расписание */
+
 .sched-row{background:var(--card2);border-radius:12px;padding:12px;margin-bottom:10px}
 input[type=number]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#0f0f18;color:var(--txt);font-size:15px;margin-top:6px;outline:none}
 input[type=number]:focus{border-color:#7c3aed}
@@ -509,8 +507,8 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 
 </head>
 <body>
-<div class="sunrise-bar" id="sunriseBar" style="width:0%"></div>
 <div class="wrap">
+
   <header>
     <div>
       <h1 id="devName">Такси Шашка</h1>
@@ -590,27 +588,9 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
           <button class="btn danger small" onclick="setTimer(0)">✕ Отменить</button>
         </div>
       </div>
-
-      <div class="card" id="sunriseCard">
-        <h3>🌅 Будильник-рассвет</h3>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
-          <div style="flex:1;min-width:120px">
-            <label class="fld" style="margin-top:0">Длительность (мин):</label>
-            <input type="number" id="srMin" min="1" max="60" value="20">
-          </div>
-          <div style="flex:1;min-width:120px">
-            <label class="fld" style="margin-top:0">Яркость (1–255):</label>
-            <input type="number" id="srBri" min="1" max="255" value="200">
-          </div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn" style="flex:2" onclick="startSunrise()">🌅 Запустить</button>
-          <button class="btn ghost" style="flex:1" onclick="cancelSunrise()">Отмена</button>
-        </div>
-        <div id="sunriseInfo" style="margin-top:10px;font-size:13px;color:var(--muted);display:none"></div>
-      </div>
     </div>
   </section>
+
 
 
 
@@ -851,19 +831,8 @@ function setTimer(min){
   toast(min?"Таймер: "+min+" мин":"Таймер отменён","ok");
 }
 
-// ============ Sunrise Alarm ============
-function startSunrise(){
-  var min=parseInt($("srMin").value)||20;
-  var bri=parseInt($("srBri").value)||200;
-  api("/api/sunrise","POST",{minutes:min,brightness:bri}).then(applyStatus);
-  toast("Рассвет запущен","ok");
-}
-function cancelSunrise(){
-  api("/api/sunrise/cancel","POST").then(applyStatus);
-  toast("Рассвет отменён","ok");
-}
-
 // ============ Избранное ============
+
 function loadFavorites(){
   api("/api/favorites").then(renderFavorites);
 }
@@ -1009,22 +978,10 @@ function applyStatus(s){
   }else{
     tb.style.display="none";
   }
-  // sunrise bar
-  var sb=$("sunriseBar"),si=$("sunriseInfo");
-  if(s.sunriseActive&&s.sunriseLeft>0){
-    var totalSec=(parseInt($("srMin").value)||20)*60;
-    var prog=Math.max(0,Math.min(100,100-(s.sunriseLeft/totalSec*100)));
-    sb.style.width=prog+"%";
-    si.style.display="";
-    var rm=Math.floor(s.sunriseLeft/60),rs=s.sunriseLeft%60;
-    si.textContent="Осталось: "+rm+" мин "+rs+" с";
-  }else{
-    sb.style.width="0%";
-    if(si)si.style.display="none";
-  }
 }
 
 function loadAll(){
+
   api("/api/status").then(applyStatus);
   loadSettings();
 }

@@ -11,8 +11,8 @@
 #include "BatteryManager.h"
 #include "WiFiManager.h"
 #include "OtaManager.h"
-#include "SunriseManager.h"
 #include "../web/ui.h"
+
 
 WebServerManager Web;   // глобальный экземпляр
 
@@ -139,10 +139,9 @@ String WebServerManager::buildStatusJson() {
   doc["apMode"]     = Wifi.isAP();
   doc["timeSynced"] = Wifi.isTimeSynced();
   doc["timerLeft"]  = sleepTimerLeft();
-  doc["sunriseActive"]  = Sunrise.isActive();
-  doc["sunriseLeft"]    = (int32_t)Sunrise.secondsLeft();
 
   String out;
+
   serializeJson(doc, out);
   return out;
 }
@@ -589,37 +588,9 @@ void WebServerManager::setupRoutes() {
     });
 
   // ===================================================================
-  //  SUNRISE ALARM
-  // ===================================================================
-
-  // --- POST /api/sunrise ---
-  _server.on("/api/sunrise", HTTP_POST,
-    [](AsyncWebServerRequest* req) {},
-    NULL,
-    [this](AsyncWebServerRequest* req, uint8_t* data, size_t len,
-           size_t index, size_t total) {
-      handleJsonBody(req, data, len, index, total,
-        [this](AsyncWebServerRequest* r, JsonDocument& doc) {
-          int minutes    = doc["minutes"]    | 20;
-          int brightness = doc["brightness"] | Config.data.brightness;
-          if (minutes < 1) minutes = 1;
-          if (minutes > SUNRISE_MAX_MINUTES) minutes = SUNRISE_MAX_MINUTES;
-          Sunrise.start((uint8_t)minutes, (uint8_t)brightness);
-          addLog(String("Рассвет: ") + minutes + " мин");
-          r->send(200, "application/json", buildStatusJson());
-        });
-    });
-
-  // --- POST /api/sunrise/cancel ---
-  _server.on("/api/sunrise/cancel", HTTP_POST, [this](AsyncWebServerRequest* req) {
-    Sunrise.cancel();
-    addLog("Рассвет отменён");
-    req->send(200, "application/json", "{\"ok\":true}");
-  });
-
-  // ===================================================================
   //  РАСПИСАНИЕ
   // ===================================================================
+
 
   // --- GET /api/schedules ---
   _server.on("/api/schedules", HTTP_GET, [this](AsyncWebServerRequest* req) {

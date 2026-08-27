@@ -73,10 +73,8 @@
 // ---------- Расписание ----------
 #define SCHEDULE_COUNT        4
 
-// ---------- Sunrise Alarm ----------
-#define SUNRISE_MAX_MINUTES   60         // максимальная длительность рассвета, мин
-
 // ---------- NTP ----------
+
 #define NTP_SERVER1           "pool.ntp.org"
 #define NTP_SERVER2           "time.cloudflare.com"
 

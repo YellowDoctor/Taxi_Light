@@ -12,8 +12,8 @@
 #include "modules/WiFiManager.h"
 #include "modules/OtaManager.h"
 #include "modules/WebServer.h"
-#include "modules/SunriseManager.h"
 #include "modules/ScheduleManager.h"
+
 
 // ---------------------------------------------------------------------
 //  Применение текущих настроек к железу (LED + эффекты)
@@ -64,11 +64,9 @@ void onSingleTap() { doAction(Config.data.touchAction1); }
 void onDoubleTap() { doAction(Config.data.touchAction2); }
 
 void onHold() {
-  // Sunrise: при удержании отменяем активный рассвет
-  if (Sunrise.isActive()) Sunrise.cancel();
-
   // Плавная регулировка яркости вверх/вниз
   int v = Config.data.brightness + brightDir * 8;
+
   if (v >= 255) { v = 255; brightDir = -1; }
   if (v <= 5)   { v = 5;   brightDir = 1; }
   Config.data.brightness = (uint8_t)v;
@@ -127,8 +125,7 @@ void setup() {
   // 7. Веб-сервер
   Web.begin();
 
-  // 8. Sunrise + Scheduler
-  Sunrise.begin();
+  // 8. Scheduler
   Scheduler.begin();
 
   Serial.printf("[SYS] Инициализация завершена, свободно heap: %u байт\n",
@@ -143,12 +140,10 @@ void loop() {
   Ota.handle();       // ArduinoOTA
   Button.tick();      // сенсорная кнопка
   Battery.tick();     // измерение аккумулятора (раз в 10с)
-  Sunrise.tick();     // будильник-рассвет
   Scheduler.tick();   // расписание (раз в 30с)
   Web.tickSleepTimer(); // таймер сна
+  Effects.tick();     // световые эффекты
 
-  // Эффекты (если sunrise не рисует сам)
-  if (!Sunrise.isActive()) Effects.tick();
 
   // Асинхронная перезагрузка (из /api/reboot)
   if (Web.pendingReboot()) {
