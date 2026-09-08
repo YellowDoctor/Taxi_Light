@@ -503,6 +503,39 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
   }
 }
 
+/* Кнопка обновления в шапке */
+.ota-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,#16a34a,#22c55e);
+  color:#fff;border:none;padding:5px 12px;border-radius:20px;
+  font-size:12px;font-weight:700;cursor:pointer;
+  box-shadow:0 0 16px rgba(34,197,94,.5);
+  animation:otaPulse 2s infinite ease-in-out;
+  transition:transform .2s,box-shadow .2s;
+}
+.ota-btn:hover{transform:scale(1.05);box-shadow:0 0 22px rgba(34,197,94,.8)}
+.ota-btn:active{transform:scale(.97)}
+.ota-badge{
+  background:#fff;color:#16a34a;font-size:9px;font-weight:800;
+  padding:1px 5px;border-radius:8px;text-transform:uppercase;letter-spacing:.3px;
+}
+@keyframes otaPulse{
+  0%,100%{box-shadow:0 0 12px rgba(34,197,94,.4)}
+  50%{box-shadow:0 0 24px rgba(34,197,94,.85)}
+}
+
+/* Модальное окно OTA */
+.modal-bg{
+  position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);
+  backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
+  z-index:9999;padding:16px;
+}
+.modal-card{
+  background:linear-gradient(160deg,#181828,#12121d);border:1px solid rgba(255,255,255,.1);
+  border-radius:22px;padding:20px;max-width:440px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.8);
+  max-height:90vh;overflow-y:auto;
+}
+
 </style>
 
 </head>
@@ -514,13 +547,20 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
       <h1 id="devName">Такси Шашка</h1>
       <div class="sub"><span class="dot" id="wifiDot"></span><span id="wifiTxt">—</span></div>
     </div>
+    <div style="display:flex;align-items:center;justify-content:center">
+      <button class="ota-btn" id="otaHeaderBtn" style="display:none" onclick="openOtaModal()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span>Обновить</span>
+        <span class="ota-badge" id="otaBadge">new</span>
+      </button>
+    </div>
     <div style="display:flex;align-items:center;gap:10px">
       <button class="fs-btn" onclick="toggleFs()" title="Во весь экран">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
         </svg>
       </button>
-      <div class="sub" id="verTxt">v—</div>
+      <div class="sub" id="verTxt" style="cursor:pointer" onclick="openOtaModal()" title="Нажмите для проверки OTA">v—</div>
     </div>
   </header>
 
@@ -662,6 +702,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 
       <div class="card">
         <h3>Обслуживание</h3>
+        <button class="btn ghost" style="margin-bottom:10px" onclick="openOtaModal()">Обновление прошивки (OTA)</button>
         <a href="/dev" style="text-decoration:none"><button class="btn ghost" style="margin-bottom:10px">Режим разработчика</button></a>
         <button class="btn danger" onclick="resetSettings()">Сбросить настройки</button>
       </div>
@@ -683,6 +724,58 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.3l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2.2-1.3L14 2h-4l-.3 2.4a7 7 0 0 0-2.2 1.3l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.3l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2.2 1.3L10 22h4l.3-2.4a7 7 0 0 0 2.2-1.3l2.4 1 2-3.4-2-1.6A7 7 0 0 0 19 12z"/></svg><span>Настройки</span></button>
 </nav>
 
+<!-- Модальное окно OTA -->
+<div class="modal-bg" id="otaModal" style="display:none" onclick="if(event.target===this)closeOtaModal()">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h3 style="font-size:16px;color:#fff;margin:0">Обновление прошивки</h3>
+      <button class="btn ghost small" style="width:30px;height:30px;padding:0;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="closeOtaModal()">✕</button>
+    </div>
+
+    <div style="background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:10px 12px;font-size:12px;color:#86efac;margin-bottom:14px;line-height:1.4">
+      💡 При прошивке шашка горит <b>зелёным на 50% яркости</b>. В конце <b>трижды мигнёт зелёным</b> и перезагрузится.
+    </div>
+
+    <!-- GitHub блок -->
+    <div style="background:rgba(255,255,255,.04);border-radius:14px;padding:12px;margin-bottom:12px">
+      <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:6px">Обновление с GitHub</div>
+      <div style="font-size:13px;margin-bottom:8px" id="otaGhInfo">Текущая версия: <b>v—</b></div>
+      <div id="otaGhAction">
+        <button class="btn ghost small" onclick="checkGitHubOta()">Проверить обновления</button>
+      </div>
+    </div>
+
+    <!-- Загрузка файла (Обзор) -->
+    <div style="background:rgba(255,255,255,.04);border-radius:14px;padding:12px;margin-bottom:12px">
+      <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:8px">Прошивка из файла (.bin)</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+        <label class="btn ghost small" style="margin:0;cursor:pointer;white-space:nowrap">
+          📁 Обзор...
+          <input type="file" id="otaFileInput" accept=".bin" style="display:none" onchange="onOtaFileChosen(this)">
+        </label>
+        <span id="otaFileName" style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">Файл не выбран</span>
+      </div>
+      <button class="btn small" id="otaUploadBtn" style="display:none;width:100%" onclick="uploadOtaFile()">Загрузить и прошить</button>
+      
+      <div id="otaProgressWrap" style="display:none;margin-top:10px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span id="otaProgressText">Загрузка...</span>
+          <span id="otaProgressPct">0%</span>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden">
+          <div id="otaProgressBar" style="width:0%;height:100%;background:linear-gradient(90deg,#7c3aed,#22c55e);transition:width .2s"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OTA по URL -->
+    <div style="background:rgba(255,255,255,.04);border-radius:14px;padding:12px">
+      <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:6px">OTA по ссылке (URL)</div>
+      <input type="text" id="otaModalUrl" placeholder="https://.../firmware.bin" style="font-size:13px;padding:8px 12px;width:100%;margin-bottom:8px;border-radius:8px;background:#10101a;border:1px solid rgba(255,255,255,.1);color:#fff">
+      <button class="btn ghost small" style="width:100%" onclick="otaByUrlModal()">Прошить по ссылке</button>
+    </div>
+  </div>
+</div>
 
 <div id="toast"></div>
 
@@ -960,6 +1053,18 @@ function applyStatus(s){
   var wLabel=WIFI_LABELS[s.wifiStatus]||s.wifiStatus||"—";
   $("devName").textContent=s.deviceName;$("verTxt").textContent="v"+s.version;
   $("wifiTxt").textContent=wLabel;
+
+  // Кнопка обновления в шапке (показывается ТОЛЬКО если есть обновление)
+  var ob=$("otaHeaderBtn");
+  if(ob){
+    if(s.hasUpdate){
+      ob.style.display="inline-flex";
+      if(s.latestVersion)$("otaBadge").textContent="v"+s.latestVersion;
+    }else{
+      ob.style.display="none";
+    }
+  }
+
   var dot=$("wifiDot");dot.className="dot"+(s.apMode?" ap":(s.wifiStatus==="connected"?" on":""));
   $("curEffect").textContent=FXNAME[s.effect]||"—";
   $("curWifi").textContent=wLabel;$("curIp").textContent=s.ip;
@@ -981,7 +1086,6 @@ function applyStatus(s){
 }
 
 function loadAll(){
-
   api("/api/status").then(applyStatus);
   loadSettings();
 }
@@ -995,6 +1099,112 @@ function toggleFs(){
     if(document.exitFullscreen)document.exitFullscreen().catch(function(){});
     else if(document.webkitExitFullscreen)document.webkitExitFullscreen();
   }
+}
+
+// ============ Модальное окно OTA ============
+function openOtaModal(){
+  $("otaModal").style.display="flex";
+  api("/api/ota/status").then(renderGhOtaStatus);
+}
+function closeOtaModal(){
+  $("otaModal").style.display="none";
+}
+function checkGitHubOta(){
+  var info=$("otaGhInfo"),action=$("otaGhAction");
+  info.innerHTML="Проверка обновлений на GitHub...";
+  action.innerHTML='<span class="muted">Проверяем...</span>';
+  api("/api/ota/check","POST").then(function(){
+    setTimeout(function(){
+      api("/api/ota/status").then(renderGhOtaStatus);
+    },2500);
+  }).catch(function(){
+    info.textContent="Ошибка запроса к GitHub";
+    action.innerHTML='<button class="btn ghost small" onclick="checkGitHubOta()">Повторить</button>';
+  });
+}
+function renderGhOtaStatus(s){
+  var info=$("otaGhInfo"),action=$("otaGhAction"),ob=$("otaHeaderBtn");
+  if(!s)return;
+  if(s.hasUpdate){
+    info.innerHTML="Текущая: <b>v"+(s.currentVersion||"1.3.6")+"</b> · Доступна: <b style='color:#22c55e'>v"+s.latestVersion+"</b>"+
+      (s.updateNotes?"<div style='color:var(--muted);font-size:11px;margin-top:4px'>"+s.updateNotes+"</div>":"");
+    action.innerHTML='<button class="btn small" style="background:#22c55e;border-color:#22c55e;font-weight:700" onclick="updateFromGitHub()">🚀 Обновить до v'+s.latestVersion+'</button>';
+    if(ob){ob.style.display="inline-flex";if(s.latestVersion)$("otaBadge").textContent="v"+s.latestVersion;}
+  }else{
+    info.innerHTML="Текущая версия: <b>v"+(s.currentVersion||"1.3.6")+"</b> (актуальная)";
+    action.innerHTML='<button class="btn ghost small" onclick="checkGitHubOta()">Проверить снова</button>';
+    if(ob)ob.style.display="none";
+  }
+}
+function updateFromGitHub(){
+  if(!confirm("Скачать и установить обновление с GitHub?\n\nШашка загорится зелёным цветом на 50% яркости и перезагрузится."))return;
+  toast("Запуск обновления с GitHub...");
+  api("/api/ota/github","POST").then(function(r){
+    if(r.ok){
+      toast("Обновление началось! Подождите...","ok");
+      setTimeout(function(){location.reload();},15000);
+    }else{
+      toast("Ошибка: "+(r.error||"сбой"),"err");
+    }
+  });
+}
+function onOtaFileChosen(input){
+  if(input.files&&input.files[0]){
+    var f=input.files[0];
+    $("otaFileName").textContent=f.name+" ("+Math.round(f.size/1024)+" КБ)";
+    $("otaUploadBtn").style.display="block";
+  }
+}
+function uploadOtaFile(){
+  var input=$("otaFileInput");
+  if(!input.files||!input.files[0]){toast("Выберите файл .bin","err");return;}
+  var file=input.files[0];
+  if(!confirm("Прошить шашку файлом "+file.name+"?\n\nШашка загорится зелёным на 50% яркости, трижды мигнёт и перезагрузится."))return;
+
+  var wrap=$("otaProgressWrap"),bar=$("otaProgressBar"),pct=$("otaProgressPct"),txt=$("otaProgressText"),btn=$("otaUploadBtn");
+  wrap.style.display="block";btn.disabled=true;
+  txt.textContent="Загрузка файла...";bar.style.width="0%";pct.textContent="0%";
+
+  var fd=new FormData();fd.append("update",file);
+  var xhr=new XMLHttpRequest();
+  xhr.open("POST","/api/ota/upload",true);
+  xhr.upload.onprogress=function(e){
+    if(e.lengthComputable){
+      var p=Math.round((e.loaded/e.total)*100);
+      bar.style.width=p+"%";pct.textContent=p+"%";
+      if(p>=100)txt.textContent="Запись во Flash-память...";
+    }
+  };
+  xhr.onload=function(){
+    if(xhr.status===200){
+      txt.textContent="Успешно! Перезагрузка...";
+      bar.style.width="100%";pct.textContent="100%";
+      toast("Прошивка успешна! Перезагрузка...","ok");
+      setTimeout(function(){location.reload();},6000);
+    }else{
+      txt.textContent="Ошибка прошивки";btn.disabled=false;
+      toast("Ошибка при обновлении","err");
+    }
+  };
+  xhr.onerror=function(){
+    txt.textContent="Сетевая ошибка";btn.disabled=false;
+    toast("Ошибка связи","err");
+  };
+  xhr.send(fd);
+}
+function otaByUrlModal(){
+  var u=$("otaModalUrl").value.trim();
+  if(!u){toast("Введите ссылку на файл .bin","err");return;}
+  if(!confirm("Начать обновление по ссылке?\n"+u+"\n\nШашка загорится зелёным на 50% яркости."))return;
+  toast("Загрузка прошивки по URL...");
+  api("/api/ota/url","POST",{url:u}).then(function(r){
+    if(r.ok){
+      toast("Обновление началось! Подождите...","ok");
+      setTimeout(function(){location.reload();},15000);
+    }else{
+      toast("Ошибка: "+(r.error||"сбой"),"err");
+    }
+  });
 }
 
 // ============ Инициализация ============
@@ -1065,6 +1275,23 @@ a{color:#0af}
   <h2>Действия</h2>
   <button onclick="testLed()">Тест LED (радуга 5с)</button>
   <button class="err" onclick="reboot()">Перезагрузить устройство</button>
+
+  <h2 style="margin-top:16px">Обновление прошивки (OTA)</h2>
+  <div style="margin-top:8px">
+    <label style="display:inline-block;cursor:pointer;background:#001a00;color:#0f0;border:1px solid #0f0;padding:7px 12px;border-radius:5px;font-size:12px">
+      📁 Выбрать файл .bin (Обзор...)
+      <input type="file" id="devFile" accept=".bin" style="display:none" onchange="devFileChosen(this)">
+    </label>
+    <span id="devFileName" style="margin-left:8px;color:#0a0;font-size:12px"></span>
+    <button class="warn" id="devUploadBtn" style="display:none;margin-top:8px" onclick="devUpload()">Загрузить и прошить</button>
+    <div id="devProgWrap" style="display:none;margin-top:8px">
+      <span id="devProgTxt" style="font-size:12px">Загрузка: 0%</span>
+      <div style="height:6px;background:#030;border-radius:3px;overflow:hidden;margin-top:4px">
+        <div id="devProgBar" style="width:0%;height:100%;background:#0f0"></div>
+      </div>
+    </div>
+  </div>
+
   <div style="margin-top:12px">
     <input type="text" id="otaUrl" placeholder="https://.../firmware.bin">
     <button class="warn" onclick="ota()">OTA по URL</button>
@@ -1102,6 +1329,37 @@ function loadLog(){
 function testLed(){api("/api/test/led","POST").then(function(){});}
 function reboot(){if(confirm("Перезагрузить устройство?"))api("/api/reboot","POST");}
 function ota(){var u=$("otaUrl").value;if(!u)return;if(confirm("Начать OTA-обновление?\n"+u))api("/api/ota/url","POST",{url:u});}
+function devFileChosen(input){
+  if(input.files&&input.files[0]){
+    $("devFileName").textContent=input.files[0].name+" ("+Math.round(input.files[0].size/1024)+" КБ)";
+    $("devUploadBtn").style.display="inline-block";
+  }
+}
+function devUpload(){
+  var f=$("devFile").files[0];if(!f)return;
+  if(!confirm("Прошить шашку файлом "+f.name+"?\n\nШашка загорится зелёным на 50% яркости и перезагрузится."))return;
+  var wrap=$("devProgWrap"),bar=$("devProgBar"),txt=$("devProgTxt"),btn=$("devUploadBtn");
+  wrap.style.display="block";btn.disabled=true;
+  var fd=new FormData();fd.append("update",f);
+  var xhr=new XMLHttpRequest();
+  xhr.open("POST","/api/ota/upload",true);
+  xhr.upload.onprogress=function(e){
+    if(e.lengthComputable){
+      var p=Math.round((e.loaded/e.total)*100);
+      bar.style.width=p+"%";txt.textContent="Загрузка: "+p+"%";
+    }
+  };
+  xhr.onload=function(){
+    if(xhr.status===200){
+      txt.textContent="Успешно! Перезагрузка...";bar.style.width="100%";
+      setTimeout(function(){location.reload();},6000);
+    }else{
+      txt.textContent="Ошибка прошивки";btn.disabled=false;
+    }
+  };
+  xhr.onerror=function(){txt.textContent="Сетевая ошибка";btn.disabled=false;};
+  xhr.send(fd);
+}
 poll();loadLog();
 setInterval(poll,2000);
 setInterval(loadLog,3000);

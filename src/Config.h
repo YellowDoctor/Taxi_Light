@@ -42,6 +42,7 @@
 // ---------- OTA ----------
 #define OTA_HOSTNAME          "taxilight"
 #define OTA_PASSWORD          "taxilight_ota"
+#define GITHUB_VERSION_URL    "https://raw.githubusercontent.com/YellowDoctor/Taxi_Light/main/version.json"
 
 // ---------- Устройство по умолчанию ----------
 #define DEVICE_DEFAULT_NAME   "Такси Шашка"

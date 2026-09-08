@@ -3,6 +3,7 @@
 // =====================================================================
 #include "WiFiManager.h"
 #include "SettingsManager.h"
+#include "OtaManager.h"
 #include <time.h>
 #include <ESPmDNS.h>
 #include <NetBIOS.h>
@@ -14,7 +15,7 @@ static const byte DNS_PORT = 53;
 void WiFiManager::begin() {
   WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
-  WiFi.setSleep(false);
+  WiFi.setSleep(true); // Включаем Modem Sleep для экономии аккумулятора
 
   if (Config.data.wifiSSID.length() > 0) {
     startSTA(Config.data.wifiSSID, Config.data.wifiPassword);
@@ -99,6 +100,7 @@ void WiFiManager::loop() {
         }
         NBNS.begin("taxilight");
         Serial.println(F("[WiFi] NetBIOS запущен: http://taxilight"));
+        Ota.checkGitHubUpdate();
       } else if (millis() - _connectStart > WIFI_CONNECT_TIMEOUT) {
         Serial.println(F("[WiFi] Таймаут подключения"));
         if (++_retryCount >= WIFI_MAX_RETRIES) {

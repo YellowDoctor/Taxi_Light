@@ -38,3 +38,34 @@ void LedManager::turnOff() {
 void LedManager::show() {
   FastLED.show();
 }
+
+void LedManager::showOtaProgress() {
+  _on = true;
+  fill_solid(leds, LED_COUNT, CRGB(0, 255, 0)); // Зелёный
+  FastLED.setBrightness(128);                     // 50% яркости
+  FastLED.show();
+}
+
+void LedManager::showOtaSuccess() {
+  for (int i = 0; i < 3; i++) {
+    fill_solid(leds, LED_COUNT, CRGB(0, 255, 0));
+    FastLED.setBrightness(255);
+    FastLED.show();
+    delay(200);
+    fill_solid(leds, LED_COUNT, CRGB::Black);
+    FastLED.show();
+    delay(200);
+  }
+}
+
+void LedManager::showOtaError() {
+  for (int i = 0; i < 3; i++) {
+    fill_solid(leds, LED_COUNT, CRGB(255, 0, 0));
+    FastLED.setBrightness(255);
+    FastLED.show();
+    delay(200);
+    fill_solid(leds, LED_COUNT, CRGB::Black);
+    FastLED.show();
+    delay(200);
+  }
+}

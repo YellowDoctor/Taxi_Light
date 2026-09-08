@@ -59,7 +59,7 @@ uint16_t EffectsManager::frameInterval()
 
 void EffectsManager::tick()
 {
-  if (!Led.isOn())
+  if (_paused || !Led.isOn())
     return;
 
   uint32_t now = millis();

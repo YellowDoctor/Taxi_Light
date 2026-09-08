@@ -11,6 +11,7 @@
 #include "BatteryManager.h"
 #include "WiFiManager.h"
 #include "OtaManager.h"
+#include <Update.h>
 #include "../web/ui.h"
 
 
@@ -138,7 +139,11 @@ String WebServerManager::buildStatusJson() {
   doc["mac"]        = WiFi.macAddress();
   doc["apMode"]     = Wifi.isAP();
   doc["timeSynced"] = Wifi.isTimeSynced();
-  doc["timerLeft"]  = sleepTimerLeft();
+  doc["timerLeft"]     = sleepTimerLeft();
+  doc["hasUpdate"]     = Ota.hasUpdate();
+  doc["latestVersion"] = Ota.getLatestVersion();
+  doc["latestUrl"]     = Ota.getLatestUrl();
+  doc["isUpdating"]    = Ota.isUpdating();
 
   String out;
 
@@ -445,6 +450,79 @@ void WebServerManager::setupRoutes() {
     applyCurrentState();
   });
 
+  // --- POST /api/ota/upload (загрузка .bin файла из браузера) ---
+  _server.on("/api/ota/upload", HTTP_POST,
+    [this](AsyncWebServerRequest* req) {
+      bool success = !Update.hasError();
+      AsyncWebServerResponse* resp = req->beginResponse(
+        200, "application/json",
+        success ? "{\"ok\":true}" : "{\"ok\":false,\"error\":\"Ошибка прошивки\"}"
+      );
+      resp->addHeader("Connection", "close");
+      req->send(resp);
+      if (success) {
+        addLog("Прошивка из файла завершена успешно");
+        Ota.onUpdateSuccess();
+      } else {
+        addLog("Ошибка прошивки из файла");
+        Ota.onUpdateError();
+      }
+    },
+    [this](AsyncWebServerRequest* req, const String& filename, size_t index, uint8_t* data, size_t len, bool final) {
+      if (!index) {
+        addLog("Старт загрузки файла прошивки: " + filename);
+        Serial.printf("[OTA] Загрузка файла: %s\n", filename.c_str());
+        Ota.onUpdateStart();
+        if (!Update.begin(UPDATE_SIZE_UNKNOWN, U_FLASH)) {
+          Update.printError(Serial);
+        }
+      }
+      if (!Update.hasError()) {
+        if (Update.write(data, len) != len) {
+          Update.printError(Serial);
+        }
+      }
+      if (final) {
+        if (Update.end(true)) {
+          Serial.printf("[OTA] Файл успешно получен, размер: %u байт\n", index + len);
+        } else {
+          Update.printError(Serial);
+        }
+      }
+    });
+
+  // --- GET /api/ota/status ---
+  _server.on("/api/ota/status", HTTP_GET, [this](AsyncWebServerRequest* req) {
+    JsonDocument doc;
+    doc["currentVersion"] = FIRMWARE_VERSION;
+    doc["hasUpdate"]      = Ota.hasUpdate();
+    doc["latestVersion"]  = Ota.getLatestVersion();
+    doc["latestUrl"]      = Ota.getLatestUrl();
+    doc["updateNotes"]    = Ota.getUpdateNotes();
+    doc["isUpdating"]     = Ota.isUpdating();
+    String out;
+    serializeJson(doc, out);
+    req->send(200, "application/json", out);
+  });
+
+  // --- POST /api/ota/check (принудительная проверка GitHub) ---
+  _server.on("/api/ota/check", HTTP_POST, [this](AsyncWebServerRequest* req) {
+    addLog("Запрос проверки обновлений на GitHub");
+    Ota.checkGitHubUpdate();
+    req->send(200, "application/json", "{\"ok\":true}");
+  });
+
+  // --- POST /api/ota/github (обновление до версии с GitHub) ---
+  _server.on("/api/ota/github", HTTP_POST, [this](AsyncWebServerRequest* req) {
+    if (!Ota.hasUpdate() || Ota.getLatestUrl().length() == 0) {
+      req->send(400, "application/json", "{\"ok\":false,\"error\":\"Нет доступных обновлений\"}");
+      return;
+    }
+    addLog("Запуск обновления с GitHub: " + Ota.getLatestVersion());
+    req->send(200, "application/json", "{\"ok\":true}");
+    Ota.updateFromUrl(Ota.getLatestUrl());
+  });
+
   // --- POST /api/ota/url ---
   _server.on("/api/ota/url", HTTP_POST,
     [](AsyncWebServerRequest* req) {},
@@ -454,11 +532,11 @@ void WebServerManager::setupRoutes() {
       handleJsonBody(req, data, len, index, total,
         [this](AsyncWebServerRequest* r, JsonDocument& doc) {
           String url = doc["url"] | "";
-          addLog("OTA по URL: " + url);
           if (url.length() == 0) {
-            r->send(400, "application/json", "{\"ok\":false}");
+            r->send(400, "application/json", "{\"ok\":false,\"error\":\"Пустой URL\"}");
             return;
           }
+          addLog("OTA по URL: " + url);
           r->send(200, "application/json", "{\"ok\":true}");
           Ota.updateFromUrl(url);
         });

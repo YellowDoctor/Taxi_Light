@@ -18,6 +18,11 @@ public:
   void show();               // вывести буфер на ленту
   bool isOn() const { return _on; }
 
+  // Индикация процесса обновления
+  void showOtaProgress();    // зелёный на 50% яркости
+  void showOtaSuccess();     // 3 мигания зелёным
+  void showOtaError();       // 3 мигания красным
+
 private:
   bool _on = true;
 };

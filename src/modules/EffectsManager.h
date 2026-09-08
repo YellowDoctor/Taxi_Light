@@ -15,8 +15,12 @@ public:
   void setSpeed(uint8_t v);                    // скорость 0–255
   void setColor(uint8_t r, uint8_t g, uint8_t b);
   uint8_t getEffect() const { return _effect; }
+  void pause() { _paused = true; }
+  void resume() { _paused = false; }
+  bool isPaused() const { return _paused; }
 
 private:
+  bool     _paused = false;
   uint8_t  _effect = EFFECT_STATIC;
   uint8_t  _speed  = 128;
   CRGB     _color  = CRGB(255, 176, 0);
