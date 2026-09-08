@@ -3,6 +3,7 @@
 //  Версия 1.2. Неблокирующий loop(), модульная архитектура.
 // =====================================================================
 #include <Arduino.h>
+#include <esp_ota_ops.h>
 #include "Config.h"
 #include "modules/SettingsManager.h"
 #include "modules/LedManager.h"
@@ -90,6 +91,9 @@ void onLongHold() {
 //  setup()
 // ---------------------------------------------------------------------
 void setup() {
+  // Подтверждаем успешный запуск прошивки (отмена авто-отката ESP32 OTA rollback)
+  esp_ota_mark_app_valid_cancel_rollback();
+
   Serial.begin(SERIAL_BAUD);
   delay(200);
   Serial.println();

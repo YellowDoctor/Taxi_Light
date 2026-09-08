@@ -117,13 +117,19 @@ bool OtaManager::updateFromUrl(const String& url) {
 }
 
 void OtaManager::checkGitHubUpdate() {
-  if (WiFi.status() != WL_CONNECTED) return;
-  // Запуск проверки в отдельной задаче FreeRTOS, чтобы не тормозить loop()
+  if (WiFi.status() != WL_CONNECTED || _updating) return;
+  static bool isChecking = false;
+  if (isChecking) return;
+  isChecking = true;
+
+  // Запуск проверки в отдельной задаче FreeRTOS (стек 12КБ для TLS/mbedtls)
   xTaskCreate([](void* param) {
+    vTaskDelay(pdMS_TO_TICKS(5000));
     OtaManager* mgr = (OtaManager*)param;
     mgr->_doCheckGitHub();
+    isChecking = false;
     vTaskDelete(NULL);
-  }, "otaCheckTask", 6144, this, 1, NULL);
+  }, "otaCheckTask", 12288, this, 1, NULL);
 }
 
 void OtaManager::_doCheckGitHub() {
