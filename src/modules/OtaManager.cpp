@@ -80,22 +80,47 @@ void OtaManager::onUpdateError() {
 }
 
 bool OtaManager::updateFromUrl(const String& url) {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println(F("[OTA] Нет подключения к сети для OTA по URL"));
+  if (WiFi.status() != WL_CONNECTED || _updating) {
+    Serial.println(F("[OTA] Нет подключения к сети или обновление уже идёт"));
     return false;
   }
-  Serial.printf("[OTA] Загрузка прошивки: %s\n", url.c_str());
+
+  // Запуск загрузки прошивки в отдельной FreeRTOS-задаче со стеком 16КБ,
+  // чтобы TLS handshake и долгая загрузка через Интернет не блокировали async_tcp
+  // и не сбивали сторожевой таймер Task Watchdog (5 сек)!
+  String* pUrl = new String(url);
+  BaseType_t res = xTaskCreate([](void* param) {
+    String* urlPtr = (String*)param;
+    Ota._doUpdateFromUrl(*urlPtr);
+    delete urlPtr;
+    vTaskDelete(NULL);
+  }, "otaUpdateTask", 16384, pUrl, 2, NULL);
+
+  if (res != pdPASS) {
+    delete pUrl;
+    Serial.println(F("[OTA] Ошибка создания задачи обновления"));
+    return false;
+  }
+  return true;
+}
+
+void OtaManager::_doUpdateFromUrl(const String& url) {
+  Serial.printf("[OTA] Загрузка прошивки в фоновой задаче: %s\n", url.c_str());
 
   onUpdateStart();
   httpUpdate.rebootOnUpdate(false);
+  httpUpdate.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+
   t_httpUpdate_return ret;
 
   if (url.startsWith("https://")) {
     WiFiClientSecure secureClient;
     secureClient.setInsecure();
+    secureClient.setTimeout(20000);
     ret = httpUpdate.update(secureClient, url);
   } else {
     WiFiClient client;
+    client.setTimeout(20000);
     ret = httpUpdate.update(client, url);
   }
 
@@ -103,17 +128,15 @@ bool OtaManager::updateFromUrl(const String& url) {
     case HTTP_UPDATE_FAILED:
       Serial.printf("[OTA] Ошибка: %s\n", httpUpdate.getLastErrorString().c_str());
       onUpdateError();
-      return false;
+      break;
     case HTTP_UPDATE_NO_UPDATES:
       Serial.println(F("[OTA] Нет обновлений"));
       onUpdateError();
-      return false;
+      break;
     case HTTP_UPDATE_OK:
       onUpdateSuccess();
-      return true;
+      break;
   }
-  onUpdateError();
-  return false;
 }
 
 void OtaManager::checkGitHubUpdate() {

@@ -25,6 +25,7 @@ public:
   void onUpdateError();
 
 private:
+  void   _doUpdateFromUrl(const String& url);
   bool   _started       = false;
   bool   _updating      = false;
   bool   _hasUpdate     = false;
