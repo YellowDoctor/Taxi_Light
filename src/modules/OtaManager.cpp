@@ -41,7 +41,11 @@ void OtaManager::begin() {
     Ota.onUpdateSuccess();
   });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    Serial.printf("[OTA] Прогресс: %u%%\r", (progress * 100) / total);
+    if (total > 0) {
+      int pct = (progress * 100) / total;
+      Ota.setProgress(pct);
+      Serial.printf("[OTA] Прогресс: %u%%\r", pct);
+    }
   });
   ArduinoOTA.onError([](ota_error_t error) {
     Serial.printf("[OTA] Ошибка [%u]\n", error);
@@ -59,12 +63,14 @@ void OtaManager::handle() {
 
 void OtaManager::onUpdateStart() {
   _updating = true;
+  _progress = 0;
   Effects.pause();
   Led.showOtaProgress();
   Serial.println(F("[OTA] Индикация: зелёный цвет 50% яркости"));
 }
 
 void OtaManager::onUpdateSuccess() {
+  _progress = 100;
   Serial.println(F("[OTA] Успешно! 3 мигания зелёным и перезагрузка"));
   Led.showOtaSuccess();
   delay(300);
@@ -75,6 +81,7 @@ void OtaManager::onUpdateError() {
   Serial.println(F("[OTA] Ошибка! 3 мигания красным"));
   Led.showOtaError();
   _updating = false;
+  _progress = 0;
   Effects.resume();
   applyCurrentState();
 }
@@ -110,6 +117,18 @@ void OtaManager::_doUpdateFromUrl(const String& url) {
   onUpdateStart();
   httpUpdate.rebootOnUpdate(false);
   httpUpdate.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+  httpUpdate.onProgress([](int cur, int total) {
+    if (total > 0) {
+      int pct = (cur * 100) / total;
+      if (pct > 100) pct = 100;
+      Ota.setProgress(pct);
+      static int lastLogged = -1;
+      if (pct != lastLogged && pct % 10 == 0) {
+        lastLogged = pct;
+        Serial.printf("[OTA] HTTP прогресс: %d%%\n", pct);
+      }
+    }
+  });
 
   t_httpUpdate_return ret;
 

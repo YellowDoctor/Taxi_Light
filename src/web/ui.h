@@ -743,6 +743,19 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
       <div id="otaGhAction">
         <button class="btn ghost small" onclick="checkGitHubOta()">Проверить обновления</button>
       </div>
+      
+      <div id="otaGhProgressWrap" style="display:none;margin-top:12px;background:rgba(0,0,0,.25);border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,.07)">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:6px">
+          <span id="otaGhProgressText" style="color:#e2e8f0;font-weight:600">Загрузка прошивки...</span>
+          <span id="otaGhProgressPct" style="font-weight:700;color:#22c55e">0%</span>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;margin-bottom:6px">
+          <div id="otaGhProgressBar" style="width:0%;height:100%;background:linear-gradient(90deg,#7c3aed,#22c55e);transition:width .25s ease"></div>
+        </div>
+        <div id="otaGhProgressHint" style="font-size:11px;color:var(--muted);line-height:1.3">
+          Шашка скачивает обновление с GitHub...
+        </div>
+      </div>
     </div>
 
     <!-- Загрузка файла (Обзор) -->
@@ -774,6 +787,21 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
       <input type="text" id="otaModalUrl" placeholder="https://.../firmware.bin" style="font-size:13px;padding:8px 12px;width:100%;margin-bottom:8px;border-radius:8px;background:#10101a;border:1px solid rgba(255,255,255,.1);color:#fff">
       <button class="btn ghost small" style="width:100%" onclick="otaByUrlModal()">Прошить по ссылке</button>
     </div>
+  </div>
+</div>
+
+<!-- Модальное окно успешного обновления -->
+<div class="modal-bg" id="otaSuccessModal" style="display:none;z-index:10000" onclick="if(event.target===this)closeOtaSuccessModal()">
+  <div class="modal-card" style="text-align:center;padding:26px 20px;max-width:380px">
+    <div style="font-size:54px;line-height:1;margin-bottom:12px">🎉</div>
+    <h3 style="font-size:18px;color:#22c55e;margin:0 0 8px 0;font-weight:700">Обновление успешно!</h3>
+    <div style="font-size:14px;color:#fff;margin-bottom:8px">
+      Шашка успешно обновлена до версии <b id="otaSuccessVer" style="color:#22c55e">v1.3.10</b>!
+    </div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:20px">
+      Все эффекты, расписания и настройки сохранены. Устройство готово к работе!
+    </div>
+    <button class="btn" style="width:100%;background:#22c55e;border-color:#22c55e;font-weight:700;padding:12px;font-size:14px;box-shadow:0 4px 15px rgba(34,197,94,.3)" onclick="closeOtaSuccessModal()">Отлично! ✨</button>
   </div>
 </div>
 
@@ -1038,6 +1066,16 @@ function loadSettings(){
 // ============ Применение статуса ============
 function applyStatus(s){
   if(!s)return;
+  if(s.version){
+    var prevVer=localStorage.getItem("taxi_ver");
+    if(prevVer&&prevVer!==s.version){
+      localStorage.setItem("taxi_ver",s.version);
+      openOtaSuccessModal(s.version);
+      toast("🎉 Шашка успешно обновлена до v"+s.version+"!","ok");
+    }else if(!prevVer){
+      localStorage.setItem("taxi_ver",s.version);
+    }
+  }
   state.on=s.on;state.brightness=s.brightness;state.effect=s.effect;state.speed=s.speed;
   renderPower();
   $("bright").value=s.brightness;$("brightVal").textContent=Math.round(s.brightness/255*100)+"%";
@@ -1109,6 +1147,13 @@ function openOtaModal(){
 function closeOtaModal(){
   $("otaModal").style.display="none";
 }
+function openOtaSuccessModal(ver){
+  if(ver)$("otaSuccessVer").textContent="v"+ver;
+  $("otaSuccessModal").style.display="flex";
+}
+function closeOtaSuccessModal(){
+  $("otaSuccessModal").style.display="none";
+}
 function checkGitHubOta(){
   var info=$("otaGhInfo"),action=$("otaGhAction");
   info.innerHTML="Проверка обновлений на GitHub...";
@@ -1125,27 +1170,84 @@ function checkGitHubOta(){
 function renderGhOtaStatus(s){
   var info=$("otaGhInfo"),action=$("otaGhAction"),ob=$("otaHeaderBtn");
   if(!s)return;
+  if(s.isUpdating){
+    startOtaProgressPolling(s.latestVersion);
+    return;
+  }
   if(s.hasUpdate){
-    info.innerHTML="Текущая: <b>v"+(s.currentVersion||"1.3.6")+"</b> · Доступна: <b style='color:#22c55e'>v"+s.latestVersion+"</b>"+
+    info.innerHTML="Текущая: <b>v"+(s.currentVersion||"1.3.9")+"</b> · Доступна: <b style='color:#22c55e'>v"+s.latestVersion+"</b>"+
       (s.updateNotes?"<div style='color:var(--muted);font-size:11px;margin-top:4px'>"+s.updateNotes+"</div>":"");
-    action.innerHTML='<button class="btn small" style="background:#22c55e;border-color:#22c55e;font-weight:700" onclick="updateFromGitHub()">🚀 Обновить до v'+s.latestVersion+'</button>';
+    action.innerHTML='<button class="btn small" style="background:#22c55e;border-color:#22c55e;font-weight:700" onclick="updateFromGitHub(\''+s.latestVersion+'\')">🚀 Обновить до v'+s.latestVersion+'</button>';
     if(ob){ob.style.display="inline-flex";if(s.latestVersion)$("otaBadge").textContent="v"+s.latestVersion;}
   }else{
-    info.innerHTML="Текущая версия: <b>v"+(s.currentVersion||"1.3.6")+"</b> (актуальная)";
+    info.innerHTML="Текущая версия: <b>v"+(s.currentVersion||"1.3.9")+"</b> (актуальная)";
     action.innerHTML='<button class="btn ghost small" onclick="checkGitHubOta()">Проверить снова</button>';
     if(ob)ob.style.display="none";
   }
 }
-function updateFromGitHub(){
-  if(!confirm("Скачать и установить обновление с GitHub?\n\nШашка загорится зелёным цветом на 50% яркости и перезагрузится."))return;
+
+var _otaPollTimer=null;
+function startOtaProgressPolling(targetVer){
+  var wrap=$("otaGhProgressWrap"),bar=$("otaGhProgressBar"),pct=$("otaGhProgressPct"),txt=$("otaGhProgressText"),hint=$("otaGhProgressHint");
+  if(wrap)wrap.style.display="block";
+  if($("otaGhAction"))$("otaGhAction").style.display="none";
+  if(bar)bar.style.width="0%";
+  if(pct)pct.textContent="0%";
+  if(txt)txt.textContent="Подключение к GitHub...";
+  if(hint)hint.textContent="Шашка горит зелёным (50% яркости). Не выключайте питание!";
+
+  var offlineCount=0;
+  if(_otaPollTimer)clearInterval(_otaPollTimer);
+
+  _otaPollTimer=setInterval(function(){
+    api("/api/ota/status").then(function(s){
+      offlineCount=0;
+      if(s){
+        var p=s.progress||0;
+        if(bar)bar.style.width=p+"%";
+        if(pct)pct.textContent=p+"%";
+        if(s.isUpdating){
+          if(p<100){
+            if(txt)txt.textContent="Скачивание с GitHub: "+p+"%";
+            if(hint)hint.textContent="Шашка скачивает обновление ("+p+"%)...";
+          }else{
+            if(txt)txt.textContent="Запись во Flash (100%)...";
+            if(hint)hint.textContent="Файл получен! Запись во Flash, 3 мигания зелёным и перезагрузка.";
+          }
+        }
+      }
+    }).catch(function(){
+      offlineCount++;
+      if(bar)bar.style.width="100%";
+      if(pct)pct.textContent="100%";
+      if(txt)txt.textContent="Перезагрузка шашки...";
+      if(hint)hint.textContent="Шашка перезагружается с новой прошивкой "+(targetVer?"v"+targetVer:"")+"...";
+
+      if(offlineCount>=3){
+        api("/api/status").then(function(newStatus){
+          if(newStatus&&newStatus.version){
+            clearInterval(_otaPollTimer);
+            _otaPollTimer=null;
+            closeOtaModal();
+            applyStatus(newStatus);
+          }
+        }).catch(function(){});
+      }
+    });
+  },600);
+}
+
+function updateFromGitHub(targetVer){
+  if(!confirm("Скачать и установить обновление с GitHub?\n\nШашка загорится зелёным цветом на 50% яркости, скачает прошивку, трижды мигнёт зелёным и перезагрузится."))return;
   toast("Запуск обновления с GitHub...");
   api("/api/ota/github","POST").then(function(r){
     if(r.ok){
-      toast("Обновление началось! Подождите...","ok");
-      setTimeout(function(){location.reload();},15000);
+      startOtaProgressPolling(targetVer);
     }else{
       toast("Ошибка: "+(r.error||"сбой"),"err");
     }
+  }).catch(function(e){
+    toast("Ошибка связи","err");
   });
 }
 function onOtaFileChosen(input){
@@ -1199,11 +1301,12 @@ function otaByUrlModal(){
   toast("Загрузка прошивки по URL...");
   api("/api/ota/url","POST",{url:u}).then(function(r){
     if(r.ok){
-      toast("Обновление началось! Подождите...","ok");
-      setTimeout(function(){location.reload();},15000);
+      startOtaProgressPolling();
     }else{
       toast("Ошибка: "+(r.error||"сбой"),"err");
     }
+  }).catch(function(e){
+    toast("Ошибка связи","err");
   });
 }
 

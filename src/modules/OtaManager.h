@@ -18,6 +18,8 @@ public:
   String getLatestUrl()     const { return _latestUrl; }
   String getUpdateNotes()   const { return _updateNotes; }
   bool   isUpdating()       const { return _updating; }
+  int    getProgress()      const { return _progress; }
+  void   setProgress(int p)       { _progress = p; }
 
   // Колбэки индикации и безопасности
   void onUpdateStart();
@@ -28,6 +30,7 @@ private:
   void   _doUpdateFromUrl(const String& url);
   bool   _started       = false;
   bool   _updating      = false;
+  int    _progress      = 0;
   bool   _hasUpdate     = false;
   String _latestVersion = "";
   String _latestUrl     = "";

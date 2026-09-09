@@ -144,6 +144,7 @@ String WebServerManager::buildStatusJson() {
   doc["latestVersion"] = Ota.getLatestVersion();
   doc["latestUrl"]     = Ota.getLatestUrl();
   doc["isUpdating"]    = Ota.isUpdating();
+  doc["progress"]      = Ota.getProgress();
 
   String out;
 
@@ -500,6 +501,7 @@ void WebServerManager::setupRoutes() {
     doc["latestUrl"]      = Ota.getLatestUrl();
     doc["updateNotes"]    = Ota.getUpdateNotes();
     doc["isUpdating"]     = Ota.isUpdating();
+    doc["progress"]       = Ota.getProgress();
     String out;
     serializeJson(doc, out);
     req->send(200, "application/json", out);
