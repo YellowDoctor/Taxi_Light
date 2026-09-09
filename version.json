@@ -1,5 +1,5 @@
-﻿{
-  "version": "1.3.7",
+{
+  "version": "1.3.8",
   "url": "https://raw.githubusercontent.com/YellowDoctor/Taxi_Light/main/firmware.bin",
-  "notes": "OTA-обновление: кнопка «Обзор», HTTPS, проверка GitHub, индикация на ленте"
+  "notes": "Проверка автообновления с GitHub (версия 1.3.8)"
 }

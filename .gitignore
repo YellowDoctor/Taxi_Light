@@ -3,5 +3,8 @@
 .abacus*
 *.log
 update_shashka.*
+flash_taxilight.*
 *.zip
+*.exe
+INSTRUCTION.txt
 
