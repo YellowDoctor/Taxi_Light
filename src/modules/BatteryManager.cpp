@@ -106,6 +106,18 @@ void BatteryManager::tick() {
     _risingCount = 0;
   }
   _charging = (_risingCount >= 3);
+
+  // Защита от глубокого разряда Li-Ion (< 3.00 В при отсутствии зарядки)
+  // Проверяем > 1.0 В, чтобы исключить неподключенный пин при стендовых тестах
+  if (_voltage > 1.0f && _voltage < 3.00f && !_charging) {
+    if (_criticalCount < 255) _criticalCount++;
+    if (_criticalCount >= 3) {
+      _critical = true;
+    }
+  } else {
+    _criticalCount = 0;
+    _critical = false;
+  }
 }
 
 float   BatteryManager::getVoltage() { return _voltage; }

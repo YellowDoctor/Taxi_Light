@@ -16,6 +16,7 @@ public:
   float   getVoltage();           // напряжение на аккумуляторе, В
   uint8_t getPercent();           // заряд, % (по LUT)
   bool    isCharging();           // определение зарядки по тренду
+  bool    isCritical() const { return _critical; } // критический разряд (< 3.0В)
 
 private:
   float    _voltage     = 0.0f;
@@ -24,6 +25,8 @@ private:
   bool     _charging    = false;
   uint32_t _lastUpdate  = 0;
   uint8_t  _risingCount = 0;      // счётчик подряд растущих замеров
+  uint8_t  _criticalCount = 0;    // счётчик подтверждений низкого напряжения
+  bool     _critical    = false;
   esp_adc_cal_characteristics_t _adcChars;
   bool     _calibrated  = false;
 

@@ -57,6 +57,8 @@ void OtaManager::begin() {
   Serial.println(F("[OTA] ArduinoOTA готов"));
 }
 
+static int s_otaLastLogged = -1;
+
 void OtaManager::handle() {
   if (_started && !_updating) ArduinoOTA.handle();
 }
@@ -64,6 +66,7 @@ void OtaManager::handle() {
 void OtaManager::onUpdateStart() {
   _updating = true;
   _progress = 0;
+  s_otaLastLogged = -1;
   Effects.pause();
   Led.showOtaProgress();
   Serial.println(F("[OTA] Индикация: зелёный цвет 50% яркости"));
@@ -122,9 +125,8 @@ void OtaManager::_doUpdateFromUrl(const String& url) {
       int pct = (cur * 100) / total;
       if (pct > 100) pct = 100;
       Ota.setProgress(pct);
-      static int lastLogged = -1;
-      if (pct != lastLogged && pct % 10 == 0) {
-        lastLogged = pct;
+      if (pct != s_otaLastLogged && pct % 10 == 0) {
+        s_otaLastLogged = pct;
         Serial.printf("[OTA] HTTP прогресс: %d%%\n", pct);
       }
     }
@@ -160,7 +162,7 @@ void OtaManager::_doUpdateFromUrl(const String& url) {
 
 void OtaManager::checkGitHubUpdate() {
   if (WiFi.status() != WL_CONNECTED || _updating) return;
-  static bool isChecking = false;
+  static volatile bool isChecking = false;
   if (isChecking) return;
   isChecking = true;
 

@@ -11,13 +11,18 @@ void EffectsManager::begin()
   _lastTick = millis();
   _policeStep = 0;
   _policeLastChange = millis();
+  _dirty = true;
+  _lastStaticShow = 0;
 }
 
 void EffectsManager::setEffect(uint8_t id)
 {
   if (id >= EFFECT_COUNT)
     id = EFFECT_STATIC;
-  _effect = id;
+  if (_effect != id) {
+    _effect = id;
+    _dirty = true;
+  }
   // Сброс тепловой карты при переходе на «огонь»
   if (id == EFFECT_FIRE)
     memset(_heat, 0, sizeof(_heat));
@@ -44,17 +49,22 @@ void EffectsManager::setEffect(uint8_t id)
 void EffectsManager::setSpeed(uint8_t v)
 {
   _speed = v;
+  _dirty = true;
 }
 
 void EffectsManager::setColor(uint8_t r, uint8_t g, uint8_t b)
 {
-  _color = CRGB(r, g, b);
+  CRGB c(r, g, b);
+  if (_color != c) {
+    _color = c;
+    _dirty = true;
+  }
 }
 
-// Чем выше скорость, тем меньше интервал между кадрами (5..80 мс)
+// Чем выше скорость, тем меньше интервал между кадрами (20..80 мс, макс 50 FPS)
 uint16_t EffectsManager::frameInterval()
 {
-  return map(_speed, 0, 255, 80, 5);
+  return map(_speed, 0, 255, 80, 20);
 }
 
 void EffectsManager::tick()
@@ -63,8 +73,20 @@ void EffectsManager::tick()
     return;
 
   uint32_t now = millis();
-  // static обновляется реже (не требует анимации)
-  uint16_t interval = (_effect == EFFECT_STATIC) ? 200 : frameInterval();
+
+  // Для статики: обновление только при изменении или раз в 15 секунд (keepalive)
+  if (_effect == EFFECT_STATIC) {
+    if (!_dirty && (now - _lastStaticShow < 15000UL)) {
+      return;
+    }
+    effStatic();
+    Led.show();
+    _dirty = false;
+    _lastStaticShow = now;
+    return;
+  }
+
+  uint16_t interval = frameInterval();
   if (now - _lastTick < interval)
     return;
   _lastTick = now;

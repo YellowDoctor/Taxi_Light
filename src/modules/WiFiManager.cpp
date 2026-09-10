@@ -7,6 +7,7 @@
 #include <time.h>
 #include <ESPmDNS.h>
 #include <NetBIOS.h>
+#include <esp_wifi.h>
 
 WiFiManager Wifi;   // глобальный экземпляр
 
@@ -73,15 +74,8 @@ void WiFiManager::forget() {
 void WiFiManager::syncNTP() {
   if (_state != WifiState::CONNECTED) return;
   configTime(Config.data.timezone * 3600L, 0, NTP_SERVER1, NTP_SERVER2);
-  // Ждём синхронизации не более 5с (неблокирующий вариант через флаг)
-  uint32_t start = millis();
-  struct tm t;
-  while (!getLocalTime(&t, 100) && millis() - start < 5000) {}
-  _timeSynced = getLocalTime(&t, 0);
-  if (_timeSynced)
-    Serial.printf("[WiFi] NTP синхронизирован: %02d:%02d:%02d\n", t.tm_hour, t.tm_min, t.tm_sec);
-  else
-    Serial.println(F("[WiFi] NTP: не удалось синхронизировать время"));
+  _timeSynced = false;
+  _ntpLastCheck = millis();
 }
 
 void WiFiManager::loop() {
@@ -93,6 +87,12 @@ void WiFiManager::loop() {
         _state      = WifiState::CONNECTED;
         _retryCount = 0;
         Serial.printf("[WiFi] Подключено, IP: %s\n", WiFi.localIP().toString().c_str());
+
+        // Энергосбережение Wi-Fi: Modem Sleep на уровне ESP-IDF + ограничение мощности TX (15 dBm)
+        WiFi.setSleep(true);
+        esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
+        WiFi.setTxPower(WIFI_POWER_15dBm);
+
         syncNTP();
         if (MDNS.begin("taxilight")) {
           MDNS.addService("http", "tcp", 80);
@@ -123,6 +123,14 @@ void WiFiManager::loop() {
         _state     = WifiState::DISCONNECTED;
         _lastRetry = millis();
         _timeSynced = false;
+      } else if (!_timeSynced && (millis() - _ntpLastCheck > 2000)) {
+        _ntpLastCheck = millis();
+        struct tm t;
+        if (getLocalTime(&t, 0)) {
+          _timeSynced = true;
+          Serial.printf("[WiFi] NTP синхронизирован: %02d:%02d:%02d\n",
+                        t.tm_hour, t.tm_min, t.tm_sec);
+        }
       }
       break;
 

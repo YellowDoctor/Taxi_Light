@@ -29,6 +29,7 @@ void applyCurrentState() {
                       Config.data.color        & 0xFF);
     Effects.setSpeed(Config.data.effectSpeed);
     Effects.setEffect(Config.data.currentEffect);
+    Effects.markDirty();
   } else {
     Led.turnOff();
   }
@@ -94,6 +95,10 @@ void setup() {
   // Подтверждаем успешный запуск прошивки (отмена авто-отката ESP32 OTA rollback)
   esp_ota_mark_app_valid_cancel_rollback();
 
+  // Энергоэффективность: установка частоты CPU 160 МГц (вместо 240 МГц)
+  // Экономит ~25 мА при сохранении быстрой криптографии для HTTPS OTA
+  setCpuFrequencyMhz(160);
+
   Serial.begin(SERIAL_BAUD);
   delay(200);
   Serial.println();
@@ -148,6 +153,16 @@ void loop() {
   Web.tickSleepTimer(); // таймер сна
   Effects.tick();     // световые эффекты
 
+  // Защита аккумулятора от глубокого разряда (< 3.0В)
+  if (Battery.isCritical()) {
+    Serial.println(F("[SYS] КРИТИЧЕСКИЙ РАЗРЯД (< 3.0В)! Переход в глубокий сон для защиты аккумулятора."));
+    Web.addLog("Критический разряд! Сон.");
+    Led.showOtaError(); // 3 красных мигания
+    Led.turnOff();
+    // Пробуждение по касанию сенсорной кнопки TTP223 (GPIO4 = RTC_GPIO10, активный HIGH)
+    esp_sleep_enable_ext0_wakeup((gpio_num_t)BUTTON_PIN, 1);
+    esp_deep_sleep_start();
+  }
 
   // Асинхронная перезагрузка (из /api/reboot)
   if (Web.pendingReboot()) {
@@ -164,4 +179,7 @@ void loop() {
       Web.addLog("ВНИМАНИЕ: мало памяти");
     }
   }
+
+  // Микропауза для запуска IDLE-задачи FreeRTOS и снижения нагрузки на CPU
+  delay(1);
 }

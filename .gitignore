@@ -7,4 +7,5 @@ flash_taxilight.*
 *.zip
 *.exe
 INSTRUCTION.txt
-
+ElectroPlan*
+implementation_plan*

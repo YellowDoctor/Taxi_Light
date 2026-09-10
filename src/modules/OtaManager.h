@@ -29,9 +29,9 @@ public:
 private:
   void   _doUpdateFromUrl(const String& url);
   bool   _started       = false;
-  bool   _updating      = false;
-  int    _progress      = 0;
-  bool   _hasUpdate     = false;
+  volatile bool _updating = false;
+  volatile int  _progress = 0;
+  volatile bool _hasUpdate = false;
   String _latestVersion = "";
   String _latestUrl     = "";
   String _updateNotes   = "";

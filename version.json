@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "url": "https://raw.githubusercontent.com/YellowDoctor/Taxi_Light/main/firmware.bin",
-  "notes": "Версия 1.4.0: живой индикатор процесса прошивки и экран поздравления"
+  "notes": "Версия 1.5.0: комплексная энергооптимизация (160 МГц, Modem Sleep, 50 FPS, защита аккумулятора) и фиксы стабильности"
 }

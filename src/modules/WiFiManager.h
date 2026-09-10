@@ -37,6 +37,7 @@ private:
   uint32_t   _lastRetry    = 0;
   uint8_t    _retryCount   = 0;
   bool       _timeSynced   = false;
+  uint32_t   _ntpLastCheck = 0;
 
   void startSTA(const String& ssid, const String& pass);
 };

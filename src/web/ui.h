@@ -846,13 +846,19 @@ function debounce(fn,ms){var t;return function(){var a=arguments,c=this;clearTim
 
 // ============ WebSocket ============
 function connectWS(){
+  if(document.hidden)return;
   try{
+    if(ws)return;
     ws=new WebSocket("ws://"+location.host+"/ws");
     ws.onmessage=function(e){try{applyStatus(JSON.parse(e.data));}catch(ex){}};
-    ws.onclose=function(){ws=null;setTimeout(connectWS,3000);};
+    ws.onclose=function(){ws=null;if(!document.hidden)setTimeout(connectWS,3000);};
     ws.onerror=function(){if(ws)ws.close();};
-  }catch(e){setTimeout(connectWS,3000);}
+  }catch(e){if(!document.hidden)setTimeout(connectWS,3000);}
 }
+document.addEventListener("visibilitychange",function(){
+  if(!document.hidden){connectWS();api("/api/status").then(applyStatus).catch(function(){});}
+  else if(ws){try{ws.close();}catch(e){}ws=null;}
+});
 
 // ============ Навигация ============
 function showTab(name){
@@ -1464,8 +1470,9 @@ function devUpload(){
   xhr.send(fd);
 }
 poll();loadLog();
-setInterval(poll,2000);
-setInterval(loadLog,3000);
+setInterval(function(){if(!document.hidden)poll();},2000);
+setInterval(function(){if(!document.hidden)loadLog();},3000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden){poll();loadLog();}});
 </script>
 </body>
 </html>
