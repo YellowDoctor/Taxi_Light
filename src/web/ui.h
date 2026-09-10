@@ -948,11 +948,11 @@ var ws=null;
 function $(id){return document.getElementById(id);}
 function toast(msg,type){var t=$("toast");t.textContent=msg;t.className="show "+(type||"");setTimeout(function(){t.className="";},2200);}
 
-function api(path,method,body){
+function api(path,method,body,silent){
   return fetch(path,{method:method||"GET",headers:{"Content-Type":"application/json"},
     body:body?JSON.stringify(body):undefined})
     .then(function(r){return r.json();})
-    .catch(function(e){toast("Ошибка связи","err");throw e;});
+    .catch(function(e){if(!silent)toast("Ошибка связи","err");throw e;});
 }
 function debounce(fn,ms){var t;return function(){var a=arguments,c=this;clearTimeout(t);t=setTimeout(function(){fn.apply(c,a);},ms);};}
 
@@ -1395,8 +1395,6 @@ function applyStatus(s){
 
 function loadAll(){
   api("/api/status").then(applyStatus);
-  loadSettings();
-  loadSchedules();
 }
 
 function toggleFs(){
@@ -1471,7 +1469,7 @@ function startOtaProgressPolling(targetVer){
   if(_otaPollTimer)clearInterval(_otaPollTimer);
 
   _otaPollTimer=setInterval(function(){
-    api("/api/ota/status").then(function(s){
+    api("/api/ota/status","GET",null,true).then(function(s){
       offlineCount=0;
       if(s){
         var p=s.progress||0;
@@ -1492,10 +1490,10 @@ function startOtaProgressPolling(targetVer){
       if(bar)bar.style.width="100%";
       if(pct)pct.textContent="100%";
       if(txt)txt.textContent="Перезагрузка шашки...";
-      if(hint)hint.textContent="Шашка перезагружается с новой прошивкой "+(targetVer?"v"+targetVer:"")+"...";
+      if(hint)hint.textContent="Шашка перезагружается с новой прошивкой "+(targetVer?"v"+targetVer:"")+" (подождите 5–8 сек)...";
 
-      if(offlineCount>=3){
-        api("/api/status").then(function(newStatus){
+      if(offlineCount>=4){
+        api("/api/status","GET",null,true).then(function(newStatus){
           if(newStatus&&newStatus.version){
             clearInterval(_otaPollTimer);
             _otaPollTimer=null;
@@ -1505,7 +1503,7 @@ function startOtaProgressPolling(targetVer){
         }).catch(function(){});
       }
     });
-  },600);
+  },1000);
 }
 
 function updateFromGitHub(targetVer){
@@ -1588,9 +1586,7 @@ function otaByUrlModal(){
   buildTz();
   renderFx();
   var t=localStorage.getItem("tab");if(t)showTab(t);
-  connectWS();
-  loadFavorites();
-  loadSchedules();
+  setTimeout(connectWS, 400);
   loadAll();
   if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
 })();
@@ -1780,6 +1776,7 @@ const char SW_JS[] PROGMEM = R"JS(
 self.addEventListener('install', function(e) { self.skipWaiting(); });
 self.addEventListener('activate', function(e) { e.waitUntil(clients.claim()); });
 self.addEventListener('fetch', function(e) {
+  if (e.request.url.includes('/api/') || e.request.url.includes('/ws')) return;
   e.respondWith(fetch(e.request).catch(function() { return caches.match(e.request); }));
 });
 )JS";
