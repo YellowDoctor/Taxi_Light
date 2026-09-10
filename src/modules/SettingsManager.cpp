@@ -37,6 +37,7 @@ void SettingsManager::applyDefaults() {
 
   // Расписание — все записи отключены
   for (uint8_t i = 0; i < SCHEDULE_COUNT; i++) {
+    data.schedules[i].used    = false;
     data.schedules[i].enabled = false;
     data.schedules[i].hour    = 0;
     data.schedules[i].minute  = 0;
@@ -182,7 +183,9 @@ static String schKey(uint8_t slot, const char* field) {
 void SettingsManager::loadSchedules() {
   if (!prefs.begin(NVS_SCH_NAMESPACE, true)) return;
   for (uint8_t i = 0; i < SCHEDULE_COUNT; i++) {
-    data.schedules[i].enabled = prefs.getBool(schKey(i, "en").c_str(),   false);
+    bool en = prefs.getBool(schKey(i, "en").c_str(), false);
+    data.schedules[i].used    = prefs.getBool(schKey(i, "u").c_str(), en);
+    data.schedules[i].enabled = en;
     data.schedules[i].hour    = prefs.getUChar(schKey(i, "h").c_str(),   0);
     data.schedules[i].minute  = prefs.getUChar(schKey(i, "m").c_str(),   0);
     data.schedules[i].action  = prefs.getBool(schKey(i, "act").c_str(),  false);
@@ -195,6 +198,7 @@ void SettingsManager::saveScheduleSlot(uint8_t slot) {
   if (slot >= SCHEDULE_COUNT) return;
   if (!prefs.begin(NVS_SCH_NAMESPACE, false)) return;
   Schedule& s = data.schedules[slot];
+  prefs.putBool(schKey(slot, "u").c_str(),     s.used);
   prefs.putBool(schKey(slot, "en").c_str(),    s.enabled);
   prefs.putUChar(schKey(slot, "h").c_str(),    s.hour);
   prefs.putUChar(schKey(slot, "m").c_str(),    s.minute);
@@ -205,6 +209,7 @@ void SettingsManager::saveScheduleSlot(uint8_t slot) {
 
 void SettingsManager::deleteScheduleSlot(uint8_t slot) {
   if (slot >= SCHEDULE_COUNT) return;
+  data.schedules[slot].used    = false;
   data.schedules[slot].enabled = false;
   saveScheduleSlot(slot);
 }

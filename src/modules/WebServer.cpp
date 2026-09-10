@@ -139,6 +139,14 @@ String WebServerManager::buildStatusJson() {
   doc["mac"]        = WiFi.macAddress();
   doc["apMode"]     = Wifi.isAP();
   doc["timeSynced"] = Wifi.isTimeSynced();
+  if (Wifi.isTimeSynced()) {
+    struct tm t;
+    if (getLocalTime(&t, 0)) {
+      char tbuf[8];
+      snprintf(tbuf, sizeof(tbuf), "%02d:%02d", t.tm_hour, t.tm_min);
+      doc["time"] = tbuf;
+    }
+  }
   doc["timerLeft"]     = sleepTimerLeft();
   doc["hasUpdate"]     = Ota.hasUpdate();
   doc["latestVersion"] = Ota.getLatestVersion();
@@ -201,6 +209,7 @@ String WebServerManager::buildSchedulesJson() {
   for (uint8_t i = 0; i < SCHEDULE_COUNT; i++) {
     JsonObject o = arr.add<JsonObject>();
     o["slot"]    = i;
+    o["used"]    = Config.data.schedules[i].used;
     o["enabled"] = Config.data.schedules[i].enabled;
     o["hour"]    = Config.data.schedules[i].hour;
     o["minute"]  = Config.data.schedules[i].minute;
@@ -691,11 +700,12 @@ void WebServerManager::setupRoutes() {
             return;
           }
           Schedule& s    = Config.data.schedules[slot];
-          s.enabled = doc["enabled"] | s.enabled;
-          s.hour    = (uint8_t)((int)(doc["hour"]   | s.hour));
-          s.minute  = (uint8_t)((int)(doc["minute"] | s.minute));
-          s.action  = doc["action"]  | s.action;
-          s.days    = (uint8_t)((int)(doc["days"]   | s.days));
+          if (!doc["used"].isNull())    s.used    = doc["used"].as<bool>();
+          if (!doc["enabled"].isNull()) s.enabled = doc["enabled"].as<bool>();
+          if (!doc["hour"].isNull())    s.hour    = (uint8_t)((int)doc["hour"]);
+          if (!doc["minute"].isNull())  s.minute  = (uint8_t)((int)doc["minute"]);
+          if (!doc["action"].isNull())  s.action  = doc["action"].as<bool>();
+          if (!doc["days"].isNull())    s.days    = (uint8_t)((int)doc["days"]);
           Config.saveScheduleSlot(slot);
           addLog(String("Расписание слот ") + slot + " обновлено");
           r->send(200, "application/json", buildSchedulesJson());

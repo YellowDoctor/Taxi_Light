@@ -41,7 +41,7 @@ void ScheduleManager::tick() {
 
   for (uint8_t i = 0; i < SCHEDULE_COUNT; i++) {
     const Schedule& s = Config.data.schedules[i];
-    if (!s.enabled) continue;
+    if (!s.used || !s.enabled) continue;
     if (!(s.days & dayBit)) continue;
     if (s.hour   != (uint8_t)t.tm_hour) continue;
     if (s.minute != (uint8_t)t.tm_min)  continue;
