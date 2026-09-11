@@ -234,18 +234,20 @@ void WebServerManager::setupRoutes() {
   });
   _server.addHandler(&_ws);
 
-  // --- Главная страница (SPA) ---
+  // --- Главная страница (SPA, gzip) ---
   _server.on("/", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
-      req->beginResponse(200, "text/html", (const uint8_t*)INDEX_HTML, sizeof(INDEX_HTML) - 1);
+      req->beginResponse(200, "text/html", INDEX_HTML_GZ, INDEX_HTML_GZ_LEN);
+    resp->addHeader("Content-Encoding", "gzip");
     resp->addHeader("Cache-Control", "no-store");
     req->send(resp);
   });
 
-  // --- Страница разработчика ---
+  // --- Страница разработчика (gzip) ---
   _server.on("/dev", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
-      req->beginResponse(200, "text/html", (const uint8_t*)DEV_HTML, sizeof(DEV_HTML) - 1);
+      req->beginResponse(200, "text/html", DEV_HTML_GZ, DEV_HTML_GZ_LEN);
+    resp->addHeader("Content-Encoding", "gzip");
     resp->addHeader("Cache-Control", "no-store");
     req->send(resp);
   });
@@ -734,7 +736,8 @@ void WebServerManager::setupRoutes() {
   _server.onNotFound([](AsyncWebServerRequest* req) {
     if (Wifi.isAP()) {
       AsyncWebServerResponse* resp =
-        req->beginResponse(200, "text/html", (const uint8_t*)INDEX_HTML, sizeof(INDEX_HTML) - 1);
+        req->beginResponse(200, "text/html", INDEX_HTML_GZ, INDEX_HTML_GZ_LEN);
+      resp->addHeader("Content-Encoding", "gzip");
       req->send(resp);
     } else {
       req->send(404, "text/plain", "Not found");
