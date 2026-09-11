@@ -237,7 +237,7 @@ void WebServerManager::setupRoutes() {
   // --- Главная страница (SPA) ---
   _server.on("/", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
-      req->beginResponse(200, "text/html", INDEX_HTML);
+      req->beginResponse(200, "text/html", (const uint8_t*)INDEX_HTML, sizeof(INDEX_HTML) - 1);
     resp->addHeader("Cache-Control", "no-store");
     req->send(resp);
   });
@@ -245,7 +245,7 @@ void WebServerManager::setupRoutes() {
   // --- Страница разработчика ---
   _server.on("/dev", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
-      req->beginResponse(200, "text/html", DEV_HTML);
+      req->beginResponse(200, "text/html", (const uint8_t*)DEV_HTML, sizeof(DEV_HTML) - 1);
     resp->addHeader("Cache-Control", "no-store");
     req->send(resp);
   });
@@ -253,7 +253,7 @@ void WebServerManager::setupRoutes() {
   // --- PWA Manifest ---
   _server.on("/manifest.json", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
-      req->beginResponse(200, "application/manifest+json", MANIFEST_JSON);
+      req->beginResponse(200, "application/manifest+json", (const uint8_t*)MANIFEST_JSON, sizeof(MANIFEST_JSON) - 1);
     resp->addHeader("Cache-Control", "public, max-age=86400");
     req->send(resp);
   });
@@ -261,7 +261,7 @@ void WebServerManager::setupRoutes() {
   // --- PWA Icon (SVG с адаптивной темой) ---
   _server.on("/icon.svg", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
-      req->beginResponse(200, "image/svg+xml", ICON_SVG);
+      req->beginResponse(200, "image/svg+xml", (const uint8_t*)ICON_SVG, sizeof(ICON_SVG) - 1);
     resp->addHeader("Cache-Control", "public, max-age=86400");
     req->send(resp);
   });
@@ -274,11 +274,10 @@ void WebServerManager::setupRoutes() {
     req->send(resp);
   });
 
-
   // --- Service Worker (требуется Chrome для standalone WebAPK) ---
   _server.on("/sw.js", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
-      req->beginResponse(200, "application/javascript", SW_JS);
+      req->beginResponse(200, "application/javascript", (const uint8_t*)SW_JS, sizeof(SW_JS) - 1);
     resp->addHeader("Cache-Control", "no-cache");
     req->send(resp);
   });
@@ -735,7 +734,7 @@ void WebServerManager::setupRoutes() {
   _server.onNotFound([](AsyncWebServerRequest* req) {
     if (Wifi.isAP()) {
       AsyncWebServerResponse* resp =
-        req->beginResponse(200, "text/html", INDEX_HTML);
+        req->beginResponse(200, "text/html", (const uint8_t*)INDEX_HTML, sizeof(INDEX_HTML) - 1);
       req->send(resp);
     } else {
       req->send(404, "text/plain", "Not found");
