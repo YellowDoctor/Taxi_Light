@@ -88,10 +88,9 @@ void WiFiManager::loop() {
         _retryCount = 0;
         Serial.printf("[WiFi] Подключено, IP: %s\n", WiFi.localIP().toString().c_str());
 
-        // Энергосбережение Wi-Fi: Modem Sleep на уровне ESP-IDF + ограничение мощности TX (15 dBm)
+        // Стабильная связь Wi-Fi: максимальная мощность TX (19.5 dBm) и базовый энергосберегающий режим
         WiFi.setSleep(true);
-        esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
-        WiFi.setTxPower(WIFI_POWER_15dBm);
+        WiFi.setTxPower(WIFI_POWER_19_5dBm);
 
         syncNTP();
         if (MDNS.begin("taxilight")) {

@@ -41,14 +41,18 @@ void ScheduleManager::tick() {
 
   for (uint8_t i = 0; i < SCHEDULE_COUNT; i++) {
     const Schedule& s = Config.data.schedules[i];
-    if (!s.enabled) continue;
+    if (!s.used || !s.enabled) continue;
     if (!(s.days & dayBit)) continue;
     if (s.hour   != (uint8_t)t.tm_hour) continue;
     if (s.minute != (uint8_t)t.tm_min)  continue;
 
     // Срабатывание!
-    Config.data.isOn = s.action;
-    Config.save();
+    if (Config.data.isOn != s.action) {   // записываем только при изменении
+      Config.data.isOn = s.action;
+      Config.save();
+    } else {
+      Config.data.isOn = s.action;
+    }
 
     if (s.action) {
       Led.turnOn();

@@ -28,6 +28,7 @@ const char INDEX_HTML[] PROGMEM = R"HTMLPAGE(<!DOCTYPE html>
 
 <style>
 :root{
+  color-scheme: dark;
   --bg:#0a0a0f; --card:#141420; --card2:#1b1b2b;
   --txt:#e8e8f0; --muted:#8a8aa0;
   --accent1:#7c3aed; --accent2:#3b82f6;
@@ -338,10 +339,29 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 .timer-badge{display:inline-block;background:rgba(124,58,237,.25);border:1px solid rgba(124,58,237,.5);color:#a78bfa;border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600;margin-left:8px}
 
 /* Расписание */
-
-.sched-row{background:var(--card2);border-radius:12px;padding:12px;margin-bottom:10px}
-input[type=number]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#0f0f18;color:var(--txt);font-size:15px;margin-top:6px;outline:none}
-input[type=number]:focus{border-color:#7c3aed}
+.sch-list{display:flex;flex-direction:column;gap:10px}
+.sch-card{margin-bottom:0;padding:14px 16px;border-radius:16px;transition:opacity .2s,border-color .2s}
+.sch-card:hover{border-color:rgba(167,139,250,.35)}
+.sch-disabled{opacity:.45}
+.sch-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:.3px}
+.sch-on{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.25)}
+.sch-off{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.25)}
+.sch-dots{display:flex;gap:5px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.05)}
+.day-dot{font-size:10px;font-weight:700;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);color:var(--muted)}
+.day-dot.active{background:rgba(167,139,250,.25);color:#c4b5fd;border:1px solid rgba(167,139,250,.4)}
+.sch-day-btn{flex:1;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--muted);transition:.2s}
+.sch-day-btn.active{background:var(--accent);color:#fff;border-color:rgba(255,255,255,.3);box-shadow:0 2px 8px var(--accent-glow)}
+.sch-act-btn{flex:1;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.sch-act-btn.active-on{background:rgba(34,197,94,.18);color:#86efac;border-color:rgba(34,197,94,.4)}
+.sch-act-btn.active-off{background:rgba(239,68,68,.18);color:#fca5a5;border-color:rgba(239,68,68,.4)}
+.icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;border-radius:8px;transition:.2s;display:flex;align-items:center;justify-content:center}
+.icon-btn:hover{color:#ef4444;background:rgba(255,255,255,.07)}
+.switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.18);transition:.3s;border-radius:24px}
+.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#fff;transition:.3s;border-radius:50%}
+input:checked+.slider{background:var(--accent);box-shadow:0 0 10px var(--accent-glow)}
+input:checked+.slider:before{transform:translateX(20px)}
 
 /* Кнопки */
 .btn{
@@ -353,10 +373,14 @@ input[type=number]:focus{border-color:#7c3aed}
 .btn.danger{background:linear-gradient(135deg,#ef4444,#b91c1c)}
 .btn.small{padding:9px 14px;font-size:13px;width:auto}
 
-input[type=text],input[type=password],select{
+input[type=text],input[type=password],input[type=time],select{
   width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);
   background:#0f0f18;color:var(--txt);font-size:15px;margin-top:6px;outline:none;
 }
+input[type=time]{
+  font-size:26px;font-weight:800;text-align:center;letter-spacing:2px;padding:10px 14px;
+}
+select option{background:#1b1b2b;color:#e8e8f0}
 input:focus,select:focus{border-color:#7c3aed}
 label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 
@@ -447,6 +471,13 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
   .fav-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 16px;
+  }
+
+  /* Расписание: сетка */
+  .sch-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
   }
 
   /* Настройки: 2 колонки */
@@ -658,6 +689,32 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     </div>
   </section>
 
+  <!-- ================= РАСПИСАНИЕ ================= -->
+  <section class="screen" id="scr-sch">
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3 style="margin:0;font-size:17px">⏰ Расписание</h3>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px" id="schTimeStatus">Синхронизация времени...</div>
+        </div>
+        <button class="btn small" onclick="openSchedModal(-1)" style="width:auto;padding:8px 16px">+ Добавить</button>
+      </div>
+    </div>
+
+    <div id="schedLoading" class="card" style="text-align:center;padding:24px 16px;color:var(--muted);font-size:13px">
+      ⏳ Загрузка расписаний...
+    </div>
+
+    <div id="schedList" class="sch-list" style="display:none"></div>
+
+    <div id="schedEmpty" class="card" style="text-align:center;padding:32px 16px;display:none">
+      <div style="font-size:36px;margin-bottom:8px">⏰</div>
+      <div style="font-weight:700;font-size:16px;margin-bottom:4px">Расписаний пока нет</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Настройте автоматическое включение и выключение шашки по дням и времени</div>
+      <button class="btn" style="max-width:240px;margin:0 auto" onclick="openSchedModal(-1)">+ Создать расписание</button>
+    </div>
+  </section>
+
   <!-- ================= НАСТРОЙКИ ================= -->
   <section class="screen" id="scr-set">
     <div class="set-col">
@@ -685,11 +742,6 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     </div>
 
     <div class="set-col">
-      <div class="card">
-        <h3>Расписание</h3>
-        <div id="schedGrid"></div>
-      </div>
-
       <div class="card">
         <h3>Информация о системе</h3>
         <div class="info-line"><span class="k">Версия прошивки</span><span class="v" id="iVer">—</span></div>
@@ -720,6 +772,8 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z"/></svg><span>Эффекты</span></button>
   <button class="tab" data-scr="fav" onclick="showTab('fav')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>Избранное</span></button>
+  <button class="tab" data-scr="sch" onclick="showTab('sch')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Расписание</span></button>
   <button class="tab" data-scr="set" onclick="showTab('set')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.3l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2.2-1.3L14 2h-4l-.3 2.4a7 7 0 0 0-2.2 1.3l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.3l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2.2 1.3L10 22h4l.3-2.4a7 7 0 0 0 2.2-1.3l2.4 1 2-3.4-2-1.6A7 7 0 0 0 19 12z"/></svg><span>Настройки</span></button>
 </nav>
@@ -805,6 +859,68 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
   </div>
 </div>
 
+<!-- Модальное окно расписания -->
+<div class="modal-bg" id="schedModal" style="display:none" onclick="if(event.target===this)closeSchedModal()">
+  <div class="modal-card" style="max-width:380px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 id="schModalTitle" style="font-size:16px;color:#fff;margin:0">⏰ Новое расписание</h3>
+      <button class="btn ghost small" style="width:30px;height:30px;padding:0;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="closeSchedModal()">✕</button>
+    </div>
+
+    <!-- 1. Нативный пикер времени -->
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:4px">Время срабатывания</label>
+      <input type="time" id="schTimeInput" value="08:00" required>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Системные часы телефона</div>
+    </div>
+
+    <!-- 2. Действие -->
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:6px">Действие</label>
+      <div style="display:flex;gap:8px">
+        <button type="button" id="schBtnOn" onclick="setSchedAction(true)" class="sch-act-btn active-on">
+          <span style="width:8px;height:8px;border-radius:50%;background:#22c55e"></span>
+          <span>Включить</span>
+        </button>
+        <button type="button" id="schBtnOff" onclick="setSchedAction(false)" class="sch-act-btn">
+          <span style="width:8px;height:8px;border-radius:50%;background:#ef4444"></span>
+          <span>Выключить</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. Дни повтора: пресеты через чистый select -->
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:4px">Дни повтора</label>
+      <select id="schPreset" onchange="applySchedPreset(this.value)" style="margin-top:0">
+        <option value="everyday" selected>🗓 Каждый день (Пн – Вс)</option>
+        <option value="workdays">💼 По будням (Пн – Пт)</option>
+        <option value="weekends">🎉 По выходным (Сб – Вс)</option>
+        <option value="custom">⚙️ Выбрать дни вручную...</option>
+      </select>
+    </div>
+
+    <!-- 4. Интерактивные кружки дней недели -->
+    <div style="margin-bottom:20px">
+      <div style="display:flex;gap:5px" id="schDayPills">
+        <div class="sch-day-btn active" onclick="toggleSchedDay(0)">Пн</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(1)">Вт</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(2)">Ср</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(3)">Чт</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(4)">Пт</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(5)">Сб</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(6)">Вс</div>
+      </div>
+    </div>
+
+    <!-- Кнопки действий -->
+    <div style="display:flex;gap:10px">
+      <button class="btn ghost" style="flex:1" onclick="closeSchedModal()">Отмена</button>
+      <button class="btn" style="flex:1" onclick="saveSchedFromModal()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -836,11 +952,11 @@ var ws=null;
 function $(id){return document.getElementById(id);}
 function toast(msg,type){var t=$("toast");t.textContent=msg;t.className="show "+(type||"");setTimeout(function(){t.className="";},2200);}
 
-function api(path,method,body){
+function api(path,method,body,silent){
   return fetch(path,{method:method||"GET",headers:{"Content-Type":"application/json"},
     body:body?JSON.stringify(body):undefined})
     .then(function(r){return r.json();})
-    .catch(function(e){toast("Ошибка связи","err");throw e;});
+    .catch(function(e){if(!silent)toast("Ошибка связи","err");throw e;});
 }
 function debounce(fn,ms){var t;return function(){var a=arguments,c=this;clearTimeout(t);t=setTimeout(function(){fn.apply(c,a);},ms);};}
 
@@ -856,7 +972,7 @@ function connectWS(){
   }catch(e){if(!document.hidden)setTimeout(connectWS,3000);}
 }
 document.addEventListener("visibilitychange",function(){
-  if(!document.hidden){connectWS();api("/api/status").then(applyStatus).catch(function(){});}
+  if(!document.hidden){connectWS();api("/api/status","GET",null,true).then(applyStatus).catch(function(){});}
   else if(ws){try{ws.close();}catch(e){}ws=null;}
 });
 
@@ -869,7 +985,8 @@ function showTab(name){
   localStorage.setItem("tab",name);
   if(name==="fx")renderFx();
   if(name==="fav")loadFavorites();
-  if(name==="set"){loadSettings();loadSchedules();}
+  if(name==="sch")loadSchedules();
+  if(name==="set")loadSettings();
 }
 
 // ============ Питание ============
@@ -1001,52 +1118,208 @@ function favDelete(slot){
 }
 
 // ============ Расписание ============
+var _schedData = [];
+var _currSchedSlot = -1;
+var _currSchedAction = true;
+var _currSchedDays = 127;
+
 function loadSchedules(){
   api("/api/schedules").then(renderSchedules);
 }
+
 function renderSchedules(scheds){
-  var g=$("schedGrid");if(!g)return;
-  g.innerHTML="";
-  var days=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
-  scheds.forEach(function(s){
-    var daysHtml=days.map(function(d,i){
-      return '<label style="font-size:11px;display:inline-flex;align-items:center;gap:3px">'+
-        '<input type="checkbox"'+(s.days&(1<<i)?" checked":"")+
-        ' onchange="schedDayToggle('+s.slot+','+i+',this.checked)"> '+d+"</label>";
-    }).join(" ");
-    var row=document.createElement("div");
-    row.className="sched-row";
-    row.innerHTML=
-      '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">'+
-      '<input type="checkbox"'+(s.enabled?" checked":"")+' onchange="schedToggle('+s.slot+',this.checked)" style="width:auto;margin:0">'+
-      '<input type="number" min="0" max="23" value="'+s.hour+'" style="width:60px;margin:0" id="sh'+s.slot+'" placeholder="Ч">'+
-      '<span style="color:var(--muted)">:</span>'+
-      '<input type="number" min="0" max="59" value="'+s.minute+'" style="width:60px;margin:0" id="sm'+s.slot+'" placeholder="М">'+
-      '<select id="sa'+s.slot+'" style="width:auto;margin:0">'+
-        '<option value="1"'+(s.action?" selected":"")+'>ВКЛ</option>'+
-        '<option value="0"'+(!s.action?" selected":"")+'>ВЫКЛ</option>'+
-      "</select>"+
-      '<button class="btn small" onclick="schedSave('+s.slot+')">Сохранить</button>'+
-      '</div>'+
-      '<div style="display:flex;gap:8px;flex-wrap:wrap">'+daysHtml+"</div>";
-    g.appendChild(row);
+  if(!scheds)return;
+  _schedData = scheds;
+  var usedList = scheds.filter(function(s){return s.used;});
+  var g = $("schedList"), e = $("schedEmpty"), ld = $("schedLoading");
+  if(!g || !e)return;
+  if(ld) ld.style.display = "none"; // скрыть индикатор загрузки
+  if(usedList.length === 0){
+    g.style.display = "none";
+    e.style.display = "block";
+    return;
+  }
+  e.style.display = "none";
+  g.style.display = "";
+  g.innerHTML = "";
+  
+  var dNames = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
+  usedList.forEach(function(s){
+    var hh = (s.hour < 10 ? "0" : "") + s.hour;
+    var mm = (s.minute < 10 ? "0" : "") + s.minute;
+    var timeStr = hh + ":" + mm;
+    var badgeHtml = s.action
+      ? '<span class="sch-badge sch-on">ВКЛЮЧИТЬ</span>'
+      : '<span class="sch-badge sch-off">ВЫКЛЮЧИТЬ</span>';
+      
+    var dText = "";
+    if(s.days === 127) dText = "Каждый день";
+    else if(s.days === 31) dText = "По будням (Пн – Пт)";
+    else if(s.days === 96) dText = "По выходным (Сб – Вс)";
+    else if(s.days === 0) dText = "Один раз";
+    else {
+      var act = [];
+      for(var i=0; i<7; i++){ if(s.days & (1<<i)) act.push(dNames[i]); }
+      dText = act.join(", ");
+    }
+    
+    var dotsHtml = "";
+    for(var i=0; i<7; i++){
+      var on = (s.days & (1<<i)) ? " active" : "";
+      dotsHtml += '<span class="day-dot' + on + '">' + dNames[i] + '</span>';
+    }
+    
+    var card = document.createElement("div");
+    card.className = "card sch-card" + (s.enabled ? "" : " sch-disabled");
+    card.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+        '<div style="cursor:pointer;flex:1" onclick="openSchedModal(' + s.slot + ')">' +
+          '<div style="display:flex;align-items:center;gap:8px">' +
+            '<span style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-.5px">' + timeStr + '</span>' +
+            badgeHtml +
+          '</div>' +
+          '<div style="font-size:12px;color:var(--muted);margin-top:4px">' + dText + '</div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:6px">' +
+          '<button class="icon-btn" onclick="deleteSched(' + s.slot + ')" title="Удалить">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+          '</button>' +
+          '<label class="switch">' +
+            '<input type="checkbox"' + (s.enabled ? ' checked' : '') + ' onchange="schedToggle(' + s.slot + ',this.checked,this)">' +
+            '<span class="slider"></span>' +
+          '</label>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sch-dots">' + dotsHtml + '</div>';
+    g.appendChild(card);
   });
 }
-function schedToggle(slot,enabled){api("/api/schedules","POST",{slot:slot,enabled:enabled});}
-function schedSave(slot){
-  var h=parseInt($("sh"+slot).value)||0;
-  var m=parseInt($("sm"+slot).value)||0;
-  var a=parseInt($("sa"+slot).value);
-  api("/api/schedules","POST",{slot:slot,enabled:true,hour:h,minute:m,action:!!a}).then(renderSchedules);
-  toast("Расписание сохранено","ok");
+
+function schedToggle(slot, enabled, el){
+  if(el){
+    var c = el.closest(".sch-card");
+    if(c) c.classList.toggle("sch-disabled", !enabled);
+  }
+  // Обновляем локально, чтобы редактирование сразу после toggle не брало устаревшие данные
+  var loc = _schedData.find(function(x){return x.slot===slot;});
+  if(loc) loc.enabled = enabled;
+  api("/api/schedules", "POST", {slot: slot, enabled: enabled}).then(renderSchedules);
 }
-function schedDayToggle(slot,day,checked){
-  api("/api/schedules").then(function(scheds){
-    var s=scheds.find(function(x){return x.slot===slot;});
-    if(!s)return;
-    var d=s.days;if(checked)d|=(1<<day);else d&=~(1<<day);
-    api("/api/schedules","POST",{slot:slot,days:d});
-  });
+
+function deleteSched(slot){
+  if(!confirm("Удалить это расписание?")) return;
+  api("/api/schedules/delete", "POST", {slot: slot})
+    .then(function(res){ renderSchedules(res); toast("Расписание удалено", "ok"); })
+    .catch(function(){ toast("Ошибка при удалении", "err"); });
+}
+
+function openSchedModal(slot){
+  _currSchedSlot = slot;
+  if(slot >= 0 && _schedData.length > 0){
+    var s = _schedData.find(function(x){return x.slot === slot;});
+    if(s){
+      $("schModalTitle").textContent = "⏰ Изменить расписание";
+      var hh = (s.hour < 10 ? "0" : "") + s.hour;
+      var mm = (s.minute < 10 ? "0" : "") + s.minute;
+      $("schTimeInput").value = hh + ":" + mm;
+      _currSchedAction = s.action;
+      _currSchedDays = s.days;
+    }
+  } else {
+    // Новое расписание — ищем свободный слот
+    if(_schedData.length === 0){
+      // Данные ещё не загружены — грузим и выходим
+      loadSchedules();
+      toast("Загружаем расписания...", "");
+      return;
+    }
+    var freeSlot = -1;
+    for(var i=0; i<_schedData.length; i++){
+      if(!_schedData[i].used){ freeSlot = _schedData[i].slot; break; }
+    }
+    if(freeSlot === -1){
+      toast("Достигнут лимит расписаний (8)", "err");
+      loadSchedules(); // обновляем на случай устаревших данных
+      return;
+    }
+    _currSchedSlot = freeSlot;
+    $("schModalTitle").textContent = "⏰ Новое расписание";
+    $("schTimeInput").value = "08:00";
+    _currSchedAction = true;
+    _currSchedDays = 127;
+  }
+  setSchedAction(_currSchedAction);
+  updateDayPillsUI();
+  updatePresetSelect();
+  $("schedModal").style.display = "flex";
+}
+
+function closeSchedModal(){
+  $("schedModal").style.display = "none";
+}
+
+function setSchedAction(isTurnOn){
+  _currSchedAction = isTurnOn;
+  $("schBtnOn").className = "sch-act-btn" + (isTurnOn ? " active-on" : "");
+  $("schBtnOff").className = "sch-act-btn" + (!isTurnOn ? " active-off" : "");
+}
+
+function applySchedPreset(val){
+  if(val === "everyday") _currSchedDays = 127;
+  else if(val === "workdays") _currSchedDays = 31;
+  else if(val === "weekends") _currSchedDays = 96;
+  updateDayPillsUI();
+}
+
+function toggleSchedDay(idx){
+  _currSchedDays ^= (1 << idx);
+  updateDayPillsUI();
+  updatePresetSelect();
+}
+
+function updateDayPillsUI(){
+  var p = $("schDayPills");
+  if(!p) return;
+  var pills = p.children;
+  for(var i=0; i<7; i++){
+    var on = !!(_currSchedDays & (1 << i));
+    pills[i].classList.toggle("active", on);
+  }
+}
+
+function updatePresetSelect(){
+  var sel = $("schPreset");
+  if(!sel) return;
+  if(_currSchedDays === 127) sel.value = "everyday";
+  else if(_currSchedDays === 31) sel.value = "workdays";
+  else if(_currSchedDays === 96) sel.value = "weekends";
+  else sel.value = "custom";
+}
+
+function saveSchedFromModal(){
+  var val = $("schTimeInput").value || "08:00";
+  var parts = val.split(":");
+  var h = parseInt(parts[0]) || 0;
+  var m = parseInt(parts[1]) || 0;
+  if(h < 0) h = 0; if(h > 23) h = 23;
+  if(m < 0) m = 0; if(m > 59) m = 59;
+  if(_currSchedDays === 0){
+    toast("Выберите хотя бы один день", "err");
+    return;
+  }
+  api("/api/schedules", "POST", {
+    slot: _currSchedSlot,
+    used: true,
+    enabled: true,
+    hour: h,
+    minute: m,
+    action: _currSchedAction,
+    days: _currSchedDays
+  }).then(function(res){
+    closeSchedModal();
+    renderSchedules(res);
+    toast("Расписание сохранено", "ok");
+  }).catch(function(){ /* api() уже показал тост ошибки, модал остаётся открытым */ });
 }
 
 // ============ Настройки ============
@@ -1117,6 +1390,14 @@ function applyStatus(s){
   $("iRssi").textContent=s.rssi?s.rssi+" dBm":"—";
   $("iHeap").textContent=Math.round(s.freeHeap/1024)+" КБ";
   $("iNtp").textContent=s.timeSynced?"✓ Синхронизировано":"✗ Нет связи";
+  var st=$("schTimeStatus");
+  if(st){
+    if(s.timeSynced && s.time){
+      st.innerHTML='<span style="color:#22c55e">●</span> Время сети: <b>'+s.time+'</b>';
+    }else{
+      st.innerHTML='<span style="color:var(--warn)">●</span> Время не синхронизировано (NTP)';
+    }
+  }
   updateFxSel();
   // таймер сна
   var tb=$("timerBadge");
@@ -1131,7 +1412,6 @@ function applyStatus(s){
 
 function loadAll(){
   api("/api/status").then(applyStatus);
-  loadSettings();
 }
 
 function toggleFs(){
@@ -1206,7 +1486,7 @@ function startOtaProgressPolling(targetVer){
   if(_otaPollTimer)clearInterval(_otaPollTimer);
 
   _otaPollTimer=setInterval(function(){
-    api("/api/ota/status").then(function(s){
+    api("/api/ota/status","GET",null,true).then(function(s){
       offlineCount=0;
       if(s){
         var p=s.progress||0;
@@ -1227,10 +1507,10 @@ function startOtaProgressPolling(targetVer){
       if(bar)bar.style.width="100%";
       if(pct)pct.textContent="100%";
       if(txt)txt.textContent="Перезагрузка шашки...";
-      if(hint)hint.textContent="Шашка перезагружается с новой прошивкой "+(targetVer?"v"+targetVer:"")+"...";
+      if(hint)hint.textContent="Шашка перезагружается с новой прошивкой "+(targetVer?"v"+targetVer:"")+" (подождите 5–8 сек)...";
 
-      if(offlineCount>=3){
-        api("/api/status").then(function(newStatus){
+      if(offlineCount>=4){
+        api("/api/status","GET",null,true).then(function(newStatus){
           if(newStatus&&newStatus.version){
             clearInterval(_otaPollTimer);
             _otaPollTimer=null;
@@ -1240,7 +1520,7 @@ function startOtaProgressPolling(targetVer){
         }).catch(function(){});
       }
     });
-  },600);
+  },1000);
 }
 
 function updateFromGitHub(targetVer){
@@ -1323,9 +1603,7 @@ function otaByUrlModal(){
   buildTz();
   renderFx();
   var t=localStorage.getItem("tab");if(t)showTab(t);
-  connectWS();
-  loadFavorites();
-  loadSchedules();
+  setTimeout(connectWS, 400);
   loadAll();
   if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){});}
 })();
@@ -1515,6 +1793,7 @@ const char SW_JS[] PROGMEM = R"JS(
 self.addEventListener('install', function(e) { self.skipWaiting(); });
 self.addEventListener('activate', function(e) { e.waitUntil(clients.claim()); });
 self.addEventListener('fetch', function(e) {
+  if (e.request.url.includes('/api/') || e.request.url.includes('/ws')) return;
   e.respondWith(fetch(e.request).catch(function() { return caches.match(e.request); }));
 });
 )JS";
