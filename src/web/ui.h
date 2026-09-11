@@ -1790,11 +1790,19 @@ const char MANIFEST_JSON[] PROGMEM = R"JSON({
 //  SERVICE WORKER (/sw.js)
 // ---------------------------------------------------------------------
 const char SW_JS[] PROGMEM = R"JS(
+var CACHE_VERSION = '1.5.1';
 self.addEventListener('install', function(e) { self.skipWaiting(); });
-self.addEventListener('activate', function(e) { e.waitUntil(clients.claim()); });
+self.addEventListener('activate', function(e) {
+  e.waitUntil(
+    caches.keys().then(function(keys) {
+      return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+    }).then(function() { return clients.claim(); })
+  );
+});
 self.addEventListener('fetch', function(e) {
-  if (e.request.url.includes('/api/') || e.request.url.includes('/ws')) return;
-  e.respondWith(fetch(e.request).catch(function() { return caches.match(e.request); }));
+  // Полностью проксируем — без кеша, всегда с сервера
+  // Это гарантирует что новая прошивка не показывает старый UI
+  e.respondWith(fetch(e.request));
 });
 )JS";
 
