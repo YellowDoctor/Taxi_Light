@@ -177,7 +177,9 @@ void SettingsManager::deleteFavoriteSlot(uint8_t slot) {
 // =====================================================================
 
 static String schKey(uint8_t slot, const char* field) {
-  return String("s") + slot + "_" + field;
+  char buf[16];
+  snprintf(buf, sizeof(buf), "s%d_%s", slot, field);
+  return String(buf);
 }
 
 void SettingsManager::loadSchedules() {

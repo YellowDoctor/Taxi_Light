@@ -47,8 +47,12 @@ void ScheduleManager::tick() {
     if (s.minute != (uint8_t)t.tm_min)  continue;
 
     // Срабатывание!
-    Config.data.isOn = s.action;
-    Config.save();
+    if (Config.data.isOn != s.action) {   // записываем только при изменении
+      Config.data.isOn = s.action;
+      Config.save();
+    } else {
+      Config.data.isOn = s.action;
+    }
 
     if (s.action) {
       Led.turnOn();

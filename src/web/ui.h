@@ -701,7 +701,11 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
       </div>
     </div>
 
-    <div id="schedList" class="sch-list"></div>
+    <div id="schedLoading" class="card" style="text-align:center;padding:24px 16px;color:var(--muted);font-size:13px">
+      ⏳ Загрузка расписаний...
+    </div>
+
+    <div id="schedList" class="sch-list" style="display:none"></div>
 
     <div id="schedEmpty" class="card" style="text-align:center;padding:32px 16px;display:none">
       <div style="font-size:36px;margin-bottom:8px">⏰</div>
@@ -968,7 +972,7 @@ function connectWS(){
   }catch(e){if(!document.hidden)setTimeout(connectWS,3000);}
 }
 document.addEventListener("visibilitychange",function(){
-  if(!document.hidden){connectWS();api("/api/status").then(applyStatus).catch(function(){});}
+  if(!document.hidden){connectWS();api("/api/status","GET",null,true).then(applyStatus).catch(function(){});}
   else if(ws){try{ws.close();}catch(e){}ws=null;}
 });
 
@@ -1127,8 +1131,9 @@ function renderSchedules(scheds){
   if(!scheds)return;
   _schedData = scheds;
   var usedList = scheds.filter(function(s){return s.used;});
-  var g = $("schedList"), e = $("schedEmpty");
+  var g = $("schedList"), e = $("schedEmpty"), ld = $("schedLoading");
   if(!g || !e)return;
+  if(ld) ld.style.display = "none"; // скрыть индикатор загрузки
   if(usedList.length === 0){
     g.style.display = "none";
     e.style.display = "block";
@@ -1195,13 +1200,17 @@ function schedToggle(slot, enabled, el){
     var c = el.closest(".sch-card");
     if(c) c.classList.toggle("sch-disabled", !enabled);
   }
-  api("/api/schedules", "POST", {slot: slot, enabled: enabled});
+  // Обновляем локально, чтобы редактирование сразу после toggle не брало устаревшие данные
+  var loc = _schedData.find(function(x){return x.slot===slot;});
+  if(loc) loc.enabled = enabled;
+  api("/api/schedules", "POST", {slot: slot, enabled: enabled}).then(renderSchedules);
 }
 
 function deleteSched(slot){
   if(!confirm("Удалить это расписание?")) return;
-  api("/api/schedules/delete", "POST", {slot: slot}).then(renderSchedules);
-  toast("Расписание удалено", "ok");
+  api("/api/schedules/delete", "POST", {slot: slot})
+    .then(function(res){ renderSchedules(res); toast("Расписание удалено", "ok"); })
+    .catch(function(){ toast("Ошибка при удалении", "err"); });
 }
 
 function openSchedModal(slot){
@@ -1217,15 +1226,23 @@ function openSchedModal(slot){
       _currSchedDays = s.days;
     }
   } else {
+    // Новое расписание — ищем свободный слот
+    if(_schedData.length === 0){
+      // Данные ещё не загружены — грузим и выходим
+      loadSchedules();
+      toast("Загружаем расписания...", "");
+      return;
+    }
     var freeSlot = -1;
     for(var i=0; i<_schedData.length; i++){
       if(!_schedData[i].used){ freeSlot = _schedData[i].slot; break; }
     }
-    if(freeSlot === -1 && _schedData.filter(function(x){return x.used;}).length >= 8){
+    if(freeSlot === -1){
       toast("Достигнут лимит расписаний (8)", "err");
+      loadSchedules(); // обновляем на случай устаревших данных
       return;
     }
-    _currSchedSlot = freeSlot >= 0 ? freeSlot : 0;
+    _currSchedSlot = freeSlot;
     $("schModalTitle").textContent = "⏰ Новое расписание";
     $("schTimeInput").value = "08:00";
     _currSchedAction = true;
@@ -1302,7 +1319,7 @@ function saveSchedFromModal(){
     closeSchedModal();
     renderSchedules(res);
     toast("Расписание сохранено", "ok");
-  });
+  }).catch(function(){ /* api() уже показал тост ошибки, модал остаётся открытым */ });
 }
 
 // ============ Настройки ============
