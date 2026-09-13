@@ -4,7 +4,6 @@
 #include "OtaManager.h"
 #include <ArduinoOTA.h>
 #include <HTTPClient.h>
-#include <HTTPUpdate.h>
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 #include <WiFi.h>
@@ -116,49 +115,84 @@ bool OtaManager::updateFromUrl(const String& url) {
 
 void OtaManager::_doUpdateFromUrl(const String& url) {
   Serial.printf("[OTA] Загрузка прошивки в фоновой задаче: %s\n", url.c_str());
-
   onUpdateStart();
-  httpUpdate.rebootOnUpdate(false);
-  httpUpdate.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
-  httpUpdate.onProgress([](int cur, int total) {
-    if (total > 0) {
-      int pct = (cur * 100) / total;
-      if (pct > 100) pct = 100;
-      Ota.setProgress(pct);
-      if (pct != s_otaLastLogged && pct % 10 == 0) {
-        s_otaLastLogged = pct;
-        Serial.printf("[OTA] HTTP прогресс: %d%%\n", pct);
-      }
-    }
-  });
 
-  t_httpUpdate_return ret;
+  WiFiClientSecure secureClient;
+  secureClient.setInsecure();
+  secureClient.setTimeout(30);  // TCP timeout в секундах
 
-  if (url.startsWith("https://")) {
-    WiFiClientSecure secureClient;
-    secureClient.setInsecure();
-    secureClient.setTimeout(20000);
-    ret = httpUpdate.update(secureClient, url);
-  } else {
-    WiFiClient client;
-    client.setTimeout(20000);
-    ret = httpUpdate.update(client, url);
+  HTTPClient http;
+  http.begin(secureClient, url);
+  // Принудительно отключаем кеш CDN — без этого GitHub может отдать
+  // устаревший firmware.bin из кеша вместо свежего файла
+  http.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  http.addHeader("Pragma", "no-cache");
+  http.setTimeout(30000);
+
+  int httpCode = http.GET();
+  if (httpCode != HTTP_CODE_OK) {
+    Serial.printf("[OTA] HTTP ошибка: %d — %s\n",
+                  httpCode, http.errorToString(httpCode).c_str());
+    http.end();
+    onUpdateError();
+    return;
   }
 
-  switch (ret) {
-    case HTTP_UPDATE_FAILED:
-      Serial.printf("[OTA] Ошибка: %s\n", httpUpdate.getLastErrorString().c_str());
-      onUpdateError();
+  int contentLength = http.getSize();
+  Serial.printf("[OTA] Content-Length: %d байт\n", contentLength);
+
+  bool sizeKnown = (contentLength > 0);
+  if (!Update.begin(sizeKnown ? (size_t)contentLength : UPDATE_SIZE_UNKNOWN, U_FLASH)) {
+    Update.printError(Serial);
+    http.end();
+    onUpdateError();
+    return;
+  }
+
+  WiFiClient* stream = http.getStreamPtr();
+  uint8_t buf[1024];
+  int written = 0;
+
+  while (http.connected()) {
+    int avail = stream->available();
+    if (avail > 0) {
+      int toRead = min(avail, (int)sizeof(buf));
+      int got    = stream->readBytes(buf, toRead);
+      if (Update.write(buf, got) != (size_t)got) {
+        Update.printError(Serial);
+        http.end();
+        onUpdateError();
+        return;
+      }
+      written += got;
+      if (contentLength > 0) {
+        int pct = (written * 100) / contentLength;
+        if (pct > 100) pct = 100;
+        setProgress(pct);
+        if (pct != s_otaLastLogged && pct % 10 == 0) {
+          s_otaLastLogged = pct;
+          Serial.printf("[OTA] Прогресс: %d%% (%d/%d байт)\n", pct, written, contentLength);
+        }
+      }
+    } else if (!stream->connected()) {
       break;
-    case HTTP_UPDATE_NO_UPDATES:
-      Serial.println(F("[OTA] Нет обновлений"));
-      onUpdateError();
-      break;
-    case HTTP_UPDATE_OK:
-      onUpdateSuccess();
-      break;
+    } else {
+      delay(1);
+    }
+  }
+
+  Serial.printf("[OTA] Загружено %d байт\n", written);
+  http.end();
+
+  if (Update.end(true)) {
+    Serial.println(F("[OTA] Update.end(true) — прошивка записана успешно"));
+    onUpdateSuccess();
+  } else {
+    Update.printError(Serial);
+    onUpdateError();
   }
 }
+
 
 void OtaManager::checkGitHubUpdate() {
   if (WiFi.status() != WL_CONNECTED || _updating) return;

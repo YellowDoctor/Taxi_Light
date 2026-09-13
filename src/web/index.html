@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0c0c14">
-<title>Такси Шашка</title>
+<title>╨в╨░╨║╤Б╨╕ ╨и╨░╤И╨║╨░</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon.png">
 <link rel="icon" type="image/svg+xml" href="/icon.svg">
@@ -12,7 +12,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Такси Шашка">
+<meta name="apple-mobile-web-app-title" content="╨в╨░╨║╤Б╨╕ ╨и╨░╤И╨║╨░">
 
 <style>
 :root{
@@ -49,7 +49,7 @@ header .sub{font-size:12px;color:var(--muted)}
 }
 .card h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px;font-weight:600}
 
-/* Кнопка питания */
+/* ╨Ъ╨╜╨╛╨┐╨║╨░ ╨┐╨╕╤В╨░╨╜╨╕╤П */
 .power-card{position:relative;overflow:hidden}
 .power-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0}
 .power-btn{
@@ -67,7 +67,7 @@ header .sub{font-size:12px;color:var(--muted)}
 @keyframes pulse{0%{box-shadow:0 0 30px rgba(124,58,237,.5)}50%{box-shadow:0 0 55px rgba(59,130,246,.75)}100%{box-shadow:0 0 30px rgba(124,58,237,.5)}}
 .power-label{font-size:14px;color:var(--muted);font-weight:600}
 
-/* Батарея в правом нижнем углу карточки питания */
+/* ╨С╨░╤В╨░╤А╨╡╤П ╨▓ ╨┐╤А╨░╨▓╨╛╨╝ ╨╜╨╕╨╢╨╜╨╡╨╝ ╤Г╨│╨╗╤Г ╨║╨░╤А╤В╨╛╤З╨║╨╕ ╨┐╨╕╤В╨░╨╜╨╕╤П */
 .power-batt{
   position:absolute;right:14px;bottom:14px;
   display:flex;align-items:center;gap:8px;
@@ -79,10 +79,15 @@ header .sub{font-size:12px;color:var(--muted)}
 .batt-fill{height:100%;border-radius:1px;background:var(--ok);transition:width .5s ease,background .5s}
 .batt-info{line-height:1.2;text-align:right}
 .batt-row{font-size:12px;font-weight:700}
-.batt-chg{color:var(--warn);font-size:11px;margin-left:2px}
+.batt-chg{font-size:11px;margin-left:3px}
 .batt-volt{font-size:10px;color:var(--muted)}
+@keyframes batt-pulse{0%{opacity:1}50%{opacity:.45}100%{opacity:1}}
+.batt-charging .batt-fill{animation:batt-pulse 1.4s ease-in-out infinite}
+.batt-charging .batt-chg{color:#f59e0b}
+.batt-full .batt-chg{color:#22c55e}
 
-/* Ползунок */
+
+/* ╨Я╨╛╨╗╨╖╤Г╨╜╨╛╨║ */
 .slider-row{display:flex;align-items:center;gap:12px}
 .slider-row .ico{font-size:18px;width:24px;text-align:center}
 input[type=range]{
@@ -100,7 +105,7 @@ input[type=range]::-moz-range-thumb{
 }
 .val{min-width:42px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}
 
-/* Цвет */
+/* ╨ж╨▓╨╡╤В */
 .color-row{display:flex;align-items:center;gap:14px}
 .color-prev{width:52px;height:52px;border-radius:16px;border:2px solid rgba(255,255,255,.15);box-shadow:inset 0 0 12px rgba(0,0,0,.4)}
 input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:pointer}
@@ -109,13 +114,13 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 .sw{width:34px;height:34px;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:transform .2s}
 .sw:active{transform:scale(.88)}
 
-/* Инфо-строки */
+/* ╨Ш╨╜╤Д╨╛-╤Б╤В╤А╨╛╨║╨╕ */
 .info-line{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
 .info-line:last-child{border-bottom:none}
 .info-line .k{color:var(--muted)}
 .info-line .v{font-weight:600}
 
-/* Сетка эффектов */
+/* ╨б╨╡╤В╨║╨░ ╤Н╤Д╤Д╨╡╨║╤В╨╛╨▓ */
 .fx-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .fx-card{
   background:var(--card2);border:2px solid rgba(255,255,255,.06);border-radius:16px;
@@ -125,7 +130,7 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 .fx-card.sel{border-color:#7c3aed;box-shadow:0 0 20px rgba(124,58,237,.4)}
 .fx-name{font-size:14px;font-weight:600;margin-top:10px}
 .fx-prev{height:56px;border-radius:12px;overflow:hidden;position:relative}
-/* превью-анимации */
+/* ╨┐╤А╨╡╨▓╤М╤О-╨░╨╜╨╕╨╝╨░╤Ж╨╕╨╕ */
 .p-static{background:#ffb000}
 .p-breathe{background:#7c3aed;animation:pbreathe 2.5s infinite ease-in-out}
 @keyframes pbreathe{0%,100%{opacity:.25}50%{opacity:1}}
@@ -139,10 +144,10 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 @keyframes pflow{0%{background:#ff0055}25%{background:#7c3aed}50%{background:#0af}75%{background:#0f5}100%{background:#ff0055}}
 
 /* -------------------------------------------------------
-   Новые превью эффектов
+   ╨Э╨╛╨▓╤Л╨╡ ╨┐╤А╨╡╨▓╤М╤О ╤Н╤Д╤Д╨╡╨║╤В╨╛╨▓
    ------------------------------------------------------- */
 
-/* Северное сияние */
+/* ╨б╨╡╨▓╨╡╤А╨╜╨╛╨╡ ╤Б╨╕╤П╨╜╨╕╨╡ */
 .p-aurora{
   background:
     linear-gradient(
@@ -174,7 +179,7 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 }
 
 
-/* Океан */
+/* ╨Ю╨║╨╡╨░╨╜ */
 .p-ocean{
   background:
     linear-gradient(
@@ -205,7 +210,7 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 }
 
 
-/* Полиция — красный / синий */
+/* ╨Я╨╛╨╗╨╕╤Ж╨╕╤П тАФ ╨║╤А╨░╤Б╨╜╤Л╨╣ / ╤Б╨╕╨╜╨╕╨╣ */
 .p-police{
   background:
     linear-gradient(
@@ -235,7 +240,7 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 }
 
 
-/* Полицейская мигалка */
+/* ╨Я╨╛╨╗╨╕╤Ж╨╡╨╣╤Б╨║╨░╤П ╨╝╨╕╨│╨░╨╗╨║╨░ */
 .p-police-flash{
   background:
     linear-gradient(
@@ -288,34 +293,34 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
   }
 }
 
-/* Метеор */
+/* ╨Ь╨╡╤В╨╡╨╛╤А */
 .p-meteor{background:#000;position:relative;overflow:hidden}
 .p-meteor::after{content:"";position:absolute;width:12px;height:100%;background:linear-gradient(90deg,transparent,#fff,#7c3aed);animation:pmeteor 1.2s linear infinite;left:-12px;top:0}
 @keyframes pmeteor{0%{left:-12px}100%{left:100%}}
 
-/* Стробоскоп */
+/* ╨б╤В╤А╨╛╨▒╨╛╤Б╨║╨╛╨┐ */
 .p-strobe{background:#fff;animation:pstrobe .3s steps(1,end) infinite}
 @keyframes pstrobe{0%{background:#fff}50%{background:#000}}
 
-/* Бегущие огни */
+/* ╨С╨╡╨│╤Г╤Й╨╕╨╡ ╨╛╨│╨╜╨╕ */
 .p-running{background:#111;position:relative;overflow:hidden}
 .p-running::after{content:"";position:absolute;width:8px;height:100%;border-radius:50%;background:#7c3aed;box-shadow:0 0 10px #7c3aed;animation:prun 1s linear infinite;left:-8px}
 @keyframes prun{0%{left:-8px}100%{left:100%}}
 
-/* Ночное небо */
+/* ╨Э╨╛╤З╨╜╨╛╨╡ ╨╜╨╡╨▒╨╛ */
 .p-nightsky{background:#000814;animation:pnightsky 3s ease infinite}
 @keyframes pnightsky{0%,100%{box-shadow:inset 10px 10px 2px 0px #fff,inset 30px 5px 2px 0px rgba(255,255,255,.3),inset 50px 20px 1px 0px #fff}50%{box-shadow:inset 10px 10px 2px 0px rgba(255,255,255,.2),inset 30px 5px 2px 0px #fff,inset 50px 20px 1px 0px rgba(255,255,255,.5)}}
 
-/* Лазер */
+/* ╨Ы╨░╨╖╨╡╤А */
 .p-laser{background:#000;position:relative;overflow:hidden}
 .p-laser::after{content:"";position:absolute;width:4px;height:100%;background:#f00;box-shadow:0 0 8px #f00;animation:plaser .8s ease-in-out infinite alternate;left:0}
 @keyframes plaser{0%{left:0}100%{left:calc(100% - 4px)}}
 
-/* Вспышки */
+/* ╨Т╤Б╨┐╤Л╤И╨║╨╕ */
 .p-flash{background:#111;animation:pflash .5s steps(1,end) infinite}
 @keyframes pflash{0%{background:#111}10%{background:#3b82f6}20%{background:#111}35%{background:#7c3aed}50%{background:#111}70%{background:#22c55e}100%{background:#111}}
 
-/* Избранное */
+/* ╨Ш╨╖╨▒╤А╨░╨╜╨╜╨╛╨╡ */
 .fav-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .fav-card{background:var(--card2);border:2px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;transition:all .25s}
 .fav-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:120px;cursor:pointer;border-style:dashed !important;opacity:.6}
@@ -323,10 +328,10 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 .fav-name{font-weight:600;font-size:14px}
 .fav-meta{font-size:12px;color:var(--muted);margin-top:2px}
 
-/* Таймер сна */
+/* ╨в╨░╨╣╨╝╨╡╤А ╤Б╨╜╨░ */
 .timer-badge{display:inline-block;background:rgba(124,58,237,.25);border:1px solid rgba(124,58,237,.5);color:#a78bfa;border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600;margin-left:8px}
 
-/* Расписание */
+/* ╨а╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡ */
 .sch-list{display:flex;flex-direction:column;gap:10px}
 .sch-card{margin-bottom:0;padding:14px 16px;border-radius:16px;transition:opacity .2s,border-color .2s}
 .sch-card:hover{border-color:rgba(167,139,250,.35)}
@@ -351,7 +356,7 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 input:checked+.slider{background:var(--accent);box-shadow:0 0 10px var(--accent-glow)}
 input:checked+.slider:before{transform:translateX(20px)}
 
-/* Кнопки */
+/* ╨Ъ╨╜╨╛╨┐╨║╨╕ */
 .btn{
   width:100%;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:600;
   cursor:pointer;transition:all .25s ease;color:#fff;background:var(--accent);
@@ -372,13 +377,13 @@ select option{background:#1b1b2b;color:#e8e8f0}
 input:focus,select:focus{border-color:#7c3aed}
 label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 
-/* Список сетей */
+/* ╨б╨┐╨╕╤Б╨╛╨║ ╤Б╨╡╤В╨╡╨╣ */
 .net{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--card2);margin-top:8px;cursor:pointer;transition:.2s}
 .net:active{transform:scale(.98)}
 .net .n-ssid{font-weight:600}
 .net .n-rssi{font-size:12px;color:var(--muted)}
 
-/* Нижняя навигация */
+/* ╨Э╨╕╨╢╨╜╤П╤П ╨╜╨░╨▓╨╕╨│╨░╤Ж╨╕╤П */
 .tabbar{
   position:fixed;bottom:0;left:0;right:0;z-index:50;
   display:flex;justify-content:space-around;
@@ -392,12 +397,12 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 .tabbar .tab svg{width:24px;height:24px}
 .tabbar .tab.active{color:#a78bfa}
 
-/* Экраны вкладок */
+/* ╨н╨║╤А╨░╨╜╤Л ╨▓╨║╨╗╨░╨┤╨╛╨║ */
 .screen{display:none;animation:fade .35s ease}
 .screen.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-/* Заглушка */
+/* ╨Ч╨░╨│╨╗╤Г╤И╨║╨░ */
 .soon{text-align:center;padding:60px 20px;color:var(--muted)}
 .soon .big{font-size:46px;margin-bottom:12px}
 
@@ -422,7 +427,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 .fs-btn svg{width:18px;height:18px}
 
 
-/* Десктопная адаптация для мониторов */
+/* ╨Ф╨╡╤Б╨║╤В╨╛╨┐╨╜╨░╤П ╨░╨┤╨░╨┐╤В╨░╤Ж╨╕╤П ╨┤╨╗╤П ╨╝╨╛╨╜╨╕╤В╨╛╤А╨╛╨▓ */
 .home-col, .set-col { display: contents; }
 
 @media (min-width: 768px) {
@@ -430,7 +435,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
   header { margin-bottom: 26px; }
   header h1 { font-size: 24px; }
   
-  /* Главная: 2 колонки */
+  /* ╨У╨╗╨░╨▓╨╜╨░╤П: 2 ╨║╨╛╨╗╨╛╨╜╨║╨╕ */
   #scr-home.active {
     display: grid;
     grid-template-columns: 1fr 1.1fr;
@@ -449,26 +454,26 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     justify-content: center;
   }
 
-  /* Эффекты: гибкая сетка от 3 до 5 колонок */
+  /* ╨н╤Д╤Д╨╡╨║╤В╤Л: ╨│╨╕╨▒╨║╨░╤П ╤Б╨╡╤В╨║╨░ ╨╛╤В 3 ╨┤╨╛ 5 ╨║╨╛╨╗╨╛╨╜╨╛╨║ */
   .fx-grid {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 16px;
   }
 
-  /* Избранное: адаптивная сетка */
+  /* ╨Ш╨╖╨▒╤А╨░╨╜╨╜╨╛╨╡: ╨░╨┤╨░╨┐╤В╨╕╨▓╨╜╨░╤П ╤Б╨╡╤В╨║╨░ */
   .fav-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 16px;
   }
 
-  /* Расписание: сетка */
+  /* ╨а╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡: ╤Б╨╡╤В╨║╨░ */
   .sch-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 14px;
   }
 
-  /* Настройки: 2 колонки */
+  /* ╨Э╨░╤Б╤В╤А╨╛╨╣╨║╨╕: 2 ╨║╨╛╨╗╨╛╨╜╨║╨╕ */
   #scr-set.active {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -481,7 +486,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
     gap: 16px;
   }
 
-  /* Плавающая панель навигации на десктопе */
+  /* ╨Я╨╗╨░╨▓╨░╤О╤Й╨░╤П ╨┐╨░╨╜╨╡╨╗╤М ╨╜╨░╨▓╨╕╨│╨░╤Ж╨╕╨╕ ╨╜╨░ ╨┤╨╡╤Б╨║╤В╨╛╨┐╨╡ */
   .tabbar {
     width: auto;
     left: 50%;
@@ -522,7 +527,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
   }
 }
 
-/* Кнопка обновления в шапке */
+/* ╨Ъ╨╜╨╛╨┐╨║╨░ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╤П ╨▓ ╤И╨░╨┐╨║╨╡ */
 .ota-btn{
   display:inline-flex;align-items:center;gap:6px;
   background:linear-gradient(135deg,#16a34a,#22c55e);
@@ -543,7 +548,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
   50%{box-shadow:0 0 24px rgba(34,197,94,.85)}
 }
 
-/* Модальное окно OTA */
+/* ╨Ь╨╛╨┤╨░╨╗╤М╨╜╨╛╨╡ ╨╛╨║╨╜╨╛ OTA */
 .modal-bg{
   position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);
   backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
@@ -563,28 +568,28 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 
   <header>
     <div>
-      <h1 id="devName">Такси Шашка</h1>
-      <div class="sub"><span class="dot" id="wifiDot"></span><span id="wifiTxt">—</span></div>
+      <h1 id="devName">╨в╨░╨║╤Б╨╕ ╨и╨░╤И╨║╨░</h1>
+      <div class="sub"><span class="dot" id="wifiDot"></span><span id="wifiTxt">тАФ</span></div>
     </div>
     <div style="display:flex;align-items:center;justify-content:center">
       <button class="ota-btn" id="otaHeaderBtn" style="display:none" onclick="openOtaModal()">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <span>Обновить</span>
+        <span>╨Ю╨▒╨╜╨╛╨▓╨╕╤В╤М</span>
         <span class="ota-badge" id="otaBadge">new</span>
       </button>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
-      <button class="fs-btn" onclick="toggleFs()" title="Во весь экран">
+      <button class="fs-btn" onclick="toggleFs()" title="╨Т╨╛ ╨▓╨╡╤Б╤М ╤Н╨║╤А╨░╨╜">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
         </svg>
       </button>
-      <div class="sub" id="verTxt" style="cursor:pointer" onclick="openOtaModal()" title="Нажмите для проверки OTA">v—</div>
+      <div class="sub" id="verTxt" style="cursor:pointer" onclick="openOtaModal()" title="╨Э╨░╨╢╨╝╨╕╤В╨╡ ╨┤╨╗╤П ╨┐╤А╨╛╨▓╨╡╤А╨║╨╕ OTA">vтАФ</div>
     </div>
   </header>
 
 
-  <!-- ================= ГЛАВНАЯ ================= -->
+  <!-- ================= ╨У╨Ы╨Р╨Т╨Э╨Р╨п ================= -->
   <section class="screen active" id="scr-home">
     <div class="home-col">
       <div class="card power-card">
@@ -594,44 +599,44 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
               <path d="M12 3v9"/><path d="M6.4 6.4a8 8 0 1 0 11.2 0"/>
             </svg>
           </button>
-          <div class="power-label" id="powerLabel">Выключено</div>
+          <div class="power-label" id="powerLabel">╨Т╤Л╨║╨╗╤О╤З╨╡╨╜╨╛</div>
         </div>
-        <div class="power-batt">
+        <div class="power-batt" id="powerBatt">
           <div class="batt-ico"><div class="batt-fill" id="battFill" style="width:0%"></div></div>
           <div class="batt-info">
-            <div class="batt-row"><span id="battPct">—</span>% <span id="battChg"></span></div>
-            <div class="batt-volt"><span id="battVolt">—</span> В</div>
+            <div class="batt-row"><span id="battPct">тАФ</span>% <span id="battChg"></span></div>
+            <div class="batt-volt"><span id="battVolt">тАФ</span> ╨Т</div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <div class="info-line"><span class="k">Текущий режим</span><span class="v" id="curEffect">—</span></div>
-        <div class="info-line"><span class="k">Сеть Wi-Fi</span><span class="v" id="curWifi">—</span></div>
-        <div class="info-line"><span class="k">IP-адрес</span><span class="v" id="curIp">—</span></div>
+        <div class="info-line"><span class="k">╨в╨╡╨║╤Г╤Й╨╕╨╣ ╤А╨╡╨╢╨╕╨╝</span><span class="v" id="curEffect">тАФ</span></div>
+        <div class="info-line"><span class="k">╨б╨╡╤В╤М Wi-Fi</span><span class="v" id="curWifi">тАФ</span></div>
+        <div class="info-line"><span class="k">IP-╨░╨┤╤А╨╡╤Б</span><span class="v" id="curIp">тАФ</span></div>
       </div>
     </div>
 
     <div class="home-col">
       <div class="card">
-        <h3>Яркость</h3>
+        <h3>╨п╤А╨║╨╛╤Б╤В╤М</h3>
         <div class="slider-row">
-          <span class="ico">🔅</span>
+          <span class="ico">ЁЯФЕ</span>
           <input type="range" id="bright" min="1" max="255" value="150" oninput="onBrightInput(this.value)">
-          <span class="ico">🔆</span>
+          <span class="ico">ЁЯФЖ</span>
           <span class="val" id="brightVal">59%</span>
         </div>
       </div>
 
       <div class="card">
-        <h3>Цвет</h3>
+        <h3>╨ж╨▓╨╡╤В</h3>
         <div class="color-row">
           <div style="position:relative">
             <div class="color-prev" id="colorPrev" style="background:#ffb000"></div>
             <input type="color" id="colorPick" value="#ffb000" oninput="onColorInput(this.value)">
           </div>
           <div>
-            <div style="font-weight:600">Основной цвет</div>
+            <div style="font-weight:600">╨Ю╤Б╨╜╨╛╨▓╨╜╨╛╨╣ ╤Ж╨▓╨╡╤В</div>
             <div class="color-hex" id="colorHex">#FFB000</div>
           </div>
         </div>
@@ -639,12 +644,12 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
       </div>
 
       <div class="card">
-        <h3>Таймер сна <span class="timer-badge" id="timerBadge" style="display:none"></span></h3>
+        <h3>╨в╨░╨╣╨╝╨╡╤А ╤Б╨╜╨░ <span class="timer-badge" id="timerBadge" style="display:none"></span></h3>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn ghost small" onclick="setTimer(15)">15 мин</button>
-          <button class="btn ghost small" onclick="setTimer(30)">30 мин</button>
-          <button class="btn ghost small" onclick="setTimer(60)">1 час</button>
-          <button class="btn danger small" onclick="setTimer(0)">✕ Отменить</button>
+          <button class="btn ghost small" onclick="setTimer(15)">15 ╨╝╨╕╨╜</button>
+          <button class="btn ghost small" onclick="setTimer(30)">30 ╨╝╨╕╨╜</button>
+          <button class="btn ghost small" onclick="setTimer(60)">1 ╤З╨░╤Б</button>
+          <button class="btn danger small" onclick="setTimer(0)">тЬХ ╨Ю╤В╨╝╨╡╨╜╨╕╤В╤М</button>
         </div>
       </div>
     </div>
@@ -653,98 +658,98 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 
 
 
-  <!-- ================= ЭФФЕКТЫ ================= -->
+  <!-- ================= ╨н╨д╨д╨Х╨Ъ╨в╨л ================= -->
   <section class="screen" id="scr-fx">
     <div class="card">
-      <h3>Световые эффекты</h3>
+      <h3>╨б╨▓╨╡╤В╨╛╨▓╤Л╨╡ ╤Н╤Д╤Д╨╡╨║╤В╤Л</h3>
       <div class="fx-grid" id="fxGrid"></div>
     </div>
     <div class="card">
-      <h3>Скорость эффекта</h3>
+      <h3>╨б╨║╨╛╤А╨╛╤Б╤В╤М ╤Н╤Д╤Д╨╡╨║╤В╨░</h3>
       <div class="slider-row">
-        <span class="ico">🐢</span>
+        <span class="ico">ЁЯРв</span>
         <input type="range" id="speed" min="0" max="255" value="128" oninput="onSpeedInput(this.value)">
-        <span class="ico">🐇</span>
+        <span class="ico">ЁЯРЗ</span>
       </div>
     </div>
   </section>
 
-  <!-- ================= ИЗБРАННОЕ ================= -->
+  <!-- ================= ╨Ш╨Ч╨С╨а╨Р╨Э╨Э╨Ю╨Х ================= -->
   <section class="screen" id="scr-fav">
     <div class="card">
-      <h3>Избранные сцены</h3>
+      <h3>╨Ш╨╖╨▒╤А╨░╨╜╨╜╤Л╨╡ ╤Б╤Ж╨╡╨╜╤Л</h3>
       <div class="fav-grid" id="favGrid"></div>
     </div>
   </section>
 
-  <!-- ================= РАСПИСАНИЕ ================= -->
+  <!-- ================= ╨а╨Р╨б╨Я╨Ш╨б╨Р╨Э╨Ш╨Х ================= -->
   <section class="screen" id="scr-sch">
     <div class="card" style="margin-bottom:12px">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
-          <h3 style="margin:0;font-size:17px">⏰ Расписание</h3>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px" id="schTimeStatus">Синхронизация времени...</div>
+          <h3 style="margin:0;font-size:17px">тП░ ╨а╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡</h3>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px" id="schTimeStatus">╨б╨╕╨╜╤Е╤А╨╛╨╜╨╕╨╖╨░╤Ж╨╕╤П ╨▓╤А╨╡╨╝╨╡╨╜╨╕...</div>
         </div>
-        <button class="btn small" onclick="openSchedModal(-1)" style="width:auto;padding:8px 16px">+ Добавить</button>
+        <button class="btn small" onclick="openSchedModal(-1)" style="width:auto;padding:8px 16px">+ ╨Ф╨╛╨▒╨░╨▓╨╕╤В╤М</button>
       </div>
     </div>
 
     <div id="schedLoading" class="card" style="text-align:center;padding:24px 16px;color:var(--muted);font-size:13px">
-      ⏳ Загрузка расписаний...
+      тП│ ╨Ч╨░╨│╤А╤Г╨╖╨║╨░ ╤А╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╣...
     </div>
 
     <div id="schedList" class="sch-list" style="display:none"></div>
 
     <div id="schedEmpty" class="card" style="text-align:center;padding:32px 16px;display:none">
-      <div style="font-size:36px;margin-bottom:8px">⏰</div>
-      <div style="font-weight:700;font-size:16px;margin-bottom:4px">Расписаний пока нет</div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Настройте автоматическое включение и выключение шашки по дням и времени</div>
-      <button class="btn" style="max-width:240px;margin:0 auto" onclick="openSchedModal(-1)">+ Создать расписание</button>
+      <div style="font-size:36px;margin-bottom:8px">тП░</div>
+      <div style="font-weight:700;font-size:16px;margin-bottom:4px">╨а╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╣ ╨┐╨╛╨║╨░ ╨╜╨╡╤В</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px">╨Э╨░╤Б╤В╤А╨╛╨╣╤В╨╡ ╨░╨▓╤В╨╛╨╝╨░╤В╨╕╤З╨╡╤Б╨║╨╛╨╡ ╨▓╨║╨╗╤О╤З╨╡╨╜╨╕╨╡ ╨╕ ╨▓╤Л╨║╨╗╤О╤З╨╡╨╜╨╕╨╡ ╤И╨░╤И╨║╨╕ ╨┐╨╛ ╨┤╨╜╤П╨╝ ╨╕ ╨▓╤А╨╡╨╝╨╡╨╜╨╕</div>
+      <button class="btn" style="max-width:240px;margin:0 auto" onclick="openSchedModal(-1)">+ ╨б╨╛╨╖╨┤╨░╤В╤М ╤А╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡</button>
     </div>
   </section>
 
-  <!-- ================= НАСТРОЙКИ ================= -->
+  <!-- ================= ╨Э╨Р╨б╨в╨а╨Ю╨Щ╨Ъ╨Ш ================= -->
   <section class="screen" id="scr-set">
     <div class="set-col">
       <div class="card">
         <h3>Wi-Fi</h3>
-        <div class="info-line"><span class="k">Текущая сеть</span><span class="v" id="setWifi">—</span></div>
-        <button class="btn ghost small" style="margin-top:12px" onclick="scanWifi()">Сменить сеть / сканировать</button>
+        <div class="info-line"><span class="k">╨в╨╡╨║╤Г╤Й╨░╤П ╤Б╨╡╤В╤М</span><span class="v" id="setWifi">тАФ</span></div>
+        <button class="btn ghost small" style="margin-top:12px" onclick="scanWifi()">╨б╨╝╨╡╨╜╨╕╤В╤М ╤Б╨╡╤В╤М / ╤Б╨║╨░╨╜╨╕╤А╨╛╨▓╨░╤В╤М</button>
         <div id="netList"></div>
       </div>
 
       <div class="card">
-        <h3>Устройство</h3>
-        <label class="fld">Имя устройства</label>
-        <input type="text" id="setName" placeholder="Такси Шашка">
-        <label class="fld">Часовой пояс</label>
+        <h3>╨г╤Б╤В╤А╨╛╨╣╤Б╤В╨▓╨╛</h3>
+        <label class="fld">╨Ш╨╝╤П ╤Г╤Б╤В╤А╨╛╨╣╤Б╤В╨▓╨░</label>
+        <input type="text" id="setName" placeholder="╨в╨░╨║╤Б╨╕ ╨и╨░╤И╨║╨░">
+        <label class="fld">╨з╨░╤Б╨╛╨▓╨╛╨╣ ╨┐╨╛╤П╤Б</label>
         <select id="setTz"></select>
-        <label class="fld">Поведение при включении</label>
+        <label class="fld">╨Я╨╛╨▓╨╡╨┤╨╡╨╜╨╕╨╡ ╨┐╤А╨╕ ╨▓╨║╨╗╤О╤З╨╡╨╜╨╕╨╕</label>
         <select id="setPom">
-          <option value="0">Восстановить последнее</option>
-          <option value="1">Всегда выключено</option>
-          <option value="2">Всегда включено</option>
+          <option value="0">╨Т╨╛╤Б╤Б╤В╨░╨╜╨╛╨▓╨╕╤В╤М ╨┐╨╛╤Б╨╗╨╡╨┤╨╜╨╡╨╡</option>
+          <option value="1">╨Т╤Б╨╡╨│╨┤╨░ ╨▓╤Л╨║╨╗╤О╤З╨╡╨╜╨╛</option>
+          <option value="2">╨Т╤Б╨╡╨│╨┤╨░ ╨▓╨║╨╗╤О╤З╨╡╨╜╨╛</option>
         </select>
-        <button class="btn" style="margin-top:16px" onclick="saveSettings()">Сохранить</button>
+        <button class="btn" style="margin-top:16px" onclick="saveSettings()">╨б╨╛╤Е╤А╨░╨╜╨╕╤В╤М</button>
       </div>
     </div>
 
     <div class="set-col">
       <div class="card">
-        <h3>Информация о системе</h3>
-        <div class="info-line"><span class="k">Версия прошивки</span><span class="v" id="iVer">—</span></div>
-        <div class="info-line"><span class="k">IP-адрес</span><span class="v" id="iIp">—</span></div>
-        <div class="info-line"><span class="k">MAC-адрес</span><span class="v" id="iMac">—</span></div>
-        <div class="info-line"><span class="k">Уровень сигнала</span><span class="v" id="iRssi">—</span></div>
-        <div class="info-line"><span class="k">Свободная память</span><span class="v" id="iHeap">—</span></div>
-        <div class="info-line"><span class="k">NTP синхронизация</span><span class="v" id="iNtp">—</span></div>
+        <h3>╨Ш╨╜╤Д╨╛╤А╨╝╨░╤Ж╨╕╤П ╨╛ ╤Б╨╕╤Б╤В╨╡╨╝╨╡</h3>
+        <div class="info-line"><span class="k">╨Т╨╡╤А╤Б╨╕╤П ╨┐╤А╨╛╤И╨╕╨▓╨║╨╕</span><span class="v" id="iVer">тАФ</span></div>
+        <div class="info-line"><span class="k">IP-╨░╨┤╤А╨╡╤Б</span><span class="v" id="iIp">тАФ</span></div>
+        <div class="info-line"><span class="k">MAC-╨░╨┤╤А╨╡╤Б</span><span class="v" id="iMac">тАФ</span></div>
+        <div class="info-line"><span class="k">╨г╤А╨╛╨▓╨╡╨╜╤М ╤Б╨╕╨│╨╜╨░╨╗╨░</span><span class="v" id="iRssi">тАФ</span></div>
+        <div class="info-line"><span class="k">╨б╨▓╨╛╨▒╨╛╨┤╨╜╨░╤П ╨┐╨░╨╝╤П╤В╤М</span><span class="v" id="iHeap">тАФ</span></div>
+        <div class="info-line"><span class="k">NTP ╤Б╨╕╨╜╤Е╤А╨╛╨╜╨╕╨╖╨░╤Ж╨╕╤П</span><span class="v" id="iNtp">тАФ</span></div>
       </div>
 
       <div class="card">
-        <h3>Обслуживание</h3>
-        <button class="btn ghost" style="margin-bottom:10px" onclick="openOtaModal()">Обновление прошивки (OTA)</button>
-        <a href="/dev" style="text-decoration:none"><button class="btn ghost" style="margin-bottom:10px">Режим разработчика</button></a>
-        <button class="btn danger" onclick="resetSettings()">Сбросить настройки</button>
+        <h3>╨Ю╨▒╤Б╨╗╤Г╨╢╨╕╨▓╨░╨╜╨╕╨╡</h3>
+        <button class="btn ghost" style="margin-bottom:10px" onclick="openOtaModal()">╨Ю╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╨┐╤А╨╛╤И╨╕╨▓╨║╨╕ (OTA)</button>
+        <a href="/dev" style="text-decoration:none"><button class="btn ghost" style="margin-bottom:10px">╨а╨╡╨╢╨╕╨╝ ╤А╨░╨╖╤А╨░╨▒╨╛╤В╤З╨╕╨║╨░</button></a>
+        <button class="btn danger" onclick="resetSettings()">╨б╨▒╤А╨╛╤Б╨╕╤В╤М ╨╜╨░╤Б╤В╤А╨╛╨╣╨║╨╕</button>
       </div>
     </div>
   </section>
@@ -752,69 +757,69 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 </div>
 
 
-<!-- Нижняя навигация -->
+<!-- ╨Э╨╕╨╢╨╜╤П╤П ╨╜╨░╨▓╨╕╨│╨░╤Ж╨╕╤П -->
 <nav class="tabbar">
   <button class="tab active" data-scr="home" onclick="showTab('home')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Главная</span></button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>╨У╨╗╨░╨▓╨╜╨░╤П</span></button>
   <button class="tab" data-scr="fx" onclick="showTab('fx')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z"/></svg><span>Эффекты</span></button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z"/></svg><span>╨н╤Д╤Д╨╡╨║╤В╤Л</span></button>
   <button class="tab" data-scr="fav" onclick="showTab('fav')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>Избранное</span></button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>╨Ш╨╖╨▒╤А╨░╨╜╨╜╨╛╨╡</span></button>
   <button class="tab" data-scr="sch" onclick="showTab('sch')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Расписание</span></button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>╨а╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡</span></button>
   <button class="tab" data-scr="set" onclick="showTab('set')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.3l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2.2-1.3L14 2h-4l-.3 2.4a7 7 0 0 0-2.2 1.3l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.3l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2.2 1.3L10 22h4l.3-2.4a7 7 0 0 0 2.2-1.3l2.4 1 2-3.4-2-1.6A7 7 0 0 0 19 12z"/></svg><span>Настройки</span></button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.3l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2.2-1.3L14 2h-4l-.3 2.4a7 7 0 0 0-2.2 1.3l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.3l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2.2 1.3L10 22h4l.3-2.4a7 7 0 0 0 2.2-1.3l2.4 1 2-3.4-2-1.6A7 7 0 0 0 19 12z"/></svg><span>╨Э╨░╤Б╤В╤А╨╛╨╣╨║╨╕</span></button>
 </nav>
 
-<!-- Модальное окно OTA -->
+<!-- ╨Ь╨╛╨┤╨░╨╗╤М╨╜╨╛╨╡ ╨╛╨║╨╜╨╛ OTA -->
 <div class="modal-bg" id="otaModal" style="display:none" onclick="if(event.target===this)closeOtaModal()">
   <div class="modal-card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <h3 style="font-size:16px;color:#fff;margin:0">Обновление прошивки</h3>
-      <button class="btn ghost small" style="width:30px;height:30px;padding:0;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="closeOtaModal()">✕</button>
+      <h3 style="font-size:16px;color:#fff;margin:0">╨Ю╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╨┐╤А╨╛╤И╨╕╨▓╨║╨╕</h3>
+      <button class="btn ghost small" style="width:30px;height:30px;padding:0;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="closeOtaModal()">тЬХ</button>
     </div>
 
     <div style="background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:10px 12px;font-size:12px;color:#86efac;margin-bottom:14px;line-height:1.4">
-      💡 При прошивке шашка горит <b>зелёным на 50% яркости</b>. В конце <b>трижды мигнёт зелёным</b> и перезагрузится.
+      ЁЯТб ╨Я╤А╨╕ ╨┐╤А╨╛╤И╨╕╨▓╨║╨╡ ╤И╨░╤И╨║╨░ ╨│╨╛╤А╨╕╤В <b>╨╖╨╡╨╗╤С╨╜╤Л╨╝ ╨╜╨░ 50% ╤П╤А╨║╨╛╤Б╤В╨╕</b>. ╨Т ╨║╨╛╨╜╤Ж╨╡ <b>╤В╤А╨╕╨╢╨┤╤Л ╨╝╨╕╨│╨╜╤С╤В ╨╖╨╡╨╗╤С╨╜╤Л╨╝</b> ╨╕ ╨┐╨╡╤А╨╡╨╖╨░╨│╤А╤Г╨╖╨╕╤В╤Б╤П.
     </div>
 
-    <!-- GitHub блок -->
+    <!-- GitHub ╨▒╨╗╨╛╨║ -->
     <div style="background:rgba(255,255,255,.04);border-radius:14px;padding:12px;margin-bottom:12px">
-      <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:6px">Обновление с GitHub</div>
-      <div style="font-size:13px;margin-bottom:8px" id="otaGhInfo">Текущая версия: <b>v—</b></div>
+      <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:6px">╨Ю╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╤Б GitHub</div>
+      <div style="font-size:13px;margin-bottom:8px" id="otaGhInfo">╨в╨╡╨║╤Г╤Й╨░╤П ╨▓╨╡╤А╤Б╨╕╤П: <b>vтАФ</b></div>
       <div id="otaGhAction">
-        <button class="btn ghost small" onclick="checkGitHubOta()">Проверить обновления</button>
+        <button class="btn ghost small" onclick="checkGitHubOta()">╨Я╤А╨╛╨▓╨╡╤А╨╕╤В╤М ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╤П</button>
       </div>
       
       <div id="otaGhProgressWrap" style="display:none;margin-top:12px;background:rgba(0,0,0,.25);border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,.07)">
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:6px">
-          <span id="otaGhProgressText" style="color:#e2e8f0;font-weight:600">Загрузка прошивки...</span>
+          <span id="otaGhProgressText" style="color:#e2e8f0;font-weight:600">╨Ч╨░╨│╤А╤Г╨╖╨║╨░ ╨┐╤А╨╛╤И╨╕╨▓╨║╨╕...</span>
           <span id="otaGhProgressPct" style="font-weight:700;color:#22c55e">0%</span>
         </div>
         <div style="height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;margin-bottom:6px">
           <div id="otaGhProgressBar" style="width:0%;height:100%;background:linear-gradient(90deg,#7c3aed,#22c55e);transition:width .25s ease"></div>
         </div>
         <div id="otaGhProgressHint" style="font-size:11px;color:var(--muted);line-height:1.3">
-          Шашка скачивает обновление с GitHub...
+          ╨и╨░╤И╨║╨░ ╤Б╨║╨░╤З╨╕╨▓╨░╨╡╤В ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╤Б GitHub...
         </div>
       </div>
     </div>
 
-    <!-- Загрузка файла (Обзор) -->
+    <!-- ╨Ч╨░╨│╤А╤Г╨╖╨║╨░ ╤Д╨░╨╣╨╗╨░ (╨Ю╨▒╨╖╨╛╤А) -->
     <div style="background:rgba(255,255,255,.04);border-radius:14px;padding:12px;margin-bottom:12px">
-      <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:8px">Прошивка из файла (.bin)</div>
+      <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:8px">╨Я╤А╨╛╤И╨╕╨▓╨║╨░ ╨╕╨╖ ╤Д╨░╨╣╨╗╨░ (.bin)</div>
       <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
         <label class="btn ghost small" style="margin:0;cursor:pointer;white-space:nowrap">
-          📁 Обзор...
+          ЁЯУБ ╨Ю╨▒╨╖╨╛╤А...
           <input type="file" id="otaFileInput" accept=".bin" style="display:none" onchange="onOtaFileChosen(this)">
         </label>
-        <span id="otaFileName" style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">Файл не выбран</span>
+        <span id="otaFileName" style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">╨д╨░╨╣╨╗ ╨╜╨╡ ╨▓╤Л╨▒╤А╨░╨╜</span>
       </div>
-      <button class="btn small" id="otaUploadBtn" style="display:none;width:100%" onclick="uploadOtaFile()">Загрузить и прошить</button>
+      <button class="btn small" id="otaUploadBtn" style="display:none;width:100%" onclick="uploadOtaFile()">╨Ч╨░╨│╤А╤Г╨╖╨╕╤В╤М ╨╕ ╨┐╤А╨╛╤И╨╕╤В╤М</button>
       
       <div id="otaProgressWrap" style="display:none;margin-top:10px">
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
-          <span id="otaProgressText">Загрузка...</span>
+          <span id="otaProgressText">╨Ч╨░╨│╤А╤Г╨╖╨║╨░...</span>
           <span id="otaProgressPct">0%</span>
         </div>
         <div style="height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden">
@@ -823,88 +828,88 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
       </div>
     </div>
 
-    <!-- OTA по URL -->
+    <!-- OTA ╨┐╨╛ URL -->
     <div style="background:rgba(255,255,255,.04);border-radius:14px;padding:12px">
-      <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:6px">OTA по ссылке (URL)</div>
+      <div style="font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:6px">OTA ╨┐╨╛ ╤Б╤Б╤Л╨╗╨║╨╡ (URL)</div>
       <input type="text" id="otaModalUrl" placeholder="https://.../firmware.bin" style="font-size:13px;padding:8px 12px;width:100%;margin-bottom:8px;border-radius:8px;background:#10101a;border:1px solid rgba(255,255,255,.1);color:#fff">
-      <button class="btn ghost small" style="width:100%" onclick="otaByUrlModal()">Прошить по ссылке</button>
+      <button class="btn ghost small" style="width:100%" onclick="otaByUrlModal()">╨Я╤А╨╛╤И╨╕╤В╤М ╨┐╨╛ ╤Б╤Б╤Л╨╗╨║╨╡</button>
     </div>
   </div>
 </div>
 
-<!-- Модальное окно успешного обновления -->
+<!-- ╨Ь╨╛╨┤╨░╨╗╤М╨╜╨╛╨╡ ╨╛╨║╨╜╨╛ ╤Г╤Б╨┐╨╡╤И╨╜╨╛╨│╨╛ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╤П -->
 <div class="modal-bg" id="otaSuccessModal" style="display:none;z-index:10000" onclick="if(event.target===this)closeOtaSuccessModal()">
   <div class="modal-card" style="text-align:center;padding:26px 20px;max-width:380px">
-    <div style="font-size:54px;line-height:1;margin-bottom:12px">🎉</div>
-    <h3 style="font-size:18px;color:#22c55e;margin:0 0 8px 0;font-weight:700">Обновление успешно!</h3>
+    <div style="font-size:54px;line-height:1;margin-bottom:12px">ЁЯОЙ</div>
+    <h3 style="font-size:18px;color:#22c55e;margin:0 0 8px 0;font-weight:700">╨Ю╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╤Г╤Б╨┐╨╡╤И╨╜╨╛!</h3>
     <div style="font-size:14px;color:#fff;margin-bottom:8px">
-      Шашка успешно обновлена до версии <b id="otaSuccessVer" style="color:#22c55e">v1.3.10</b>!
+      ╨и╨░╤И╨║╨░ ╤Г╤Б╨┐╨╡╤И╨╜╨╛ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨░ ╨┤╨╛ ╨▓╨╡╤А╤Б╨╕╨╕ <b id="otaSuccessVer" style="color:#22c55e">v1.3.10</b>!
     </div>
     <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:20px">
-      Все эффекты, расписания и настройки сохранены. Устройство готово к работе!
+      ╨Т╤Б╨╡ ╤Н╤Д╤Д╨╡╨║╤В╤Л, ╤А╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╤П ╨╕ ╨╜╨░╤Б╤В╤А╨╛╨╣╨║╨╕ ╤Б╨╛╤Е╤А╨░╨╜╨╡╨╜╤Л. ╨г╤Б╤В╤А╨╛╨╣╤Б╤В╨▓╨╛ ╨│╨╛╤В╨╛╨▓╨╛ ╨║ ╤А╨░╨▒╨╛╤В╨╡!
     </div>
-    <button class="btn" style="width:100%;background:#22c55e;border-color:#22c55e;font-weight:700;padding:12px;font-size:14px;box-shadow:0 4px 15px rgba(34,197,94,.3)" onclick="closeOtaSuccessModal()">Отлично! ✨</button>
+    <button class="btn" style="width:100%;background:#22c55e;border-color:#22c55e;font-weight:700;padding:12px;font-size:14px;box-shadow:0 4px 15px rgba(34,197,94,.3)" onclick="closeOtaSuccessModal()">╨Ю╤В╨╗╨╕╤З╨╜╨╛! тЬи</button>
   </div>
 </div>
 
-<!-- Модальное окно расписания -->
+<!-- ╨Ь╨╛╨┤╨░╨╗╤М╨╜╨╛╨╡ ╨╛╨║╨╜╨╛ ╤А╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╤П -->
 <div class="modal-bg" id="schedModal" style="display:none" onclick="if(event.target===this)closeSchedModal()">
   <div class="modal-card" style="max-width:380px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <h3 id="schModalTitle" style="font-size:16px;color:#fff;margin:0">⏰ Новое расписание</h3>
-      <button class="btn ghost small" style="width:30px;height:30px;padding:0;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="closeSchedModal()">✕</button>
+      <h3 id="schModalTitle" style="font-size:16px;color:#fff;margin:0">тП░ ╨Э╨╛╨▓╨╛╨╡ ╤А╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡</h3>
+      <button class="btn ghost small" style="width:30px;height:30px;padding:0;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="closeSchedModal()">тЬХ</button>
     </div>
 
-    <!-- 1. Нативный пикер времени -->
+    <!-- 1. ╨Э╨░╤В╨╕╨▓╨╜╤Л╨╣ ╨┐╨╕╨║╨╡╤А ╨▓╤А╨╡╨╝╨╡╨╜╨╕ -->
     <div style="margin-bottom:14px">
-      <label style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:4px">Время срабатывания</label>
+      <label style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:4px">╨Т╤А╨╡╨╝╤П ╤Б╤А╨░╨▒╨░╤В╤Л╨▓╨░╨╜╨╕╤П</label>
       <input type="time" id="schTimeInput" value="08:00" required>
-      <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Системные часы телефона</div>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">╨б╨╕╤Б╤В╨╡╨╝╨╜╤Л╨╡ ╤З╨░╤Б╤Л ╤В╨╡╨╗╨╡╤Д╨╛╨╜╨░</div>
     </div>
 
-    <!-- 2. Действие -->
+    <!-- 2. ╨Ф╨╡╨╣╤Б╤В╨▓╨╕╨╡ -->
     <div style="margin-bottom:14px">
-      <label style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:6px">Действие</label>
+      <label style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:6px">╨Ф╨╡╨╣╤Б╤В╨▓╨╕╨╡</label>
       <div style="display:flex;gap:8px">
         <button type="button" id="schBtnOn" onclick="setSchedAction(true)" class="sch-act-btn active-on">
           <span style="width:8px;height:8px;border-radius:50%;background:#22c55e"></span>
-          <span>Включить</span>
+          <span>╨Т╨║╨╗╤О╤З╨╕╤В╤М</span>
         </button>
         <button type="button" id="schBtnOff" onclick="setSchedAction(false)" class="sch-act-btn">
           <span style="width:8px;height:8px;border-radius:50%;background:#ef4444"></span>
-          <span>Выключить</span>
+          <span>╨Т╤Л╨║╨╗╤О╤З╨╕╤В╤М</span>
         </button>
       </div>
     </div>
 
-    <!-- 3. Дни повтора: пресеты через чистый select -->
+    <!-- 3. ╨Ф╨╜╨╕ ╨┐╨╛╨▓╤В╨╛╤А╨░: ╨┐╤А╨╡╤Б╨╡╤В╤Л ╤З╨╡╤А╨╡╨╖ ╤З╨╕╤Б╤В╤Л╨╣ select -->
     <div style="margin-bottom:14px">
-      <label style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:4px">Дни повтора</label>
+      <label style="display:block;font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-bottom:4px">╨Ф╨╜╨╕ ╨┐╨╛╨▓╤В╨╛╤А╨░</label>
       <select id="schPreset" onchange="applySchedPreset(this.value)" style="margin-top:0">
-        <option value="everyday" selected>🗓 Каждый день (Пн – Вс)</option>
-        <option value="workdays">💼 По будням (Пн – Пт)</option>
-        <option value="weekends">🎉 По выходным (Сб – Вс)</option>
-        <option value="custom">⚙️ Выбрать дни вручную...</option>
+        <option value="everyday" selected>ЁЯЧУ ╨Ъ╨░╨╢╨┤╤Л╨╣ ╨┤╨╡╨╜╤М (╨Я╨╜ тАУ ╨Т╤Б)</option>
+        <option value="workdays">ЁЯТ╝ ╨Я╨╛ ╨▒╤Г╨┤╨╜╤П╨╝ (╨Я╨╜ тАУ ╨Я╤В)</option>
+        <option value="weekends">ЁЯОЙ ╨Я╨╛ ╨▓╤Л╤Е╨╛╨┤╨╜╤Л╨╝ (╨б╨▒ тАУ ╨Т╤Б)</option>
+        <option value="custom">тЪЩя╕П ╨Т╤Л╨▒╤А╨░╤В╤М ╨┤╨╜╨╕ ╨▓╤А╤Г╤З╨╜╤Г╤О...</option>
       </select>
     </div>
 
-    <!-- 4. Интерактивные кружки дней недели -->
+    <!-- 4. ╨Ш╨╜╤В╨╡╤А╨░╨║╤В╨╕╨▓╨╜╤Л╨╡ ╨║╤А╤Г╨╢╨║╨╕ ╨┤╨╜╨╡╨╣ ╨╜╨╡╨┤╨╡╨╗╨╕ -->
     <div style="margin-bottom:20px">
       <div style="display:flex;gap:5px" id="schDayPills">
-        <div class="sch-day-btn active" onclick="toggleSchedDay(0)">Пн</div>
-        <div class="sch-day-btn active" onclick="toggleSchedDay(1)">Вт</div>
-        <div class="sch-day-btn active" onclick="toggleSchedDay(2)">Ср</div>
-        <div class="sch-day-btn active" onclick="toggleSchedDay(3)">Чт</div>
-        <div class="sch-day-btn active" onclick="toggleSchedDay(4)">Пт</div>
-        <div class="sch-day-btn active" onclick="toggleSchedDay(5)">Сб</div>
-        <div class="sch-day-btn active" onclick="toggleSchedDay(6)">Вс</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(0)">╨Я╨╜</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(1)">╨Т╤В</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(2)">╨б╤А</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(3)">╨з╤В</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(4)">╨Я╤В</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(5)">╨б╨▒</div>
+        <div class="sch-day-btn active" onclick="toggleSchedDay(6)">╨Т╤Б</div>
       </div>
     </div>
 
-    <!-- Кнопки действий -->
+    <!-- ╨Ъ╨╜╨╛╨┐╨║╨╕ ╨┤╨╡╨╣╤Б╤В╨▓╨╕╨╣ -->
     <div style="display:flex;gap:10px">
-      <button class="btn ghost" style="flex:1" onclick="closeSchedModal()">Отмена</button>
-      <button class="btn" style="flex:1" onclick="saveSchedFromModal()">Сохранить</button>
+      <button class="btn ghost" style="flex:1" onclick="closeSchedModal()">╨Ю╤В╨╝╨╡╨╜╨░</button>
+      <button class="btn" style="flex:1" onclick="saveSchedFromModal()">╨б╨╛╤Е╤А╨░╨╜╨╕╤В╤М</button>
     </div>
   </div>
 </div>
@@ -912,28 +917,28 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 <div id="toast"></div>
 
 <script>
-// ============ FX справочник (теперь 16 эффектов) ============
+// ============ FX ╤Б╨┐╤А╨░╨▓╨╛╤З╨╜╨╕╨║ (╤В╨╡╨┐╨╡╤А╤М 16 ╤Н╤Д╤Д╨╡╨║╤В╨╛╨▓) ============
 var FX=[
-  {id:0,name:"Статика",cls:"p-static"},
-  {id:1,name:"Дыхание",cls:"p-breathe"},
-  {id:2,name:"Радуга",cls:"p-rainbow"},
-  {id:3,name:"Огонь",cls:"p-fire"},
-  {id:4,name:"Свеча",cls:"p-candle"},
-  {id:5,name:"Перелив",cls:"p-flow"},
-  {id:6,name:"Сев. сияние",cls:"p-aurora"},
-  {id:7,name:"Океан",cls:"p-ocean"},
-  {id:8,name:"Полиция",cls:"p-police"},
-  {id:9,name:"Мигалка",cls:"p-police-flash"},
-  {id:10,name:"Метеор",cls:"p-meteor"},
-  {id:11,name:"Стробоскоп",cls:"p-strobe"},
-  {id:12,name:"Гирлянда",cls:"p-running"},
-  {id:13,name:"Ночное небо",cls:"p-nightsky"},
-  {id:14,name:"Лазер",cls:"p-laser"},
-  {id:15,name:"Вспышки",cls:"p-flash"}
+  {id:0,name:"╨б╤В╨░╤В╨╕╨║╨░",cls:"p-static"},
+  {id:1,name:"╨Ф╤Л╤Е╨░╨╜╨╕╨╡",cls:"p-breathe"},
+  {id:2,name:"╨а╨░╨┤╤Г╨│╨░",cls:"p-rainbow"},
+  {id:3,name:"╨Ю╨│╨╛╨╜╤М",cls:"p-fire"},
+  {id:4,name:"╨б╨▓╨╡╤З╨░",cls:"p-candle"},
+  {id:5,name:"╨Я╨╡╤А╨╡╨╗╨╕╨▓",cls:"p-flow"},
+  {id:6,name:"╨б╨╡╨▓. ╤Б╨╕╤П╨╜╨╕╨╡",cls:"p-aurora"},
+  {id:7,name:"╨Ю╨║╨╡╨░╨╜",cls:"p-ocean"},
+  {id:8,name:"╨Я╨╛╨╗╨╕╤Ж╨╕╤П",cls:"p-police"},
+  {id:9,name:"╨Ь╨╕╨│╨░╨╗╨║╨░",cls:"p-police-flash"},
+  {id:10,name:"╨Ь╨╡╤В╨╡╨╛╤А",cls:"p-meteor"},
+  {id:11,name:"╨б╤В╤А╨╛╨▒╨╛╤Б╨║╨╛╨┐",cls:"p-strobe"},
+  {id:12,name:"╨У╨╕╤А╨╗╤П╨╜╨┤╨░",cls:"p-running"},
+  {id:13,name:"╨Э╨╛╤З╨╜╨╛╨╡ ╨╜╨╡╨▒╨╛",cls:"p-nightsky"},
+  {id:14,name:"╨Ы╨░╨╖╨╡╤А",cls:"p-laser"},
+  {id:15,name:"╨Т╤Б╨┐╤Л╤И╨║╨╕",cls:"p-flash"}
 ];
 var FXNAME={};FX.forEach(function(f){FXNAME[f.id]=f.name;});
 var SWATCHES=["#ffffff","#ffb000","#ff3b30","#ff2d92","#7c3aed","#3b82f6","#00d4ff","#22c55e"];
-var WIFI_LABELS={connected:"Подключено",connecting:"Подключение...",ap_mode:"Точка доступа",disconnected:"Не подключено"};
+var WIFI_LABELS={connected:"╨Я╨╛╨┤╨║╨╗╤О╤З╨╡╨╜╨╛",connecting:"╨Я╨╛╨┤╨║╨╗╤О╤З╨╡╨╜╨╕╨╡...",ap_mode:"╨в╨╛╤З╨║╨░ ╨┤╨╛╤Б╤В╤Г╨┐╨░",disconnected:"╨Э╨╡ ╨┐╨╛╨┤╨║╨╗╤О╤З╨╡╨╜╨╛"};
 var state={on:false,brightness:150,effect:0,speed:128};
 var ws=null;
 
@@ -944,7 +949,7 @@ function api(path,method,body,silent){
   return fetch(path,{method:method||"GET",headers:{"Content-Type":"application/json"},
     body:body?JSON.stringify(body):undefined})
     .then(function(r){return r.json();})
-    .catch(function(e){if(!silent)toast("Ошибка связи","err");throw e;});
+    .catch(function(e){if(!silent)toast("╨Ю╤И╨╕╨▒╨║╨░ ╤Б╨▓╤П╨╖╨╕","err");throw e;});
 }
 function debounce(fn,ms){var t;return function(){var a=arguments,c=this;clearTimeout(t);t=setTimeout(function(){fn.apply(c,a);},ms);};}
 
@@ -964,7 +969,7 @@ document.addEventListener("visibilitychange",function(){
   else if(ws){try{ws.close();}catch(e){}ws=null;}
 });
 
-// ============ Навигация ============
+// ============ ╨Э╨░╨▓╨╕╨│╨░╤Ж╨╕╤П ============
 function showTab(name){
   document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
   $("scr-"+name).classList.add("active");
@@ -977,7 +982,7 @@ function showTab(name){
   if(name==="set")loadSettings();
 }
 
-// ============ Питание ============
+// ============ ╨Я╨╕╤В╨░╨╜╨╕╨╡ ============
 function togglePower(){
   state.on=!state.on;renderPower();
   api("/api/power","POST",{on:state.on}).then(applyStatus);
@@ -985,17 +990,17 @@ function togglePower(){
 function renderPower(){
   var b=$("powerBtn");
   b.classList.toggle("active",state.on);
-  $("powerLabel").textContent=state.on?"Включено":"Выключено";
+  $("powerLabel").textContent=state.on?"╨Т╨║╨╗╤О╤З╨╡╨╜╨╛":"╨Т╤Л╨║╨╗╤О╤З╨╡╨╜╨╛";
 }
 
-// ============ Яркость ============
+// ============ ╨п╤А╨║╨╛╤Б╤В╤М ============
 var sendBright=debounce(function(v){api("/api/brightness","POST",{value:parseInt(v)});},400);
 function onBrightInput(v){
   $("brightVal").textContent=Math.round(v/255*100)+"%";
   state.brightness=parseInt(v);sendBright(v);
 }
 
-// ============ Цвет ============
+// ============ ╨ж╨▓╨╡╤В ============
 function hexToRgb(h){h=h.replace("#","");return{r:parseInt(h.substr(0,2),16),g:parseInt(h.substr(2,2),16),b:parseInt(h.substr(4,2),16)};}
 var sendColor=debounce(function(rgb){api("/api/color","POST",rgb);},400);
 function onColorInput(hex){
@@ -1003,7 +1008,7 @@ function onColorInput(hex){
 }
 function pickSwatch(hex){$("colorPick").value=hex;onColorInput(hex);}
 
-// ============ Эффекты ============
+// ============ ╨н╤Д╤Д╨╡╨║╤В╤Л ============
 function renderFx(){
   var g=$("fxGrid");if(g.childElementCount)return updateFxSel();
   g.innerHTML="";
@@ -1011,7 +1016,7 @@ function renderFx(){
     var d=document.createElement("div");
     d.className="fx-card";d.setAttribute("data-fx",f.id);
     d.innerHTML='<div class="fx-prev"><div class="'+f.cls+'" style="width:100%;height:100%"></div></div><div class="fx-name">'+f.name+'</div>';
-    // Превью при долгом нажатии (500 мс)
+    // ╨Я╤А╨╡╨▓╤М╤О ╨┐╤А╨╕ ╨┤╨╛╨╗╨│╨╛╨╝ ╨╜╨░╨╢╨░╤В╨╕╨╕ (500 ╨╝╤Б)
     var tmr;
     d.addEventListener("touchstart",function(){tmr=setTimeout(function(){previewEffect(f.id);},500);},{passive:true});
     d.addEventListener("touchend",function(){clearTimeout(tmr);});
@@ -1029,20 +1034,20 @@ function setEffect(id){
   state.effect=id;updateFxSel();
   if(!state.on){state.on=true;renderPower();}
   api("/api/effect","POST",{id:id,speed:state.speed}).then(applyStatus);
-  toast("Эффект: "+FXNAME[id],"ok");
+  toast("╨н╤Д╤Д╨╡╨║╤В: "+FXNAME[id],"ok");
 }
 var sendSpeed=debounce(function(v){api("/api/effect","POST",{id:state.effect,speed:parseInt(v)});},400);
 function onSpeedInput(v){state.speed=parseInt(v);sendSpeed(v);}
 
 // ============ Wi-Fi ============
 function scanWifi(){
-  var l=$("netList");l.innerHTML='<div class="muted" style="margin-top:12px"><span class="spin"></span> Поиск сетей...</div>';
+  var l=$("netList");l.innerHTML='<div class="muted" style="margin-top:12px"><span class="spin"></span> ╨Я╨╛╨╕╤Б╨║ ╤Б╨╡╤В╨╡╨╣...</div>';
   api("/api/wifi/scan").then(function(nets){
-    if(!nets||!nets.length){l.innerHTML='<div class="muted" style="margin-top:12px">Сети не найдены, повторите ещё раз</div>';return;}
+    if(!nets||!nets.length){l.innerHTML='<div class="muted" style="margin-top:12px">╨б╨╡╤В╨╕ ╨╜╨╡ ╨╜╨░╨╣╨┤╨╡╨╜╤Л, ╨┐╨╛╨▓╤В╨╛╤А╨╕╤В╨╡ ╨╡╤Й╤С ╤А╨░╨╖</div>';return;}
     l.innerHTML="";
     nets.sort(function(a,b){return b.rssi-a.rssi;}).forEach(function(n){
       var d=document.createElement("div");d.className="net";
-      d.innerHTML='<div><div class="n-ssid">'+(n.secure?"🔒 ":"")+n.ssid+'</div><div class="n-rssi">'+n.rssi+' dBm</div></div><div class="muted">→</div>';
+      d.innerHTML='<div><div class="n-ssid">'+(n.secure?"ЁЯФТ ":"")+n.ssid+'</div><div class="n-rssi">'+n.rssi+' dBm</div></div><div class="muted">тЖТ</div>';
       d.onclick=function(){connectWifiNet(n.ssid,n.secure);};
       l.appendChild(d);
     });
@@ -1050,20 +1055,20 @@ function scanWifi(){
 }
 function connectWifiNet(ssid,secure){
   var pass="";
-  if(secure){pass=prompt('Пароль для сети "'+ssid+'":',[]);if(pass===null)return;}
-  toast("Подключение к "+ssid+"...");
+  if(secure){pass=prompt('╨Я╨░╤А╨╛╨╗╤М ╨┤╨╗╤П ╤Б╨╡╤В╨╕ "'+ssid+'":',[]);if(pass===null)return;}
+  toast("╨Я╨╛╨┤╨║╨╗╤О╤З╨╡╨╜╨╕╨╡ ╨║ "+ssid+"...");
   api("/api/wifi/connect","POST",{ssid:ssid,pass:pass}).then(function(r){
-    toast(r.ok?"Данные сохранены, подключаемся":"Ошибка",r.ok?"ok":"err");
+    toast(r.ok?"╨Ф╨░╨╜╨╜╤Л╨╡ ╤Б╨╛╤Е╤А╨░╨╜╨╡╨╜╤Л, ╨┐╨╛╨┤╨║╨╗╤О╤З╨░╨╡╨╝╤Б╤П":"╨Ю╤И╨╕╨▒╨║╨░",r.ok?"ok":"err");
   });
 }
 
-// ============ Таймер сна ============
+// ============ ╨в╨░╨╣╨╝╨╡╤А ╤Б╨╜╨░ ============
 function setTimer(min){
   api("/api/timer","POST",{minutes:min}).then(applyStatus);
-  toast(min?"Таймер: "+min+" мин":"Таймер отменён","ok");
+  toast(min?"╨в╨░╨╣╨╝╨╡╤А: "+min+" ╨╝╨╕╨╜":"╨в╨░╨╣╨╝╨╡╤А ╨╛╤В╨╝╨╡╨╜╤С╨╜","ok");
 }
 
-// ============ Избранное ============
+// ============ ╨Ш╨╖╨▒╤А╨░╨╜╨╜╨╛╨╡ ============
 
 function loadFavorites(){
   api("/api/favorites").then(renderFavorites);
@@ -1076,36 +1081,36 @@ function renderFavorites(favs){
     d.className="fav-card";
     if(f.used){
       d.innerHTML='<div class="fav-color-dot" style="background:'+f.color+'"></div>'+
-        '<div class="fav-name">'+(f.name||"Сцена "+(f.slot+1))+'</div>'+
-        '<div class="fav-meta">'+(FXNAME[f.effect]||"")+" · "+Math.round(f.brightness/2.55)+"%</div>"+
+        '<div class="fav-name">'+(f.name||"╨б╤Ж╨╡╨╜╨░ "+(f.slot+1))+'</div>'+
+        '<div class="fav-meta">'+(FXNAME[f.effect]||"")+" ┬╖ "+Math.round(f.brightness/2.55)+"%</div>"+
         '<div style="display:flex;gap:8px;margin-top:10px">'+
-        '<button class="btn small" onclick="favLoad('+f.slot+')">▶ Применить</button>'+
-        '<button class="btn ghost small" onclick="favDelete('+f.slot+')">удалить</button></div>';
+        '<button class="btn small" onclick="favLoad('+f.slot+')">тЦ╢ ╨Я╤А╨╕╨╝╨╡╨╜╨╕╤В╤М</button>'+
+        '<button class="btn ghost small" onclick="favDelete('+f.slot+')">╤Г╨┤╨░╨╗╨╕╤В╤М</button></div>';
     }else{
       d.className+=" fav-empty";
       d.innerHTML='<div style="font-size:28px">+</div>'+
-        '<div style="font-size:13px;color:var(--muted);margin-top:4px">Слот '+(f.slot+1)+"</div>"+
-        '<button class="btn small" style="margin-top:10px" onclick="favSave('+f.slot+')">Сохранить сцену</button>';
+        '<div style="font-size:13px;color:var(--muted);margin-top:4px">╨б╨╗╨╛╤В '+(f.slot+1)+"</div>"+
+        '<button class="btn small" style="margin-top:10px" onclick="favSave('+f.slot+')">╨б╨╛╤Е╤А╨░╨╜╨╕╤В╤М ╤Б╤Ж╨╡╨╜╤Г</button>';
     }
     g.appendChild(d);
   });
 }
 function favLoad(slot){
   api("/api/favorites/load","POST",{slot:slot}).then(function(s){applyStatus(s);loadFavorites();});
-  toast("Загружена сцена","ok");
+  toast("╨Ч╨░╨│╤А╤Г╨╢╨╡╨╜╨░ ╤Б╤Ж╨╡╨╜╨░","ok");
 }
 function favSave(slot){
-  var name=prompt("Название сцены:","Сцена "+(slot+1));
+  var name=prompt("╨Э╨░╨╖╨▓╨░╨╜╨╕╨╡ ╤Б╤Ж╨╡╨╜╤Л:","╨б╤Ж╨╡╨╜╨░ "+(slot+1));
   if(name===null)return;
   api("/api/favorites/save","POST",{slot:slot,name:name}).then(renderFavorites);
-  toast("Сцена сохранена","ok");
+  toast("╨б╤Ж╨╡╨╜╨░ ╤Б╨╛╤Е╤А╨░╨╜╨╡╨╜╨░","ok");
 }
 function favDelete(slot){
-  if(!confirm("Удалить слот "+(slot+1)+"?"))return;
+  if(!confirm("╨г╨┤╨░╨╗╨╕╤В╤М ╤Б╨╗╨╛╤В "+(slot+1)+"?"))return;
   api("/api/favorites/delete","POST",{slot:slot}).then(renderFavorites);
 }
 
-// ============ Расписание ============
+// ============ ╨а╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡ ============
 var _schedData = [];
 var _currSchedSlot = -1;
 var _currSchedAction = true;
@@ -1121,7 +1126,7 @@ function renderSchedules(scheds){
   var usedList = scheds.filter(function(s){return s.used;});
   var g = $("schedList"), e = $("schedEmpty"), ld = $("schedLoading");
   if(!g || !e)return;
-  if(ld) ld.style.display = "none"; // скрыть индикатор загрузки
+  if(ld) ld.style.display = "none"; // ╤Б╨║╤А╤Л╤В╤М ╨╕╨╜╨┤╨╕╨║╨░╤В╨╛╤А ╨╖╨░╨│╤А╤Г╨╖╨║╨╕
   if(usedList.length === 0){
     g.style.display = "none";
     e.style.display = "block";
@@ -1131,20 +1136,20 @@ function renderSchedules(scheds){
   g.style.display = "";
   g.innerHTML = "";
   
-  var dNames = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
+  var dNames = ["╨Я╨╜","╨Т╤В","╨б╤А","╨з╤В","╨Я╤В","╨б╨▒","╨Т╤Б"];
   usedList.forEach(function(s){
     var hh = (s.hour < 10 ? "0" : "") + s.hour;
     var mm = (s.minute < 10 ? "0" : "") + s.minute;
     var timeStr = hh + ":" + mm;
     var badgeHtml = s.action
-      ? '<span class="sch-badge sch-on">ВКЛЮЧИТЬ</span>'
-      : '<span class="sch-badge sch-off">ВЫКЛЮЧИТЬ</span>';
+      ? '<span class="sch-badge sch-on">╨Т╨Ъ╨Ы╨о╨з╨Ш╨в╨м</span>'
+      : '<span class="sch-badge sch-off">╨Т╨л╨Ъ╨Ы╨о╨з╨Ш╨в╨м</span>';
       
     var dText = "";
-    if(s.days === 127) dText = "Каждый день";
-    else if(s.days === 31) dText = "По будням (Пн – Пт)";
-    else if(s.days === 96) dText = "По выходным (Сб – Вс)";
-    else if(s.days === 0) dText = "Один раз";
+    if(s.days === 127) dText = "╨Ъ╨░╨╢╨┤╤Л╨╣ ╨┤╨╡╨╜╤М";
+    else if(s.days === 31) dText = "╨Я╨╛ ╨▒╤Г╨┤╨╜╤П╨╝ (╨Я╨╜ тАУ ╨Я╤В)";
+    else if(s.days === 96) dText = "╨Я╨╛ ╨▓╤Л╤Е╨╛╨┤╨╜╤Л╨╝ (╨б╨▒ тАУ ╨Т╤Б)";
+    else if(s.days === 0) dText = "╨Ю╨┤╨╕╨╜ ╤А╨░╨╖";
     else {
       var act = [];
       for(var i=0; i<7; i++){ if(s.days & (1<<i)) act.push(dNames[i]); }
@@ -1169,7 +1174,7 @@ function renderSchedules(scheds){
           '<div style="font-size:12px;color:var(--muted);margin-top:4px">' + dText + '</div>' +
         '</div>' +
         '<div style="display:flex;align-items:center;gap:6px">' +
-          '<button class="icon-btn" onclick="deleteSched(' + s.slot + ')" title="Удалить">' +
+          '<button class="icon-btn" onclick="deleteSched(' + s.slot + ')" title="╨г╨┤╨░╨╗╨╕╤В╤М">' +
             '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
           '</button>' +
           '<label class="switch">' +
@@ -1188,17 +1193,17 @@ function schedToggle(slot, enabled, el){
     var c = el.closest(".sch-card");
     if(c) c.classList.toggle("sch-disabled", !enabled);
   }
-  // Обновляем локально, чтобы редактирование сразу после toggle не брало устаревшие данные
+  // ╨Ю╨▒╨╜╨╛╨▓╨╗╤П╨╡╨╝ ╨╗╨╛╨║╨░╨╗╤М╨╜╨╛, ╤З╤В╨╛╨▒╤Л ╤А╨╡╨┤╨░╨║╤В╨╕╤А╨╛╨▓╨░╨╜╨╕╨╡ ╤Б╤А╨░╨╖╤Г ╨┐╨╛╤Б╨╗╨╡ toggle ╨╜╨╡ ╨▒╤А╨░╨╗╨╛ ╤Г╤Б╤В╨░╤А╨╡╨▓╤И╨╕╨╡ ╨┤╨░╨╜╨╜╤Л╨╡
   var loc = _schedData.find(function(x){return x.slot===slot;});
   if(loc) loc.enabled = enabled;
   api("/api/schedules", "POST", {slot: slot, enabled: enabled}).then(renderSchedules);
 }
 
 function deleteSched(slot){
-  if(!confirm("Удалить это расписание?")) return;
+  if(!confirm("╨г╨┤╨░╨╗╨╕╤В╤М ╤Н╤В╨╛ ╤А╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡?")) return;
   api("/api/schedules/delete", "POST", {slot: slot})
-    .then(function(res){ renderSchedules(res); toast("Расписание удалено", "ok"); })
-    .catch(function(){ toast("Ошибка при удалении", "err"); });
+    .then(function(res){ renderSchedules(res); toast("╨а╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡ ╤Г╨┤╨░╨╗╨╡╨╜╨╛", "ok"); })
+    .catch(function(){ toast("╨Ю╤И╨╕╨▒╨║╨░ ╨┐╤А╨╕ ╤Г╨┤╨░╨╗╨╡╨╜╨╕╨╕", "err"); });
 }
 
 function openSchedModal(slot){
@@ -1206,7 +1211,7 @@ function openSchedModal(slot){
   if(slot >= 0 && _schedData.length > 0){
     var s = _schedData.find(function(x){return x.slot === slot;});
     if(s){
-      $("schModalTitle").textContent = "⏰ Изменить расписание";
+      $("schModalTitle").textContent = "тП░ ╨Ш╨╖╨╝╨╡╨╜╨╕╤В╤М ╤А╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡";
       var hh = (s.hour < 10 ? "0" : "") + s.hour;
       var mm = (s.minute < 10 ? "0" : "") + s.minute;
       $("schTimeInput").value = hh + ":" + mm;
@@ -1214,11 +1219,11 @@ function openSchedModal(slot){
       _currSchedDays = s.days;
     }
   } else {
-    // Новое расписание — ищем свободный слот
+    // ╨Э╨╛╨▓╨╛╨╡ ╤А╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡ тАФ ╨╕╤Й╨╡╨╝ ╤Б╨▓╨╛╨▒╨╛╨┤╨╜╤Л╨╣ ╤Б╨╗╨╛╤В
     if(_schedData.length === 0){
-      // Данные ещё не загружены — грузим и выходим
+      // ╨Ф╨░╨╜╨╜╤Л╨╡ ╨╡╤Й╤С ╨╜╨╡ ╨╖╨░╨│╤А╤Г╨╢╨╡╨╜╤Л тАФ ╨│╤А╤Г╨╖╨╕╨╝ ╨╕ ╨▓╤Л╤Е╨╛╨┤╨╕╨╝
       loadSchedules();
-      toast("Загружаем расписания...", "");
+      toast("╨Ч╨░╨│╤А╤Г╨╢╨░╨╡╨╝ ╤А╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╤П...", "");
       return;
     }
     var freeSlot = -1;
@@ -1226,12 +1231,12 @@ function openSchedModal(slot){
       if(!_schedData[i].used){ freeSlot = _schedData[i].slot; break; }
     }
     if(freeSlot === -1){
-      toast("Достигнут лимит расписаний (8)", "err");
-      loadSchedules(); // обновляем на случай устаревших данных
+      toast("╨Ф╨╛╤Б╤В╨╕╨│╨╜╤Г╤В ╨╗╨╕╨╝╨╕╤В ╤А╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╣ (8)", "err");
+      loadSchedules(); // ╨╛╨▒╨╜╨╛╨▓╨╗╤П╨╡╨╝ ╨╜╨░ ╤Б╨╗╤Г╤З╨░╨╣ ╤Г╤Б╤В╨░╤А╨╡╨▓╤И╨╕╤Е ╨┤╨░╨╜╨╜╤Л╤Е
       return;
     }
     _currSchedSlot = freeSlot;
-    $("schModalTitle").textContent = "⏰ Новое расписание";
+    $("schModalTitle").textContent = "тП░ ╨Э╨╛╨▓╨╛╨╡ ╤А╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡";
     $("schTimeInput").value = "08:00";
     _currSchedAction = true;
     _currSchedDays = 127;
@@ -1292,7 +1297,7 @@ function saveSchedFromModal(){
   if(h < 0) h = 0; if(h > 23) h = 23;
   if(m < 0) m = 0; if(m > 59) m = 59;
   if(_currSchedDays === 0){
-    toast("Выберите хотя бы один день", "err");
+    toast("╨Т╤Л╨▒╨╡╤А╨╕╤В╨╡ ╤Е╨╛╤В╤П ╨▒╤Л ╨╛╨┤╨╕╨╜ ╨┤╨╡╨╜╤М", "err");
     return;
   }
   api("/api/schedules", "POST", {
@@ -1306,21 +1311,21 @@ function saveSchedFromModal(){
   }).then(function(res){
     closeSchedModal();
     renderSchedules(res);
-    toast("Расписание сохранено", "ok");
-  }).catch(function(){ /* api() уже показал тост ошибки, модал остаётся открытым */ });
+    toast("╨а╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡ ╤Б╨╛╤Е╤А╨░╨╜╨╡╨╜╨╛", "ok");
+  }).catch(function(){ /* api() ╤Г╨╢╨╡ ╨┐╨╛╨║╨░╨╖╨░╨╗ ╤В╨╛╤Б╤В ╨╛╤И╨╕╨▒╨║╨╕, ╨╝╨╛╨┤╨░╨╗ ╨╛╤Б╤В╨░╤С╤В╤Б╤П ╨╛╤В╨║╤А╤Л╤В╤Л╨╝ */ });
 }
 
-// ============ Настройки ============
+// ============ ╨Э╨░╤Б╤В╤А╨╛╨╣╨║╨╕ ============
 function buildTz(){
   var s=$("setTz");for(var i=-12;i<=14;i++){var o=document.createElement("option");o.value=i;o.textContent="UTC"+(i>=0?"+":"")+i;s.appendChild(o);}
 }
 function saveSettings(){
   var body={deviceName:$("setName").value,timezone:parseInt($("setTz").value),powerOnMode:parseInt($("setPom").value)};
-  api("/api/settings","POST",body).then(function(){toast("Настройки сохранены","ok");loadSettings();});
+  api("/api/settings","POST",body).then(function(){toast("╨Э╨░╤Б╤В╤А╨╛╨╣╨║╨╕ ╤Б╨╛╤Е╤А╨░╨╜╨╡╨╜╤Л","ok");loadSettings();});
 }
 function resetSettings(){
-  if(!confirm("Сбросить все настройки к заводским?"))return;
-  api("/api/settings/reset","POST").then(function(){toast("Сброшено","ok");setTimeout(loadAll,1200);});
+  if(!confirm("╨б╨▒╤А╨╛╤Б╨╕╤В╤М ╨▓╤Б╨╡ ╨╜╨░╤Б╤В╤А╨╛╨╣╨║╨╕ ╨║ ╨╖╨░╨▓╨╛╨┤╤Б╨║╨╕╨╝?"))return;
+  api("/api/settings/reset","POST").then(function(){toast("╨б╨▒╤А╨╛╤И╨╡╨╜╨╛","ok");setTimeout(loadAll,1200);});
 }
 function loadSettings(){
   api("/api/settings").then(function(s){
@@ -1330,7 +1335,7 @@ function loadSettings(){
   });
 }
 
-// ============ Применение статуса ============
+// ============ ╨Я╤А╨╕╨╝╨╡╨╜╨╡╨╜╨╕╨╡ ╤Б╤В╨░╤В╤Г╤Б╨░ ============
 function applyStatus(s){
   if(!s)return;
   if(s.version){
@@ -1338,7 +1343,7 @@ function applyStatus(s){
     if(prevVer&&prevVer!==s.version){
       localStorage.setItem("taxi_ver",s.version);
       openOtaSuccessModal(s.version);
-      toast("🎉 Шашка успешно обновлена до v"+s.version+"!","ok");
+      toast("ЁЯОЙ ╨и╨░╤И╨║╨░ ╤Г╤Б╨┐╨╡╤И╨╜╨╛ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨░ ╨┤╨╛ v"+s.version+"!","ok");
     }else if(!prevVer){
       localStorage.setItem("taxi_ver",s.version);
     }
@@ -1348,18 +1353,33 @@ function applyStatus(s){
   $("bright").value=s.brightness;$("brightVal").textContent=Math.round(s.brightness/255*100)+"%";
   $("speed").value=s.speed;
   if(s.color){$("colorPrev").style.background=s.color;$("colorHex").textContent=s.color.toUpperCase();$("colorPick").value=s.color;}
-  // батарея
-  $("battPct").textContent=s.battery;$("battFill").style.width=s.battery+"%";
+  // ╨▒╨░╤В╨░╤А╨╡╤П тАФ 3 ╤Б╨╛╤Б╤В╨╛╤П╨╜╨╕╤П: ╤А╨░╨╖╤А╤П╨╢╨░╨╡╤В╤Б╤П / ╨╖╨░╤А╤П╨╢╨░╨╡╤В╤Б╤П / ╨╖╨░╤А╤П╨╢╨╡╨╜
+  var pct=s.battery||0;
+  $("battPct").textContent=pct;
+  $("battFill").style.width=pct+"%";
   $("battVolt").textContent=(s.voltage||0).toFixed(2);
-  $("battChg").textContent=s.charging?"⚡":"";
-  var f=$("battFill");f.style.background=s.battery>50?"#22c55e":(s.battery>20?"#f59e0b":"#ef4444");
+  var battWrap=$("powerBatt");
+  battWrap.classList.remove("batt-charging","batt-full");
+  if(s.charged){
+    battWrap.classList.add("batt-full");
+    $("battChg").textContent="тЬУ";
+  } else if(s.charging){
+    battWrap.classList.add("batt-charging");
+    $("battChg").textContent="тЪб";
+  } else {
+    $("battChg").textContent="";
+  }
+  var fillColor=pct>50?"#22c55e":(pct>20?"#f59e0b":"#ef4444");
+  if(s.charging||s.charged) fillColor="#f59e0b";
+  if(s.charged && pct>=98) fillColor="#22c55e";
+  $("battFill").style.background=fillColor;
 
-  // wi-fi: теперь machine-readable коды
-  var wLabel=WIFI_LABELS[s.wifiStatus]||s.wifiStatus||"—";
+  // wi-fi: ╤В╨╡╨┐╨╡╤А╤М machine-readable ╨║╨╛╨┤╤Л
+  var wLabel=WIFI_LABELS[s.wifiStatus]||s.wifiStatus||"тАФ";
   $("devName").textContent=s.deviceName;$("verTxt").textContent="v"+s.version;
   $("wifiTxt").textContent=wLabel;
 
-  // Кнопка обновления в шапке (показывается ТОЛЬКО если есть обновление)
+  // ╨Ъ╨╜╨╛╨┐╨║╨░ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╤П ╨▓ ╤И╨░╨┐╨║╨╡ (╨┐╨╛╨║╨░╨╖╤Л╨▓╨░╨╡╤В╤Б╤П ╨в╨Ю╨Ы╨м╨Ъ╨Ю ╨╡╤Б╨╗╨╕ ╨╡╤Б╤В╤М ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡)
   var ob=$("otaHeaderBtn");
   if(ob){
     if(s.hasUpdate){
@@ -1371,23 +1391,23 @@ function applyStatus(s){
   }
 
   var dot=$("wifiDot");dot.className="dot"+(s.apMode?" ap":(s.wifiStatus==="connected"?" on":""));
-  $("curEffect").textContent=FXNAME[s.effect]||"—";
+  $("curEffect").textContent=FXNAME[s.effect]||"тАФ";
   $("curWifi").textContent=wLabel;$("curIp").textContent=s.ip;
-  $("setWifi").textContent=s.apMode?"Режим точки доступа":(s.wifiStatus==="connected"?s.ip:"Не подключено");
+  $("setWifi").textContent=s.apMode?"╨а╨╡╨╢╨╕╨╝ ╤В╨╛╤З╨║╨╕ ╨┤╨╛╤Б╤В╤Г╨┐╨░":(s.wifiStatus==="connected"?s.ip:"╨Э╨╡ ╨┐╨╛╨┤╨║╨╗╤О╤З╨╡╨╜╨╛");
   $("iVer").textContent=s.version;$("iIp").textContent=s.ip;$("iMac").textContent=s.mac;
-  $("iRssi").textContent=s.rssi?s.rssi+" dBm":"—";
-  $("iHeap").textContent=Math.round(s.freeHeap/1024)+" КБ";
-  $("iNtp").textContent=s.timeSynced?"✓ Синхронизировано":"✗ Нет связи";
+  $("iRssi").textContent=s.rssi?s.rssi+" dBm":"тАФ";
+  $("iHeap").textContent=Math.round(s.freeHeap/1024)+" ╨Ъ╨С";
+  $("iNtp").textContent=s.timeSynced?"тЬУ ╨б╨╕╨╜╤Е╤А╨╛╨╜╨╕╨╖╨╕╤А╨╛╨▓╨░╨╜╨╛":"тЬЧ ╨Э╨╡╤В ╤Б╨▓╤П╨╖╨╕";
   var st=$("schTimeStatus");
   if(st){
     if(s.timeSynced && s.time){
-      st.innerHTML='<span style="color:#22c55e">●</span> Время сети: <b>'+s.time+'</b>';
+      st.innerHTML='<span style="color:#22c55e">тЧП</span> ╨Т╤А╨╡╨╝╤П ╤Б╨╡╤В╨╕: <b>'+s.time+'</b>';
     }else{
-      st.innerHTML='<span style="color:var(--warn)">●</span> Время не синхронизировано (NTP)';
+      st.innerHTML='<span style="color:var(--warn)">тЧП</span> ╨Т╤А╨╡╨╝╤П ╨╜╨╡ ╤Б╨╕╨╜╤Е╤А╨╛╨╜╨╕╨╖╨╕╤А╨╛╨▓╨░╨╜╨╛ (NTP)';
     }
   }
   updateFxSel();
-  // таймер сна
+  // ╤В╨░╨╣╨╝╨╡╤А ╤Б╨╜╨░
   var tb=$("timerBadge");
   if(s.timerLeft>=0){
     var mm=Math.floor(s.timerLeft/60),ss=s.timerLeft%60;
@@ -1413,7 +1433,7 @@ function toggleFs(){
   }
 }
 
-// ============ Модальное окно OTA ============
+// ============ ╨Ь╨╛╨┤╨░╨╗╤М╨╜╨╛╨╡ ╨╛╨║╨╜╨╛ OTA ============
 function openOtaModal(){
   $("otaModal").style.display="flex";
   api("/api/ota/status").then(renderGhOtaStatus);
@@ -1430,15 +1450,15 @@ function closeOtaSuccessModal(){
 }
 function checkGitHubOta(){
   var info=$("otaGhInfo"),action=$("otaGhAction");
-  info.innerHTML="Проверка обновлений на GitHub...";
-  action.innerHTML='<span class="muted">Проверяем...</span>';
+  info.innerHTML="╨Я╤А╨╛╨▓╨╡╤А╨║╨░ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╣ ╨╜╨░ GitHub...";
+  action.innerHTML='<span class="muted">╨Я╤А╨╛╨▓╨╡╤А╤П╨╡╨╝...</span>';
   api("/api/ota/check","POST").then(function(){
     setTimeout(function(){
       api("/api/ota/status").then(renderGhOtaStatus);
     },2500);
   }).catch(function(){
-    info.textContent="Ошибка запроса к GitHub";
-    action.innerHTML='<button class="btn ghost small" onclick="checkGitHubOta()">Повторить</button>';
+    info.textContent="╨Ю╤И╨╕╨▒╨║╨░ ╨╖╨░╨┐╤А╨╛╤Б╨░ ╨║ GitHub";
+    action.innerHTML='<button class="btn ghost small" onclick="checkGitHubOta()">╨Я╨╛╨▓╤В╨╛╤А╨╕╤В╤М</button>';
   });
 }
 function renderGhOtaStatus(s){
@@ -1449,13 +1469,13 @@ function renderGhOtaStatus(s){
     return;
   }
   if(s.hasUpdate){
-    info.innerHTML="Текущая: <b>v"+(s.currentVersion||"1.3.9")+"</b> · Доступна: <b style='color:#22c55e'>v"+s.latestVersion+"</b>"+
+    info.innerHTML="╨в╨╡╨║╤Г╤Й╨░╤П: <b>v"+(s.currentVersion||"1.3.9")+"</b> ┬╖ ╨Ф╨╛╤Б╤В╤Г╨┐╨╜╨░: <b style='color:#22c55e'>v"+s.latestVersion+"</b>"+
       (s.updateNotes?"<div style='color:var(--muted);font-size:11px;margin-top:4px'>"+s.updateNotes+"</div>":"");
-    action.innerHTML='<button class="btn small" style="background:#22c55e;border-color:#22c55e;font-weight:700" onclick="updateFromGitHub(\''+s.latestVersion+'\')">🚀 Обновить до v'+s.latestVersion+'</button>';
+    action.innerHTML='<button class="btn small" style="background:#22c55e;border-color:#22c55e;font-weight:700" onclick="updateFromGitHub(\''+s.latestVersion+'\')">ЁЯЪА ╨Ю╨▒╨╜╨╛╨▓╨╕╤В╤М ╨┤╨╛ v'+s.latestVersion+'</button>';
     if(ob){ob.style.display="inline-flex";if(s.latestVersion)$("otaBadge").textContent="v"+s.latestVersion;}
   }else{
-    info.innerHTML="Текущая версия: <b>v"+(s.currentVersion||"1.3.9")+"</b> (актуальная)";
-    action.innerHTML='<button class="btn ghost small" onclick="checkGitHubOta()">Проверить снова</button>';
+    info.innerHTML="╨в╨╡╨║╤Г╤Й╨░╤П ╨▓╨╡╤А╤Б╨╕╤П: <b>v"+(s.currentVersion||"1.3.9")+"</b> (╨░╨║╤В╤Г╨░╨╗╤М╨╜╨░╤П)";
+    action.innerHTML='<button class="btn ghost small" onclick="checkGitHubOta()">╨Я╤А╨╛╨▓╨╡╤А╨╕╤В╤М ╤Б╨╜╨╛╨▓╨░</button>';
     if(ob)ob.style.display="none";
   }
 }
@@ -1467,8 +1487,8 @@ function startOtaProgressPolling(targetVer){
   if($("otaGhAction"))$("otaGhAction").style.display="none";
   if(bar)bar.style.width="0%";
   if(pct)pct.textContent="0%";
-  if(txt)txt.textContent="Подключение к GitHub...";
-  if(hint)hint.textContent="Шашка горит зелёным (50% яркости). Не выключайте питание!";
+  if(txt)txt.textContent="╨Я╨╛╨┤╨║╨╗╤О╤З╨╡╨╜╨╕╨╡ ╨║ GitHub...";
+  if(hint)hint.textContent="╨и╨░╤И╨║╨░ ╨│╨╛╤А╨╕╤В ╨╖╨╡╨╗╤С╨╜╤Л╨╝ (50% ╤П╤А╨║╨╛╤Б╤В╨╕). ╨Э╨╡ ╨▓╤Л╨║╨╗╤О╤З╨░╨╣╤В╨╡ ╨┐╨╕╤В╨░╨╜╨╕╨╡!";
 
   var offlineCount=0;
   if(_otaPollTimer)clearInterval(_otaPollTimer);
@@ -1482,11 +1502,11 @@ function startOtaProgressPolling(targetVer){
         if(pct)pct.textContent=p+"%";
         if(s.isUpdating){
           if(p<100){
-            if(txt)txt.textContent="Скачивание с GitHub: "+p+"%";
-            if(hint)hint.textContent="Шашка скачивает обновление ("+p+"%)...";
+            if(txt)txt.textContent="╨б╨║╨░╤З╨╕╨▓╨░╨╜╨╕╨╡ ╤Б GitHub: "+p+"%";
+            if(hint)hint.textContent="╨и╨░╤И╨║╨░ ╤Б╨║╨░╤З╨╕╨▓╨░╨╡╤В ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ("+p+"%)...";
           }else{
-            if(txt)txt.textContent="Запись во Flash (100%)...";
-            if(hint)hint.textContent="Файл получен! Запись во Flash, 3 мигания зелёным и перезагрузка.";
+            if(txt)txt.textContent="╨Ч╨░╨┐╨╕╤Б╤М ╨▓╨╛ Flash (100%)...";
+            if(hint)hint.textContent="╨д╨░╨╣╨╗ ╨┐╨╛╨╗╤Г╤З╨╡╨╜! ╨Ч╨░╨┐╨╕╤Б╤М ╨▓╨╛ Flash, 3 ╨╝╨╕╨│╨░╨╜╨╕╤П ╨╖╨╡╨╗╤С╨╜╤Л╨╝ ╨╕ ╨┐╨╡╤А╨╡╨╖╨░╨│╤А╤Г╨╖╨║╨░.";
           }
         }
       }
@@ -1494,8 +1514,8 @@ function startOtaProgressPolling(targetVer){
       offlineCount++;
       if(bar)bar.style.width="100%";
       if(pct)pct.textContent="100%";
-      if(txt)txt.textContent="Перезагрузка шашки...";
-      if(hint)hint.textContent="Шашка перезагружается с новой прошивкой "+(targetVer?"v"+targetVer:"")+" (подождите 5–8 сек)...";
+      if(txt)txt.textContent="╨Я╨╡╤А╨╡╨╖╨░╨│╤А╤Г╨╖╨║╨░ ╤И╨░╤И╨║╨╕...";
+      if(hint)hint.textContent="╨и╨░╤И╨║╨░ ╨┐╨╡╤А╨╡╨╖╨░╨│╤А╤Г╨╢╨░╨╡╤В╤Б╤П ╤Б ╨╜╨╛╨▓╨╛╨╣ ╨┐╤А╨╛╤И╨╕╨▓╨║╨╛╨╣ "+(targetVer?"v"+targetVer:"")+" (╨┐╨╛╨┤╨╛╨╢╨┤╨╕╤В╨╡ 5тАУ8 ╤Б╨╡╨║)...";
 
       if(offlineCount>=4){
         api("/api/status","GET",null,true).then(function(newStatus){
@@ -1512,34 +1532,34 @@ function startOtaProgressPolling(targetVer){
 }
 
 function updateFromGitHub(targetVer){
-  if(!confirm("Скачать и установить обновление с GitHub?\n\nШашка загорится зелёным цветом на 50% яркости, скачает прошивку, трижды мигнёт зелёным и перезагрузится."))return;
-  toast("Запуск обновления с GitHub...");
+  if(!confirm("╨б╨║╨░╤З╨░╤В╤М ╨╕ ╤Г╤Б╤В╨░╨╜╨╛╨▓╨╕╤В╤М ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╤Б GitHub?\n\n╨и╨░╤И╨║╨░ ╨╖╨░╨│╨╛╤А╨╕╤В╤Б╤П ╨╖╨╡╨╗╤С╨╜╤Л╨╝ ╤Ж╨▓╨╡╤В╨╛╨╝ ╨╜╨░ 50% ╤П╤А╨║╨╛╤Б╤В╨╕, ╤Б╨║╨░╤З╨░╨╡╤В ╨┐╤А╨╛╤И╨╕╨▓╨║╤Г, ╤В╤А╨╕╨╢╨┤╤Л ╨╝╨╕╨│╨╜╤С╤В ╨╖╨╡╨╗╤С╨╜╤Л╨╝ ╨╕ ╨┐╨╡╤А╨╡╨╖╨░╨│╤А╤Г╨╖╨╕╤В╤Б╤П."))return;
+  toast("╨Ч╨░╨┐╤Г╤Б╨║ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╤П ╤Б GitHub...");
   api("/api/ota/github","POST").then(function(r){
     if(r.ok){
       startOtaProgressPolling(targetVer);
     }else{
-      toast("Ошибка: "+(r.error||"сбой"),"err");
+      toast("╨Ю╤И╨╕╨▒╨║╨░: "+(r.error||"╤Б╨▒╨╛╨╣"),"err");
     }
   }).catch(function(e){
-    toast("Ошибка связи","err");
+    toast("╨Ю╤И╨╕╨▒╨║╨░ ╤Б╨▓╤П╨╖╨╕","err");
   });
 }
 function onOtaFileChosen(input){
   if(input.files&&input.files[0]){
     var f=input.files[0];
-    $("otaFileName").textContent=f.name+" ("+Math.round(f.size/1024)+" КБ)";
+    $("otaFileName").textContent=f.name+" ("+Math.round(f.size/1024)+" ╨Ъ╨С)";
     $("otaUploadBtn").style.display="block";
   }
 }
 function uploadOtaFile(){
   var input=$("otaFileInput");
-  if(!input.files||!input.files[0]){toast("Выберите файл .bin","err");return;}
+  if(!input.files||!input.files[0]){toast("╨Т╤Л╨▒╨╡╤А╨╕╤В╨╡ ╤Д╨░╨╣╨╗ .bin","err");return;}
   var file=input.files[0];
-  if(!confirm("Прошить шашку файлом "+file.name+"?\n\nШашка загорится зелёным на 50% яркости, трижды мигнёт и перезагрузится."))return;
+  if(!confirm("╨Я╤А╨╛╤И╨╕╤В╤М ╤И╨░╤И╨║╤Г ╤Д╨░╨╣╨╗╨╛╨╝ "+file.name+"?\n\n╨и╨░╤И╨║╨░ ╨╖╨░╨│╨╛╤А╨╕╤В╤Б╤П ╨╖╨╡╨╗╤С╨╜╤Л╨╝ ╨╜╨░ 50% ╤П╤А╨║╨╛╤Б╤В╨╕, ╤В╤А╨╕╨╢╨┤╤Л ╨╝╨╕╨│╨╜╤С╤В ╨╕ ╨┐╨╡╤А╨╡╨╖╨░╨│╤А╤Г╨╖╨╕╤В╤Б╤П."))return;
 
   var wrap=$("otaProgressWrap"),bar=$("otaProgressBar"),pct=$("otaProgressPct"),txt=$("otaProgressText"),btn=$("otaUploadBtn");
   wrap.style.display="block";btn.disabled=true;
-  txt.textContent="Загрузка файла...";bar.style.width="0%";pct.textContent="0%";
+  txt.textContent="╨Ч╨░╨│╤А╤Г╨╖╨║╨░ ╤Д╨░╨╣╨╗╨░...";bar.style.width="0%";pct.textContent="0%";
 
   var fd=new FormData();fd.append("update",file);
   var xhr=new XMLHttpRequest();
@@ -1548,43 +1568,43 @@ function uploadOtaFile(){
     if(e.lengthComputable){
       var p=Math.round((e.loaded/e.total)*100);
       bar.style.width=p+"%";pct.textContent=p+"%";
-      if(p>=100)txt.textContent="Запись во Flash-память...";
+      if(p>=100)txt.textContent="╨Ч╨░╨┐╨╕╤Б╤М ╨▓╨╛ Flash-╨┐╨░╨╝╤П╤В╤М...";
     }
   };
   xhr.onload=function(){
     if(xhr.status===200){
-      txt.textContent="Успешно! Перезагрузка...";
+      txt.textContent="╨г╤Б╨┐╨╡╤И╨╜╨╛! ╨Я╨╡╤А╨╡╨╖╨░╨│╤А╤Г╨╖╨║╨░...";
       bar.style.width="100%";pct.textContent="100%";
-      toast("Прошивка успешна! Перезагрузка...","ok");
+      toast("╨Я╤А╨╛╤И╨╕╨▓╨║╨░ ╤Г╤Б╨┐╨╡╤И╨╜╨░! ╨Я╨╡╤А╨╡╨╖╨░╨│╤А╤Г╨╖╨║╨░...","ok");
       setTimeout(function(){location.reload();},6000);
     }else{
-      txt.textContent="Ошибка прошивки";btn.disabled=false;
-      toast("Ошибка при обновлении","err");
+      txt.textContent="╨Ю╤И╨╕╨▒╨║╨░ ╨┐╤А╨╛╤И╨╕╨▓╨║╨╕";btn.disabled=false;
+      toast("╨Ю╤И╨╕╨▒╨║╨░ ╨┐╤А╨╕ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╕","err");
     }
   };
   xhr.onerror=function(){
-    txt.textContent="Сетевая ошибка";btn.disabled=false;
-    toast("Ошибка связи","err");
+    txt.textContent="╨б╨╡╤В╨╡╨▓╨░╤П ╨╛╤И╨╕╨▒╨║╨░";btn.disabled=false;
+    toast("╨Ю╤И╨╕╨▒╨║╨░ ╤Б╨▓╤П╨╖╨╕","err");
   };
   xhr.send(fd);
 }
 function otaByUrlModal(){
   var u=$("otaModalUrl").value.trim();
-  if(!u){toast("Введите ссылку на файл .bin","err");return;}
-  if(!confirm("Начать обновление по ссылке?\n"+u+"\n\nШашка загорится зелёным на 50% яркости."))return;
-  toast("Загрузка прошивки по URL...");
+  if(!u){toast("╨Т╨▓╨╡╨┤╨╕╤В╨╡ ╤Б╤Б╤Л╨╗╨║╤Г ╨╜╨░ ╤Д╨░╨╣╨╗ .bin","err");return;}
+  if(!confirm("╨Э╨░╤З╨░╤В╤М ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╨┐╨╛ ╤Б╤Б╤Л╨╗╨║╨╡?\n"+u+"\n\n╨и╨░╤И╨║╨░ ╨╖╨░╨│╨╛╤А╨╕╤В╤Б╤П ╨╖╨╡╨╗╤С╨╜╤Л╨╝ ╨╜╨░ 50% ╤П╤А╨║╨╛╤Б╤В╨╕."))return;
+  toast("╨Ч╨░╨│╤А╤Г╨╖╨║╨░ ╨┐╤А╨╛╤И╨╕╨▓╨║╨╕ ╨┐╨╛ URL...");
   api("/api/ota/url","POST",{url:u}).then(function(r){
     if(r.ok){
       startOtaProgressPolling();
     }else{
-      toast("Ошибка: "+(r.error||"сбой"),"err");
+      toast("╨Ю╤И╨╕╨▒╨║╨░: "+(r.error||"╤Б╨▒╨╛╨╣"),"err");
     }
   }).catch(function(e){
-    toast("Ошибка связи","err");
+    toast("╨Ю╤И╨╕╨▒╨║╨░ ╤Б╨▓╤П╨╖╨╕","err");
   });
 }
 
-// ============ Инициализация ============
+// ============ ╨Ш╨╜╨╕╤Ж╨╕╨░╨╗╨╕╨╖╨░╤Ж╨╕╤П ============
 
 (function init(){
   var sw=$("swatches");SWATCHES.forEach(function(c){var d=document.createElement("div");d.className="sw";d.style.background=c;d.onclick=function(){pickSwatch(c);};sw.appendChild(d);});
