@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
@@ -79,8 +79,13 @@ header .sub{font-size:12px;color:var(--muted)}
 .batt-fill{height:100%;border-radius:1px;background:var(--ok);transition:width .5s ease,background .5s}
 .batt-info{line-height:1.2;text-align:right}
 .batt-row{font-size:12px;font-weight:700}
-.batt-chg{color:var(--warn);font-size:11px;margin-left:2px}
+.batt-chg{font-size:11px;margin-left:3px}
 .batt-volt{font-size:10px;color:var(--muted)}
+@keyframes batt-pulse{0%{opacity:1}50%{opacity:.45}100%{opacity:1}}
+.batt-charging .batt-fill{animation:batt-pulse 1.4s ease-in-out infinite}
+.batt-charging .batt-chg{color:#f59e0b}
+.batt-full .batt-chg{color:#22c55e}
+
 
 /* Ползунок */
 .slider-row{display:flex;align-items:center;gap:12px}
@@ -596,7 +601,7 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
           </button>
           <div class="power-label" id="powerLabel">Выключено</div>
         </div>
-        <div class="power-batt">
+        <div class="power-batt" id="powerBatt">
           <div class="batt-ico"><div class="batt-fill" id="battFill" style="width:0%"></div></div>
           <div class="batt-info">
             <div class="batt-row"><span id="battPct">—</span>% <span id="battChg"></span></div>
@@ -1348,11 +1353,26 @@ function applyStatus(s){
   $("bright").value=s.brightness;$("brightVal").textContent=Math.round(s.brightness/255*100)+"%";
   $("speed").value=s.speed;
   if(s.color){$("colorPrev").style.background=s.color;$("colorHex").textContent=s.color.toUpperCase();$("colorPick").value=s.color;}
-  // батарея
-  $("battPct").textContent=s.battery;$("battFill").style.width=s.battery+"%";
+  // батарея — 3 состояния: разряжается / заряжается / заряжен
+  var pct=s.battery||0;
+  $("battPct").textContent=pct;
+  $("battFill").style.width=pct+"%";
   $("battVolt").textContent=(s.voltage||0).toFixed(2);
-  $("battChg").textContent=s.charging?"⚡":"";
-  var f=$("battFill");f.style.background=s.battery>50?"#22c55e":(s.battery>20?"#f59e0b":"#ef4444");
+  var battWrap=$("powerBatt");
+  battWrap.classList.remove("batt-charging","batt-full");
+  if(s.charged){
+    battWrap.classList.add("batt-full");
+    $("battChg").textContent="✓";
+  } else if(s.charging){
+    battWrap.classList.add("batt-charging");
+    $("battChg").textContent="⚡";
+  } else {
+    $("battChg").textContent="";
+  }
+  var fillColor=pct>50?"#22c55e":(pct>20?"#f59e0b":"#ef4444");
+  if(s.charging||s.charged) fillColor="#f59e0b";
+  if(s.charged && pct>=98) fillColor="#22c55e";
+  $("battFill").style.background=fillColor;
 
   // wi-fi: теперь machine-readable коды
   var wLabel=WIFI_LABELS[s.wifiStatus]||s.wifiStatus||"—";
