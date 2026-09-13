@@ -91,21 +91,64 @@ void BatteryManager::tick() {
   if (now - _lastUpdate < BATTERY_UPDATE_MS) return;
   _lastUpdate = now;
 
-  float prev = _emaVoltage;
-  float raw  = measureRaw();
+  float raw = measureRaw();
+
+  // Сохраняем состояние до обновления (для детектирования смены)
+  _prevCharging = _charging;
+
+  // ---- Детектирование зарядки ----
+  // Признаки зарядки WITHOUT CHRG-пина (Вариант A):
+  //   1. Напряжение > 4.05 В (Li-Ion при разряде редко превышает 4.05 В под нагрузкой)
+  //   2. И EMA-тренд растущий (raw > emaVoltage + ε)
+  // Гистерезис: сбросить charging только при V < 4.00 В ИЛИ устойчивом падении
+
+  const float CHG_ON_THRESH   = 4.05f;  // включить режим зарядки
+  const float CHG_OFF_THRESH  = 4.00f;  // выключить режим зарядки (гистерезис)
+  const float CHG_DONE_THRESH = 4.18f;  // "заряд завершён" (TP4056 STDBY ~4.2 В)
+  const float RISE_EPS        = 0.008f; // минимальный рост для учёта
+
+  // Если зарядник только подключили — сбрасываем EMA на raw,
+  // чтобы не ждать несколько минут сглаживания
+  if (!_prevCharging && raw > CHG_ON_THRESH && raw > _emaVoltage + 0.10f) {
+    _emaVoltage = raw;
+  }
 
   // EMA-фильтр: новое = α * замер + (1 − α) * старое
   _emaVoltage = EMA_ALPHA * raw + (1.0f - EMA_ALPHA) * _emaVoltage;
   _voltage    = _emaVoltage;
   _percent    = voltageToPct(_voltage);
 
-  // Определение зарядки: 3+ замера подряд с ростом > 0.01 В
-  if (_emaVoltage - prev > 0.01f) {
-    if (_risingCount < 255) _risingCount++;
+  // Тренд: raw растёт относительно EMA
+  bool rising = (raw - _emaVoltage) > RISE_EPS;
+
+  if (!_charging) {
+    // Включить зарядку: напряжение высокое И тренд вверх
+    if (_emaVoltage >= CHG_ON_THRESH && rising) {
+      if (_risingCount < 255) _risingCount++;
+      if (_risingCount >= 2) _charging = true;
+    } else {
+      _risingCount = 0;
+    }
   } else {
-    _risingCount = 0;
+    // Выключить зарядку: напряжение упало под гистерезис ИЛИ устойчивое падение
+    if (_emaVoltage < CHG_OFF_THRESH || (!rising && raw < _emaVoltage - RISE_EPS)) {
+      _charging    = false;
+      _risingCount = 0;
+      _stableCount = 0;
+      _charged     = false;
+    }
   }
-  _charging = (_risingCount >= 3);
+
+  // "Заряд завершён": charging=true, напряжение стабильно ≥ 4.18 В (не растёт)
+  if (_charging && _emaVoltage >= CHG_DONE_THRESH && !rising) {
+    if (_stableCount < 255) _stableCount++;
+    if (_stableCount >= 5) _charged = true;
+  } else {
+    if (!_charging) {
+      _stableCount = 0;
+      _charged     = false;
+    }
+  }
 
   // Защита от глубокого разряда Li-Ion (< 3.00 В при отсутствии зарядки)
   // Проверяем > 1.0 В, чтобы исключить неподключенный пин при стендовых тестах
@@ -122,4 +165,5 @@ void BatteryManager::tick() {
 
 float   BatteryManager::getVoltage() { return _voltage; }
 uint8_t BatteryManager::getPercent() { return _percent; }
-bool    BatteryManager::isCharging() { return _charging; }
+bool    BatteryManager::isCharging() { return _charging && !_charged; }
+bool    BatteryManager::isCharged()  { return _charged; }

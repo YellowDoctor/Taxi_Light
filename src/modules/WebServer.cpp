@@ -130,6 +130,7 @@ String WebServerManager::buildStatusJson() {
   doc["battery"]    = Battery.getPercent();
   doc["voltage"]    = Battery.getVoltage();
   doc["charging"]   = Battery.isCharging();
+  doc["charged"]    = Battery.isCharged();
   doc["wifiStatus"] = Wifi.getStatus();
   doc["ip"]         = Wifi.getIP();
   doc["rssi"]       = Wifi.getRSSI();
