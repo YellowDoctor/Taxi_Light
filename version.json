@@ -1,5 +1,5 @@
 {
-  "version": "1.5.3",
-  "url": "https://raw.githubusercontent.com/YellowDoctor/Taxi_Light/v1.5.3/firmware.bin",
-  "notes": "Версия 1.5.3: редизайн вкладки Эффекты — виртуальная шашка Hero, плавный ползунок скорости, чипы категорий и 2-колоночная сетка без перегрева устройства"
+  "version": "1.5.4",
+  "url": "https://raw.githubusercontent.com/YellowDoctor/Taxi_Light/v1.5.4/firmware.bin",
+  "notes": "Версия 1.5.4: улучшенная читаемость каталога эффектов — увеличен шрифт названий и подписей, расширены цветовые маркеры"
 }

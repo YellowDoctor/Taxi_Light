@@ -190,29 +190,29 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 }
 
 /* Сетка карточек каталога (2 колонки) */
-.fx-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fx-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fx-card{
-  display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:14px;
-  background:var(--card2);border:1.5px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:15px;
+  background:var(--card2);border:1.5px solid rgba(255,255,255,.07);
   cursor:pointer;transition:transform .15s ease,border-color .2s ease,background .2s ease;
-  min-height:50px;
+  min-height:56px;
 }
 .fx-card:active{transform:scale(.97)}
 .fx-card.sel{
-  border-color:#7c3aed;background:rgba(124,58,237,.15);
-  box-shadow:0 0 16px rgba(124,58,237,.25);
+  border-color:#7c3aed;background:rgba(124,58,237,.16);
+  box-shadow:0 0 18px rgba(124,58,237,.3);
 }
 .fx-pill{
-  width:12px;height:30px;border-radius:6px;
-  border:1px solid rgba(255,255,255,.14);flex-shrink:0;
+  width:14px;height:34px;border-radius:7px;
+  border:1px solid rgba(255,255,255,.16);flex-shrink:0;
 }
 .fx-info{flex:1;min-width:0}
 .fx-name{
-  font-size:12px;font-weight:700;color:var(--txt);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;
+  font-size:14px;font-weight:700;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25;
 }
-.fx-sub{font-size:10px;color:var(--muted);margin-top:2px}
-.fx-check{font-size:13px;font-weight:900;color:#a78bfa;margin-left:auto;flex-shrink:0}
+.fx-sub{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:2px}
+.fx-check{font-size:14px;font-weight:900;color:#a78bfa;margin-left:auto;flex-shrink:0}
 
 /* Спящий режим: когда экран скрыт, анимация спит */
 .screen:not(.active) #heroDiffuser,
