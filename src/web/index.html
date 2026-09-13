@@ -119,205 +119,133 @@ input[type=color]{position:absolute;opacity:0;width:52px;height:52px;cursor:poin
 .info-line .k{color:var(--muted)}
 .info-line .v{font-weight:600}
 
-/* Сетка эффектов */
-.fx-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* ================= Вкладка «Эффекты»: Hero-превью и каталог ================= */
+
+/* Hero-карточка */
+.hero-fx-card{
+  background:linear-gradient(160deg,#1c1c2e,#121220);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;padding:16px;margin-bottom:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+.hero-fx-header{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;
+}
+.hero-fx-title{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);
+}
+.hero-fx-badge{
+  font-size:12px;font-weight:700;padding:3px 10px;border-radius:8px;
+  background:rgba(124,58,237,.2);color:#c4b5fd;border:1px solid rgba(124,58,237,.4);
+  transition:all .3s ease;
+}
+
+/* Макет светящейся шашки */
+.hero-lamp-wrap{
+  display:flex;flex-direction:column;align-items:center;margin:8px 0 12px;
+}
+.hero-lamp-bezel{
+  width:100%;max-width:380px;height:38px;padding:3px;
+  background:#090912;border:1px solid rgba(255,255,255,.18);border-radius:12px;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.8);display:flex;align-items:center;
+}
+.hero-diffuser{
+  width:100%;height:100%;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;transition:background .4s ease,box-shadow .4s ease;
+}
+.hero-diffuser span{
+  font-size:9px;font-weight:900;letter-spacing:3px;
+  color:rgba(0,0,0,.45);text-transform:uppercase;user-select:none;
+}
+.hero-glow{
+  width:160px;height:8px;border-radius:50%;filter:blur(6px);
+  margin-top:-3px;transition:background .4s ease;
+}
+
+/* Ползунок скорости внутри Hero */
+.hero-speed-row{
+  border-top:1px solid rgba(255,255,255,.07);padding-top:10px;margin-top:4px;
+}
+.hero-speed-header{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;
+}
+.hero-speed-header b{color:#a78bfa}
+
+/* Горизонтальные чипы категорий */
+.fx-cat-row{
+  display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;margin-bottom:12px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.fx-cat-row::-webkit-scrollbar{display:none}
+.fx-cat-chip{
+  padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;
+  white-space:nowrap;cursor:pointer;border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);color:var(--muted);transition:all .2s;
+}
+.fx-cat-chip.active{
+  background:var(--accent);color:#fff;border-color:rgba(255,255,255,.2);
+  box-shadow:0 2px 10px var(--accent-glow);
+}
+
+/* Сетка карточек каталога (2 колонки) */
+.fx-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .fx-card{
-  background:var(--card2);border:2px solid rgba(255,255,255,.06);border-radius:16px;
-  padding:14px;cursor:pointer;transition:all .3s ease;overflow:hidden;position:relative;
+  display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:14px;
+  background:var(--card2);border:1.5px solid rgba(255,255,255,.06);
+  cursor:pointer;transition:transform .15s ease,border-color .2s ease,background .2s ease;
+  min-height:50px;
 }
-.fx-card:active{transform:scale(.96)}
-.fx-card.sel{border-color:#7c3aed;box-shadow:0 0 20px rgba(124,58,237,.4)}
-.fx-name{font-size:14px;font-weight:600;margin-top:10px}
-.fx-prev{height:56px;border-radius:12px;overflow:hidden;position:relative}
-/* превью-анимации */
-.p-static{background:#ffb000}
-.p-breathe{background:#7c3aed;animation:pbreathe 2.5s infinite ease-in-out}
-@keyframes pbreathe{0%,100%{opacity:.25}50%{opacity:1}}
-.p-rainbow{background:linear-gradient(90deg,red,orange,yellow,green,cyan,blue,violet,red);background-size:200% 100%;animation:prain 2s linear infinite}
-@keyframes prain{0%{background-position:0 0}100%{background-position:200% 0}}
-.p-fire{background:linear-gradient(0deg,#ff2200,#ff8800,#ffcc00);animation:pfire .4s infinite alternate}
-@keyframes pfire{0%{filter:brightness(.7)}100%{filter:brightness(1.3)}}
-.p-candle{background:radial-gradient(circle at 50% 70%,#ffcc33,#ff8800);animation:pcandle .25s infinite alternate}
-@keyframes pcandle{0%{filter:brightness(.6)}100%{filter:brightness(1.2)}}
-.p-flow{animation:pflow 6s linear infinite}
-@keyframes pflow{0%{background:#ff0055}25%{background:#7c3aed}50%{background:#0af}75%{background:#0f5}100%{background:#ff0055}}
+.fx-card:active{transform:scale(.97)}
+.fx-card.sel{
+  border-color:#7c3aed;background:rgba(124,58,237,.15);
+  box-shadow:0 0 16px rgba(124,58,237,.25);
+}
+.fx-pill{
+  width:12px;height:30px;border-radius:6px;
+  border:1px solid rgba(255,255,255,.14);flex-shrink:0;
+}
+.fx-info{flex:1;min-width:0}
+.fx-name{
+  font-size:12px;font-weight:700;color:var(--txt);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;
+}
+.fx-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.fx-check{font-size:13px;font-weight:900;color:#a78bfa;margin-left:auto;flex-shrink:0}
 
-/* -------------------------------------------------------
-   Новые превью эффектов
-   ------------------------------------------------------- */
-
-/* Северное сияние */
-.p-aurora{
-  background:
-    linear-gradient(
-      120deg,
-      #063b35,
-      #00a878,
-      #00d4aa,
-      #3155d9,
-      #7c3aed,
-      #063b35
-    );
-  background-size:300% 100%;
-  animation:paurora 5s ease-in-out infinite;
+/* Спящий режим: когда экран скрыт, анимация спит */
+.screen:not(.active) #heroDiffuser,
+.screen:not(.active) #heroDiffuser::after{
+  animation-play-state:paused !important;
 }
 
-@keyframes paurora{
-  0%{
-    background-position:0% 50%;
-    filter:brightness(.65);
-  }
-  50%{
-    background-position:100% 50%;
-    filter:brightness(1.25);
-  }
-  100%{
-    background-position:0% 50%;
-    filter:brightness(.65);
-  }
-}
+/* Анимации Hero-шашки (аппаратное ускорение) */
+@keyframes hero-glow-pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes hero-slide{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes hero-police{0%,48%{background:#ef4444}52%,100%{background:#3b82f6}}
+@keyframes hero-strobe{0%,49%{opacity:1}50%,100%{opacity:.05}}
+@keyframes hero-meteor{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
 
-
-/* Океан */
-.p-ocean{
-  background:
-    linear-gradient(
-      90deg,
-      #003b73,
-      #006994,
-      #00a6a6,
-      #0077b6,
-      #003b73
-    );
-  background-size:300% 100%;
-  animation:pocean 3s ease-in-out infinite;
-}
-
-@keyframes pocean{
-  0%{
-    background-position:0% 50%;
-    filter:brightness(.7);
-  }
-  50%{
-    background-position:100% 50%;
-    filter:brightness(1.2);
-  }
-  100%{
-    background-position:0% 50%;
-    filter:brightness(.7);
-  }
-}
-
-
-/* Полиция — красный / синий */
-.p-police{
-  background:
-    linear-gradient(
-      90deg,
-      #ff0000 0%,
-      #ff0000 20%,
-      #101020 20%,
-      #101020 80%,
-      #0055ff 80%,
-      #0055ff 100%
-    );
-  animation:ppolice 1.2s infinite;
-}
-
-@keyframes ppolice{
-  0%, 35%{
-    filter:brightness(1.4);
-  }
-
-  50%, 85%{
-    filter:brightness(.65);
-  }
-
-  100%{
-    filter:brightness(1.4);
-  }
-}
-
-
-/* Полицейская мигалка */
-.p-police-flash{
-  background:
-    linear-gradient(
-      90deg,
-      #ff0000 0%,
-      #ff0000 20%,
-      #050510 20%,
-      #050510 80%,
-      #0055ff 80%,
-      #0055ff 100%
-    );
-  animation:ppoliceflash .8s steps(1,end) infinite;
-}
-
-@keyframes ppoliceflash{
-  0%{
-    filter:brightness(1.6);
-  }
-
-  12%{
-    filter:brightness(.25);
-  }
-
-  25%{
-    filter:brightness(1.6);
-  }
-
-  37%{
-    filter:brightness(.25);
-  }
-
-  50%{
-    filter:brightness(.15);
-  }
-
-  62%{
-    filter:brightness(1.6);
-  }
-
-  75%{
-    filter:brightness(.25);
-  }
-
-  87%{
-    filter:brightness(1.6);
-  }
-
-  100%{
-    filter:brightness(.15);
-  }
-}
-
-/* Метеор */
-.p-meteor{background:#000;position:relative;overflow:hidden}
-.p-meteor::after{content:"";position:absolute;width:12px;height:100%;background:linear-gradient(90deg,transparent,#fff,#7c3aed);animation:pmeteor 1.2s linear infinite;left:-12px;top:0}
-@keyframes pmeteor{0%{left:-12px}100%{left:100%}}
-
-/* Стробоскоп */
-.p-strobe{background:#fff;animation:pstrobe .3s steps(1,end) infinite}
-@keyframes pstrobe{0%{background:#fff}50%{background:#000}}
-
-/* Бегущие огни */
-.p-running{background:#111;position:relative;overflow:hidden}
-.p-running::after{content:"";position:absolute;width:8px;height:100%;border-radius:50%;background:#7c3aed;box-shadow:0 0 10px #7c3aed;animation:prun 1s linear infinite;left:-8px}
-@keyframes prun{0%{left:-8px}100%{left:100%}}
-
-/* Ночное небо */
-.p-nightsky{background:#000814;animation:pnightsky 3s ease infinite}
-@keyframes pnightsky{0%,100%{box-shadow:inset 10px 10px 2px 0px #fff,inset 30px 5px 2px 0px rgba(255,255,255,.3),inset 50px 20px 1px 0px #fff}50%{box-shadow:inset 10px 10px 2px 0px rgba(255,255,255,.2),inset 30px 5px 2px 0px #fff,inset 50px 20px 1px 0px rgba(255,255,255,.5)}}
-
-/* Лазер */
-.p-laser{background:#000;position:relative;overflow:hidden}
-.p-laser::after{content:"";position:absolute;width:4px;height:100%;background:#f00;box-shadow:0 0 8px #f00;animation:plaser .8s ease-in-out infinite alternate;left:0}
-@keyframes plaser{0%{left:0}100%{left:calc(100% - 4px)}}
-
-/* Вспышки */
-.p-flash{background:#111;animation:pflash .5s steps(1,end) infinite}
-@keyframes pflash{0%{background:#111}10%{background:#3b82f6}20%{background:#111}35%{background:#7c3aed}50%{background:#111}70%{background:#22c55e}100%{background:#111}}
+.fx-hero-static{background:radial-gradient(circle,#ffb000 0%,#b45309 100%);box-shadow:0 0 20px rgba(255,176,0,.45)}
+.fx-hero-breathe{background:#8b5cf6;animation:hero-glow-pulse 2.5s infinite ease-in-out;box-shadow:0 0 20px rgba(139,92,246,.5)}
+.fx-hero-rainbow{background:linear-gradient(90deg,#ef4444,#f97316,#eab308,#22c55e,#06b6d4,#3b82f6,#a855f7,#ef4444);background-size:200% 100%;animation:hero-slide 3s linear infinite;box-shadow:0 0 20px rgba(6,182,212,.45)}
+.fx-hero-fire{background:linear-gradient(180deg,#fef08a 0%,#f97316 40%,#dc2626 100%);animation:hero-glow-pulse .8s infinite alternate ease-in-out;box-shadow:0 0 20px rgba(249,115,22,.5)}
+.fx-hero-candle{background:radial-gradient(circle at 50% 60%,#ffcc33,#ea580c);animation:hero-glow-pulse .5s infinite alternate ease-in-out;box-shadow:0 0 18px rgba(234,88,12,.5)}
+.fx-hero-flow{background:linear-gradient(90deg,#ec4899,#8b5cf6,#06b6d4,#22c55e,#ec4899);background-size:250% 100%;animation:hero-slide 4.5s linear infinite;box-shadow:0 0 20px rgba(139,92,246,.45)}
+.fx-hero-aurora{background:linear-gradient(120deg,#022c22,#10b981,#06b6d4,#6366f1,#022c22);background-size:250% 100%;animation:hero-slide 5.5s ease-in-out infinite;box-shadow:0 0 20px rgba(16,185,129,.45)}
+.fx-hero-ocean{background:linear-gradient(90deg,#082f49,#0284c7,#38bdf8,#082f49);background-size:200% 100%;animation:hero-slide 3.5s ease-in-out infinite;box-shadow:0 0 20px rgba(2,132,199,.45)}
+.fx-hero-police{animation:hero-police .8s steps(1) infinite;box-shadow:0 0 20px rgba(59,130,246,.5)}
+.fx-hero-police-flash{animation:hero-police .35s steps(1) infinite;box-shadow:0 0 22px rgba(239,68,68,.6)}
+.fx-hero-meteor{background:#09090b;position:relative;overflow:hidden}
+.fx-hero-meteor::after{content:"";position:absolute;top:0;left:0;width:50px;height:100%;background:linear-gradient(90deg,transparent,#fff,#a855f7);animation:hero-meteor 1.4s linear infinite}
+.fx-hero-strobe{background:#fff;animation:hero-strobe .25s steps(1) infinite;box-shadow:0 0 25px rgba(255,255,255,.7)}
+.fx-hero-running{background:#09090b;position:relative;overflow:hidden}
+.fx-hero-running::after{content:"";position:absolute;top:0;left:0;width:24px;height:100%;background:#8b5cf6;box-shadow:0 0 10px #8b5cf6;border-radius:4px;animation:hero-meteor 1s linear infinite}
+.fx-hero-nightsky{background:radial-gradient(ellipse at 50% 50%,#1e1b4b,#020617);animation:hero-glow-pulse 3s infinite ease;box-shadow:0 0 16px rgba(30,27,75,.4)}
+.fx-hero-laser{background:#09090b;position:relative;overflow:hidden}
+.fx-hero-laser::after{content:"";position:absolute;top:0;left:0;width:8px;height:100%;background:#ef4444;box-shadow:0 0 12px #ef4444;animation:hero-meteor .7s linear infinite alternate}
+.fx-hero-flash{animation:hero-strobe .4s steps(1) infinite;background:#3b82f6;box-shadow:0 0 20px rgba(59,130,246,.5)}
 
 /* Избранное */
 .fav-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -659,17 +587,42 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 
   <!-- ================= ЭФФЕКТЫ ================= -->
   <section class="screen" id="scr-fx">
-    <div class="card">
-      <h3>Световые эффекты</h3>
-      <div class="fx-grid" id="fxGrid"></div>
-    </div>
-    <div class="card">
-      <h3>Скорость эффекта</h3>
-      <div class="slider-row">
-        <span class="ico">🐢</span>
-        <input type="range" id="speed" min="0" max="255" value="128" oninput="onSpeedInput(this.value)">
-        <span class="ico">🐇</span>
+    <!-- Hero-превью виртуальной шашки + ползунок скорости -->
+    <div class="card hero-fx-card">
+      <div class="hero-fx-header">
+        <span class="hero-fx-title">Виртуальная шашка</span>
+        <span class="hero-fx-badge" id="heroBadge">Радуга</span>
       </div>
+      <div class="hero-lamp-wrap">
+        <div class="hero-lamp-bezel">
+          <div class="hero-diffuser fx-hero-rainbow" id="heroDiffuser">
+            <span>TAXI LIGHT</span>
+          </div>
+        </div>
+        <div class="hero-glow" id="heroGlow"></div>
+      </div>
+      <div class="hero-speed-row">
+        <div class="hero-speed-header">
+          <span>Скорость анимации</span>
+          <b id="speedVal">50%</b>
+        </div>
+        <div class="slider-row">
+          <span class="ico">🐢</span>
+          <input type="range" id="speed" min="0" max="255" value="128" oninput="onSpeedInput(this.value)">
+          <span class="ico">🐇</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Категории эффектов и сетка каталога -->
+    <div class="card" style="padding:14px 14px 16px">
+      <div class="fx-cat-row" id="fxCatRow">
+        <button class="fx-cat-chip active" onclick="filterFxCat('all')">Все (16)</button>
+        <button class="fx-cat-chip" onclick="filterFxCat('relax')">🧘 Уют</button>
+        <button class="fx-cat-chip" onclick="filterFxCat('dynamic')">🌈 Динамика</button>
+        <button class="fx-cat-chip" onclick="filterFxCat('special')">🚨 Спец</button>
+      </div>
+      <div class="fx-grid" id="fxGrid"></div>
     </div>
   </section>
 
@@ -916,24 +869,24 @@ label.fld{display:block;font-size:13px;color:var(--muted);margin-top:12px}
 <div id="toast"></div>
 
 <script>
-// ============ FX справочник (теперь 16 эффектов) ============
+// ============ FX справочник (16 эффектов) ============
 var FX=[
-  {id:0,name:"Статика",cls:"p-static"},
-  {id:1,name:"Дыхание",cls:"p-breathe"},
-  {id:2,name:"Радуга",cls:"p-rainbow"},
-  {id:3,name:"Огонь",cls:"p-fire"},
-  {id:4,name:"Свеча",cls:"p-candle"},
-  {id:5,name:"Перелив",cls:"p-flow"},
-  {id:6,name:"Сев. сияние",cls:"p-aurora"},
-  {id:7,name:"Океан",cls:"p-ocean"},
-  {id:8,name:"Полиция",cls:"p-police"},
-  {id:9,name:"Мигалка",cls:"p-police-flash"},
-  {id:10,name:"Метеор",cls:"p-meteor"},
-  {id:11,name:"Стробоскоп",cls:"p-strobe"},
-  {id:12,name:"Гирлянда",cls:"p-running"},
-  {id:13,name:"Ночное небо",cls:"p-nightsky"},
-  {id:14,name:"Лазер",cls:"p-laser"},
-  {id:15,name:"Вспышки",cls:"p-flash"}
+  {id:0,name:"Статика",cat:"relax",color:"#ffb000",heroCls:"fx-hero-static",sub:"Ровный свет"},
+  {id:1,name:"Дыхание",cat:"relax",color:"#8b5cf6",heroCls:"fx-hero-breathe",sub:"Плавный пульс"},
+  {id:2,name:"Радуга",cat:"dynamic",color:"linear-gradient(180deg,#ef4444,#eab308,#06b6d4,#8b5cf6)",heroCls:"fx-hero-rainbow",sub:"Бегущий спектр"},
+  {id:3,name:"Огонь",cat:"relax",color:"linear-gradient(180deg,#dc2626,#f97316,#fef08a)",heroCls:"fx-hero-fire",sub:"Пламя костра"},
+  {id:4,name:"Свеча",cat:"relax",color:"linear-gradient(180deg,#ea580c,#f59e0b)",heroCls:"fx-hero-candle",sub:"Мягкий уют"},
+  {id:5,name:"Перелив",cat:"dynamic",color:"linear-gradient(180deg,#ec4899,#8b5cf6,#06b6d4)",heroCls:"fx-hero-flow",sub:"Мягкая смена"},
+  {id:6,name:"Сев. сияние",cat:"relax",color:"linear-gradient(180deg,#064e3b,#10b981,#6366f1)",heroCls:"fx-hero-aurora",sub:"Полярный свет"},
+  {id:7,name:"Океан",cat:"relax",color:"linear-gradient(180deg,#0c4a6e,#0284c7,#38bdf8)",heroCls:"fx-hero-ocean",sub:"Морская волна"},
+  {id:8,name:"Полиция",cat:"special",color:"linear-gradient(180deg,#ef4444 50%,#3b82f6 50%)",heroCls:"fx-hero-police",sub:"Сине-красный"},
+  {id:9,name:"Мигалка",cat:"special",color:"linear-gradient(180deg,#ef4444,#101020,#3b82f6)",heroCls:"fx-hero-police-flash",sub:"Строб-маяк"},
+  {id:10,name:"Метеор",cat:"dynamic",color:"linear-gradient(180deg,#fff,#a855f7,#09090b)",heroCls:"fx-hero-meteor",sub:"Хвост кометы"},
+  {id:11,name:"Стробоскоп",cat:"special",color:"linear-gradient(180deg,#fff,#111)",heroCls:"fx-hero-strobe",sub:"Белые вспышки"},
+  {id:12,name:"Гирлянда",cat:"dynamic",color:"linear-gradient(180deg,#8b5cf6,#06b6d4)",heroCls:"fx-hero-running",sub:"Бегущие огни"},
+  {id:13,name:"Ночное небо",cat:"relax",color:"linear-gradient(180deg,#1e1b4b,#020617)",heroCls:"fx-hero-nightsky",sub:"Звездный блеск"},
+  {id:14,name:"Лазер",cat:"dynamic",color:"linear-gradient(180deg,#ef4444,#7f1d1d)",heroCls:"fx-hero-laser",sub:"Сканирующий луч"},
+  {id:15,name:"Вспышки",cat:"special",color:"linear-gradient(180deg,#3b82f6,#8b5cf6,#22c55e)",heroCls:"fx-hero-flash",sub:"Импульсы цвета"}
 ];
 var FXNAME={};FX.forEach(function(f){FXNAME[f.id]=f.name;});
 var SWATCHES=["#ffffff","#ffb000","#ff3b30","#ff2d92","#7c3aed","#3b82f6","#00d4ff","#22c55e"];
@@ -1008,35 +961,96 @@ function onColorInput(hex){
 function pickSwatch(hex){$("colorPick").value=hex;onColorInput(hex);}
 
 // ============ Эффекты ============
+var fxCurrentCat = "all";
+
+function updateHeroDisplay(){
+  var f = FX.find(function(item){return item.id === state.effect;}) || FX[0];
+  var b = $("heroBadge");
+  if(b) b.textContent = f.name;
+  var diff = $("heroDiffuser");
+  if(diff){
+    diff.className = "hero-diffuser " + f.heroCls;
+    var dur = (7.0 - (state.speed / 255.0) * 6.4).toFixed(2);
+    diff.style.animationDuration = dur + "s";
+  }
+  var sp = $("speed");
+  if(sp && parseInt(sp.value) !== state.speed) sp.value = state.speed;
+  var spV = $("speedVal");
+  if(spV) spV.textContent = Math.round(state.speed / 2.55) + "%";
+}
+
 function renderFx(){
-  var g=$("fxGrid");if(g.childElementCount)return updateFxSel();
-  g.innerHTML="";
+  var g = $("fxGrid");
+  if(!g) return;
+  g.innerHTML = "";
   FX.forEach(function(f){
-    var d=document.createElement("div");
-    d.className="fx-card";d.setAttribute("data-fx",f.id);
-    d.innerHTML='<div class="fx-prev"><div class="'+f.cls+'" style="width:100%;height:100%"></div></div><div class="fx-name">'+f.name+'</div>';
-    // Превью при долгом нажатии (500 мс)
-    var tmr;
-    d.addEventListener("touchstart",function(){tmr=setTimeout(function(){previewEffect(f.id);},500);},{passive:true});
-    d.addEventListener("touchend",function(){clearTimeout(tmr);});
-    d.onclick=function(){setEffect(f.id);};
+    if(fxCurrentCat !== "all" && f.cat !== fxCurrentCat) return;
+    var sel = (f.id === state.effect);
+    var d = document.createElement("div");
+    d.className = "fx-card" + (sel ? " sel" : "");
+    d.setAttribute("data-fx", f.id);
+    
+    var pillBg = f.color.indexOf("linear") >= 0 ? "background:" + f.color : "background-color:" + f.color;
+    d.innerHTML = 
+      '<div class="fx-pill" style="' + pillBg + '"></div>' +
+      '<div class="fx-info">' +
+        '<div class="fx-name">' + f.name + '</div>' +
+        '<div class="fx-sub">' + (f.sub || "") + '</div>' +
+      '</div>' +
+      (sel ? '<div class="fx-check">✓</div>' : '');
+    d.onclick = function(){ setEffect(f.id); };
     g.appendChild(d);
   });
-  updateFxSel();
+  updateHeroDisplay();
 }
+
+function filterFxCat(cat){
+  fxCurrentCat = cat;
+  document.querySelectorAll(".fx-cat-chip").forEach(function(btn){
+    var isThis = btn.getAttribute("onclick").indexOf("'" + cat + "'") >= 0;
+    btn.classList.toggle("active", isThis);
+  });
+  renderFx();
+}
+
 function updateFxSel(){
   document.querySelectorAll(".fx-card").forEach(function(c){
-    c.classList.toggle("sel",parseInt(c.getAttribute("data-fx"))===state.effect);});
+    var isSel = parseInt(c.getAttribute("data-fx")) === state.effect;
+    c.classList.toggle("sel", isSel);
+    var chk = c.querySelector(".fx-check");
+    if(isSel && !chk){
+      var v = document.createElement("div");
+      v.className = "fx-check";
+      v.textContent = "✓";
+      c.appendChild(v);
+    } else if(!isSel && chk){
+      chk.remove();
+    }
+  });
+  updateHeroDisplay();
 }
-function previewEffect(id){api("/api/effect","POST",{id:id,speed:state.speed});}
+
 function setEffect(id){
-  state.effect=id;updateFxSel();
-  if(!state.on){state.on=true;renderPower();}
-  api("/api/effect","POST",{id:id,speed:state.speed}).then(applyStatus);
-  toast("Эффект: "+FXNAME[id],"ok");
+  state.effect = id;
+  updateFxSel();
+  if(!state.on){state.on = true; renderPower();}
+  api("/api/effect", "POST", {id: id, speed: state.speed}).then(applyStatus);
+  toast("Эффект: " + FXNAME[id], "ok");
 }
-var sendSpeed=debounce(function(v){api("/api/effect","POST",{id:state.effect,speed:parseInt(v)});},400);
-function onSpeedInput(v){state.speed=parseInt(v);sendSpeed(v);}
+
+var sendSpeed = debounce(function(v){api("/api/effect", "POST", {id: state.effect, speed: parseInt(v)});}, 350);
+
+function onSpeedInput(v){
+  state.speed = parseInt(v);
+  var spV = $("speedVal");
+  if(spV) spV.textContent = Math.round(state.speed / 2.55) + "%";
+  var diff = $("heroDiffuser");
+  if(diff){
+    var dur = (7.0 - (state.speed / 255.0) * 6.4).toFixed(2);
+    diff.style.animationDuration = dur + "s";
+  }
+  sendSpeed(v);
+}
 
 // ============ Wi-Fi ============
 function scanWifi(){
@@ -1351,6 +1365,7 @@ function applyStatus(s){
   renderPower();
   $("bright").value=s.brightness;$("brightVal").textContent=Math.round(s.brightness/255*100)+"%";
   $("speed").value=s.speed;
+  if($("speedVal")) $("speedVal").textContent=Math.round(s.speed/2.55)+"%";
   if(s.color){$("colorPrev").style.background=s.color;$("colorHex").textContent=s.color.toUpperCase();$("colorPick").value=s.color;}
   // батарея — 3 состояния: разряжается / заряжается / заряжен
   var pct=s.battery||0;
