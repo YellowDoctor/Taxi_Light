@@ -15,24 +15,20 @@ public:
   void    tick();                 // неблокирующее обновление раз в BATTERY_UPDATE_MS
   float   getVoltage();           // напряжение на аккумуляторе, В
   uint8_t getPercent();           // заряд, % (по LUT)
-  bool    isCharging();           // идёт зарядка (напряжение растёт, порог > 4.05 В)
-  bool    isCharged();            // заряд завершён (напряжение стабильно > 4.18 В)
+  bool    isCharging();           // определение зарядки по тренду
   bool    isCritical() const { return _critical; } // критический разряд (< 3.0В)
 
 private:
-  float    _voltage      = 0.0f;
-  float    _emaVoltage   = 0.0f;   // отфильтрованное (EMA)
-  uint8_t  _percent      = 0;
-  bool     _charging     = false;
-  bool     _charged      = false;  // зарядка завершена (full)
-  bool     _prevCharging = false;  // для сброса EMA при смене состояния
-  uint32_t _lastUpdate   = 0;
-  uint8_t  _risingCount  = 0;      // счётчик подряд растущих замеров
-  uint8_t  _stableCount  = 0;      // счётчик стабильных замеров > 4.18 В
-  uint8_t  _criticalCount = 0;     // счётчик подтверждений низкого напряжения
-  bool     _critical     = false;
+  float    _voltage     = 0.0f;
+  float    _emaVoltage  = 0.0f;   // отфильтрованное (EMA)
+  uint8_t  _percent     = 0;
+  bool     _charging    = false;
+  uint32_t _lastUpdate  = 0;
+  uint8_t  _risingCount = 0;      // счётчик подряд растущих замеров
+  uint8_t  _criticalCount = 0;    // счётчик подтверждений низкого напряжения
+  bool     _critical    = false;
   esp_adc_cal_characteristics_t _adcChars;
-  bool     _calibrated   = false;
+  bool     _calibrated  = false;
 
   float   measureRaw();            // один замер с калибрацией, В
   uint8_t voltageToPct(float v);   // перевод через LUT
