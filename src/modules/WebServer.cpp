@@ -1,5 +1,5 @@
-﻿// =====================================================================
-//  WebServer.cpp тАФ REST API + WebSocket + UI
+// =====================================================================
+//  WebServer.cpp — REST API + WebSocket + UI
 // =====================================================================
 #include "WebServer.h"
 #include <ArduinoJson.h>
@@ -15,10 +15,10 @@
 #include "../web/ui.h"
 
 
-WebServerManager Web;   // ╨│╨╗╨╛╨▒╨░╨╗╤М╨╜╤Л╨╣ ╤Н╨║╨╖╨╡╨╝╨┐╨╗╤П╤А
+WebServerManager Web;   // глобальный экземпляр
 
 // ---------------------------------------------------------------------
-//  ╨Т╤Б╨┐╨╛╨╝╨╛╨│╨░╤В╨╡╨╗╤М╨╜╨╛╨╡: ╨╜╨░╨║╨╛╨┐╨╗╨╡╨╜╨╕╨╡ ╤В╨╡╨╗╨░ POST-╨╖╨░╨┐╤А╨╛╤Б╨░ ╨╕ ╤А╨░╨╖╨▒╨╛╤А JSON
+//  Вспомогательное: накопление тела POST-запроса и разбор JSON
 // ---------------------------------------------------------------------
 typedef std::function<void(AsyncWebServerRequest*, JsonDocument&)> JsonHandler;
 
@@ -48,7 +48,7 @@ static void handleJsonBody(AsyncWebServerRequest* request, uint8_t* data,
 }
 
 // ---------------------------------------------------------------------
-//  ╨Ъ╨╛╨╗╤М╤Ж╨╡╨▓╨╛╨╣ ╨╗╨╛╨│ ╤Б╨╛╨▒╤Л╤В╨╕╨╣
+//  Кольцевой лог событий
 // ---------------------------------------------------------------------
 void WebServerManager::addLog(const String& line) {
   _log[_logHead] = line;
@@ -69,7 +69,7 @@ String WebServerManager::buildLogJson() {
 }
 
 // ---------------------------------------------------------------------
-//  WebSocket: push-╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╨▓╤Б╨╡╨╝ ╨║╨╗╨╕╨╡╨╜╤В╨░╨╝
+//  WebSocket: push-обновление всем клиентам
 // ---------------------------------------------------------------------
 void WebServerManager::notifyClients() {
   if (_ws.count() > 0) {
@@ -78,19 +78,19 @@ void WebServerManager::notifyClients() {
 }
 
 // ---------------------------------------------------------------------
-//  ╨в╨░╨╣╨╝╨╡╤А ╤Б╨╜╨░
+//  Таймер сна
 // ---------------------------------------------------------------------
 void WebServerManager::setSleepTimer(uint32_t minutes) {
   if (minutes == 0) { cancelSleepTimer(); return; }
   _sleepActive = true;
   _sleepEnd    = millis() + minutes * 60UL * 1000UL;
-  Serial.printf("[Web] ╨в╨░╨╣╨╝╨╡╤А ╤Б╨╜╨░: %u ╨╝╨╕╨╜\n", minutes);
+  Serial.printf("[Web] Таймер сна: %u мин\n", minutes);
 }
 
 void WebServerManager::cancelSleepTimer() {
   _sleepActive = false;
   _sleepEnd    = 0;
-  Serial.println(F("[Web] ╨в╨░╨╣╨╝╨╡╤А ╤Б╨╜╨░ ╨╛╤В╨╝╨╡╨╜╤С╨╜"));
+  Serial.println(F("[Web] Таймер сна отменён"));
 }
 
 int32_t WebServerManager::sleepTimerLeft() const {
@@ -107,14 +107,14 @@ void WebServerManager::tickSleepTimer() {
     Config.data.isOn = false;
     applyCurrentState();
     Config.save();
-    addLog("╨в╨░╨╣╨╝╨╡╤А ╤Б╨╜╨░: ╨▓╤Л╨║╨╗╤О╤З╨╡╨╜╨╕╨╡");
+    addLog("Таймер сна: выключение");
     notifyClients();
-    Serial.println(F("[Web] ╨в╨░╨╣╨╝╨╡╤А ╤Б╨╜╨░: ╤Г╤Б╤В╤А╨╛╨╣╤Б╤В╨▓╨╛ ╨▓╤Л╨║╨╗╤О╤З╨╡╨╜╨╛"));
+    Serial.println(F("[Web] Таймер сна: устройство выключено"));
   }
 }
 
 // ---------------------------------------------------------------------
-//  ╨д╨╛╤А╨╝╨╕╤А╨╛╨▓╨░╨╜╨╕╨╡ JSON
+//  Формирование JSON
 // ---------------------------------------------------------------------
 String WebServerManager::buildStatusJson() {
   JsonDocument doc;
@@ -130,7 +130,6 @@ String WebServerManager::buildStatusJson() {
   doc["battery"]    = Battery.getPercent();
   doc["voltage"]    = Battery.getVoltage();
   doc["charging"]   = Battery.isCharging();
-  doc["charged"]    = Battery.isCharged();
   doc["wifiStatus"] = Wifi.getStatus();
   doc["ip"]         = Wifi.getIP();
   doc["rssi"]       = Wifi.getRSSI();
@@ -223,19 +222,19 @@ String WebServerManager::buildSchedulesJson() {
 }
 
 // ---------------------------------------------------------------------
-//  ╨Ь╨░╤А╤И╤А╤Г╤В╤Л
+//  Маршруты
 // ---------------------------------------------------------------------
 void WebServerManager::setupRoutes() {
 
   // --- WebSocket ---
   _ws.onEvent([](AsyncWebSocket*, AsyncWebSocketClient*, AwsEventType type,
                  void*, uint8_t*, size_t) {
-    // ╨Я╤А╨╕ ╨┐╨╛╨┤╨║╨╗╤О╤З╨╡╨╜╨╕╨╕ ╨╜╨╛╨▓╨╛╨│╨╛ ╨║╨╗╨╕╨╡╨╜╤В╨░ ╨╛╨╜ ╤Б╤А╨░╨╖╤Г ╨┐╨╛╨╗╤Г╤З╨╕╤В ╤Б╤В╨░╤В╤Г╤Б
+    // При подключении нового клиента он сразу получит статус
     if (type == WS_EVT_CONNECT) Web.notifyClients();
   });
   _server.addHandler(&_ws);
 
-  // --- ╨У╨╗╨░╨▓╨╜╨░╤П ╤Б╤В╤А╨░╨╜╨╕╤Ж╨░ (SPA, gzip) ---
+  // --- Главная страница (SPA, gzip) ---
   _server.on("/", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
       req->beginResponse(200, "text/html", INDEX_HTML_GZ, INDEX_HTML_GZ_LEN);
@@ -244,7 +243,7 @@ void WebServerManager::setupRoutes() {
     req->send(resp);
   });
 
-  // --- ╨б╤В╤А╨░╨╜╨╕╤Ж╨░ ╤А╨░╨╖╤А╨░╨▒╨╛╤В╤З╨╕╨║╨░ (gzip) ---
+  // --- Страница разработчика (gzip) ---
   _server.on("/dev", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
       req->beginResponse(200, "text/html", DEV_HTML_GZ, DEV_HTML_GZ_LEN);
@@ -261,7 +260,7 @@ void WebServerManager::setupRoutes() {
     req->send(resp);
   });
 
-  // --- PWA Icon (SVG ╤Б ╨░╨┤╨░╨┐╤В╨╕╨▓╨╜╨╛╨╣ ╤В╨╡╨╝╨╛╨╣) ---
+  // --- PWA Icon (SVG с адаптивной темой) ---
   _server.on("/icon.svg", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
       req->beginResponse(200, "image/svg+xml", (const uint8_t*)ICON_SVG, sizeof(ICON_SVG) - 1);
@@ -269,7 +268,7 @@ void WebServerManager::setupRoutes() {
     req->send(resp);
   });
 
-  // --- PNG Icon (╤А╨░╤Б╤В╤А╨╛╨▓╤Л╨╣ ╨┤╨╗╤П Android Chrome PWA) ---
+  // --- PNG Icon (растровый для Android Chrome PWA) ---
   _server.on("/icon.png", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
       req->beginResponse(200, "image/png", ICON_PNG, ICON_PNG_LEN);
@@ -277,7 +276,7 @@ void WebServerManager::setupRoutes() {
     req->send(resp);
   });
 
-  // --- Service Worker (╤В╤А╨╡╨▒╤Г╨╡╤В╤Б╤П Chrome ╨┤╨╗╤П standalone WebAPK) ---
+  // --- Service Worker (требуется Chrome для standalone WebAPK) ---
   _server.on("/sw.js", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
       req->beginResponse(200, "application/javascript", (const uint8_t*)SW_JS, sizeof(SW_JS) - 1);
@@ -313,7 +312,7 @@ void WebServerManager::setupRoutes() {
           Config.data.isOn = doc["on"] | Config.data.isOn;
           Config.save();
           applyCurrentState();
-          addLog(String("╨Я╨╕╤В╨░╨╜╨╕╨╡: ") + (Config.data.isOn ? "╨Т╨Ъ╨Ы" : "╨Т╨л╨Ъ╨Ы"));
+          addLog(String("Питание: ") + (Config.data.isOn ? "ВКЛ" : "ВЫКЛ"));
           notifyClients();
           r->send(200, "application/json", buildStatusJson());
         });
@@ -351,7 +350,7 @@ void WebServerManager::setupRoutes() {
           Config.data.color = ((uint32_t)rr << 16) | ((uint32_t)gg << 8) | bb;
           Config.save();
           applyCurrentState();
-          addLog("╨ж╨▓╨╡╤В ╨╕╨╖╨╝╨╡╨╜╤С╨╜");
+          addLog("Цвет изменён");
           notifyClients();
           r->send(200, "application/json", buildStatusJson());
         });
@@ -372,7 +371,7 @@ void WebServerManager::setupRoutes() {
             Config.data.effectSpeed = (uint8_t)(int)doc["speed"];
           Config.save();
           applyCurrentState();
-          addLog(String("╨н╤Д╤Д╨╡╨║╤В: ") + id);
+          addLog(String("Эффект: ") + id);
           notifyClients();
           r->send(200, "application/json", buildStatusJson());
         });
@@ -410,8 +409,8 @@ void WebServerManager::setupRoutes() {
         [this](AsyncWebServerRequest* r, JsonDocument& doc) {
           String ssid = doc["ssid"] | "";
           String pass = doc["pass"] | "";
-          addLog("╨Я╨╛╨┤╨║╨╗╤О╤З╨╡╨╜╨╕╨╡ ╨║ Wi-Fi: " + ssid);
-          // ╨Ю╤В╨▓╨╡╤З╨░╨╡╨╝ ╤Б╤А╨░╨╖╤Г, ╤Б╨░╨╝╨╛ ╨┐╨╛╨┤╨║╨╗╤О╤З╨╡╨╜╨╕╨╡ тАФ ╨░╤Б╨╕╨╜╤Е╤А╨╛╨╜╨╜╨╛
+          addLog("Подключение к Wi-Fi: " + ssid);
+          // Отвечаем сразу, само подключение — асинхронно
           JsonDocument res;
           res["ok"] = (ssid.length() > 0);
           String out; serializeJson(res, out);
@@ -422,12 +421,12 @@ void WebServerManager::setupRoutes() {
 
   // --- POST /api/wifi/forget ---
   _server.on("/api/wifi/forget", HTTP_POST, [this](AsyncWebServerRequest* req) {
-    addLog("╨б╨╡╤В╤М Wi-Fi ╨╖╨░╨▒╤Л╤В╨░");
+    addLog("Сеть Wi-Fi забыта");
     req->send(200, "application/json", "{\"ok\":true}");
     Wifi.forget();
   });
 
-  // --- POST /api/settings (╤З╨░╤Б╤В╨╕╤З╨╜╨╛╨╡ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡) ---
+  // --- POST /api/settings (частичное обновление) ---
   _server.on("/api/settings", HTTP_POST,
     [](AsyncWebServerRequest* req) {},
     NULL,
@@ -449,41 +448,41 @@ void WebServerManager::setupRoutes() {
             Config.data.touchAction3 = (uint8_t)(int)doc["touchAction3"];
           Config.save();
           applyCurrentState();
-          addLog("╨Э╨░╤Б╤В╤А╨╛╨╣╨║╨╕ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╤Л");
+          addLog("Настройки обновлены");
           r->send(200, "application/json", buildSettingsJson());
         });
     });
 
   // --- POST /api/settings/reset ---
   _server.on("/api/settings/reset", HTTP_POST, [this](AsyncWebServerRequest* req) {
-    addLog("╨б╨▒╤А╨╛╤Б ╨╜╨░╤Б╤В╤А╨╛╨╡╨║");
+    addLog("Сброс настроек");
     req->send(200, "application/json", "{\"ok\":true}");
     Config.reset();
     applyCurrentState();
   });
 
-  // --- POST /api/ota/upload (╨╖╨░╨│╤А╤Г╨╖╨║╨░ .bin ╤Д╨░╨╣╨╗╨░ ╨╕╨╖ ╨▒╤А╨░╤Г╨╖╨╡╤А╨░) ---
+  // --- POST /api/ota/upload (загрузка .bin файла из браузера) ---
   _server.on("/api/ota/upload", HTTP_POST,
     [this](AsyncWebServerRequest* req) {
       bool success = !Update.hasError();
       AsyncWebServerResponse* resp = req->beginResponse(
         200, "application/json",
-        success ? "{\"ok\":true}" : "{\"ok\":false,\"error\":\"╨Ю╤И╨╕╨▒╨║╨░ ╨┐╤А╨╛╤И╨╕╨▓╨║╨╕\"}"
+        success ? "{\"ok\":true}" : "{\"ok\":false,\"error\":\"Ошибка прошивки\"}"
       );
       resp->addHeader("Connection", "close");
       req->send(resp);
       if (success) {
-        addLog("╨Я╤А╨╛╤И╨╕╨▓╨║╨░ ╨╕╨╖ ╤Д╨░╨╣╨╗╨░ ╨╖╨░╨▓╨╡╤А╤И╨╡╨╜╨░ ╤Г╤Б╨┐╨╡╤И╨╜╨╛");
+        addLog("Прошивка из файла завершена успешно");
         Ota.onUpdateSuccess();
       } else {
-        addLog("╨Ю╤И╨╕╨▒╨║╨░ ╨┐╤А╨╛╤И╨╕╨▓╨║╨╕ ╨╕╨╖ ╤Д╨░╨╣╨╗╨░");
+        addLog("Ошибка прошивки из файла");
         Ota.onUpdateError();
       }
     },
     [this](AsyncWebServerRequest* req, const String& filename, size_t index, uint8_t* data, size_t len, bool final) {
       if (!index) {
-        addLog("╨б╤В╨░╤А╤В ╨╖╨░╨│╤А╤Г╨╖╨║╨╕ ╤Д╨░╨╣╨╗╨░ ╨┐╤А╨╛╤И╨╕╨▓╨║╨╕: " + filename);
-        Serial.printf("[OTA] ╨Ч╨░╨│╤А╤Г╨╖╨║╨░ ╤Д╨░╨╣╨╗╨░: %s\n", filename.c_str());
+        addLog("Старт загрузки файла прошивки: " + filename);
+        Serial.printf("[OTA] Загрузка файла: %s\n", filename.c_str());
         Ota.onUpdateStart();
         if (!Update.begin(UPDATE_SIZE_UNKNOWN, U_FLASH)) {
           Update.printError(Serial);
@@ -496,7 +495,7 @@ void WebServerManager::setupRoutes() {
       }
       if (final) {
         if (Update.end(true)) {
-          Serial.printf("[OTA] ╨д╨░╨╣╨╗ ╤Г╤Б╨┐╨╡╤И╨╜╨╛ ╨┐╨╛╨╗╤Г╤З╨╡╨╜, ╤А╨░╨╖╨╝╨╡╤А: %u ╨▒╨░╨╣╤В\n", index + len);
+          Serial.printf("[OTA] Файл успешно получен, размер: %u байт\n", index + len);
         } else {
           Update.printError(Serial);
         }
@@ -518,20 +517,20 @@ void WebServerManager::setupRoutes() {
     req->send(200, "application/json", out);
   });
 
-  // --- POST /api/ota/check (╨┐╤А╨╕╨╜╤Г╨┤╨╕╤В╨╡╨╗╤М╨╜╨░╤П ╨┐╤А╨╛╨▓╨╡╤А╨║╨░ GitHub) ---
+  // --- POST /api/ota/check (принудительная проверка GitHub) ---
   _server.on("/api/ota/check", HTTP_POST, [this](AsyncWebServerRequest* req) {
-    addLog("╨Ч╨░╨┐╤А╨╛╤Б ╨┐╤А╨╛╨▓╨╡╤А╨║╨╕ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╣ ╨╜╨░ GitHub");
+    addLog("Запрос проверки обновлений на GitHub");
     Ota.checkGitHubUpdate();
     req->send(200, "application/json", "{\"ok\":true}");
   });
 
-  // --- POST /api/ota/github (╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ╨┤╨╛ ╨▓╨╡╤А╤Б╨╕╨╕ ╤Б GitHub) ---
+  // --- POST /api/ota/github (обновление до версии с GitHub) ---
   _server.on("/api/ota/github", HTTP_POST, [this](AsyncWebServerRequest* req) {
     if (!Ota.hasUpdate() || Ota.getLatestUrl().length() == 0) {
-      req->send(400, "application/json", "{\"ok\":false,\"error\":\"╨Э╨╡╤В ╨┤╨╛╤Б╤В╤Г╨┐╨╜╤Л╤Е ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╣\"}");
+      req->send(400, "application/json", "{\"ok\":false,\"error\":\"Нет доступных обновлений\"}");
       return;
     }
-    addLog("╨Ч╨░╨┐╤Г╤Б╨║ ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╕╤П ╤Б GitHub: " + Ota.getLatestVersion());
+    addLog("Запуск обновления с GitHub: " + Ota.getLatestVersion());
     req->send(200, "application/json", "{\"ok\":true}");
     Ota.updateFromUrl(Ota.getLatestUrl());
   });
@@ -546,25 +545,25 @@ void WebServerManager::setupRoutes() {
         [this](AsyncWebServerRequest* r, JsonDocument& doc) {
           String url = doc["url"] | "";
           if (url.length() == 0) {
-            r->send(400, "application/json", "{\"ok\":false,\"error\":\"╨Я╤Г╤Б╤В╨╛╨╣ URL\"}");
+            r->send(400, "application/json", "{\"ok\":false,\"error\":\"Пустой URL\"}");
             return;
           }
-          addLog("OTA ╨┐╨╛ URL: " + url);
+          addLog("OTA по URL: " + url);
           r->send(200, "application/json", "{\"ok\":true}");
           Ota.updateFromUrl(url);
         });
     });
 
-  // --- POST /api/reboot (╨░╤Б╨╕╨╜╤Е╤А╨╛╨╜╨╜╨╛, ╤З╨╡╤А╨╡╨╖ ╤Д╨╗╨░╨│) ---
+  // --- POST /api/reboot (асинхронно, через флаг) ---
   _server.on("/api/reboot", HTTP_POST, [this](AsyncWebServerRequest* req) {
-    addLog("╨Я╨╡╤А╨╡╨╖╨░╨│╤А╤Г╨╖╨║╨░ ╤Г╤Б╤В╤А╨╛╨╣╤Б╤В╨▓╨░");
+    addLog("Перезагрузка устройства");
     req->send(200, "application/json", "{\"ok\":true}");
-    _pendingReboot = true;   // ╤А╨╡╨░╨╗╤М╨╜╤Л╨╣ restart тАФ ╨▓ loop()
+    _pendingReboot = true;   // реальный restart — в loop()
   });
 
   // --- POST /api/test/led ---
   _server.on("/api/test/led", HTTP_POST, [this](AsyncWebServerRequest* req) {
-    addLog("╨в╨╡╤Б╤В LED: ╤А╨░╨┤╤Г╨│╨░ 5╤Б");
+    addLog("Тест LED: радуга 5с");
     Config.data.isOn = true;
     Config.data.currentEffect = EFFECT_RAINBOW;
     applyCurrentState();
@@ -572,7 +571,7 @@ void WebServerManager::setupRoutes() {
   });
 
   // ===================================================================
-  //  ╨Ш╨Ч╨С╨а╨Р╨Э╨Э╨л╨Х ╨б╨ж╨Х╨Э╨л (Favorites)
+  //  ИЗБРАННЫЕ СЦЕНЫ (Favorites)
   // ===================================================================
 
   // --- GET /api/favorites ---
@@ -599,13 +598,13 @@ void WebServerManager::setupRoutes() {
           f.effect     = Config.data.currentEffect;
           f.brightness = Config.data.brightness;
           f.speed      = Config.data.effectSpeed;
-          // ╨Ш╨╝╤П
+          // Имя
           const char* name = doc["name"] | "";
-          strncpy(f.name, (name[0] ? name : (String("╨б╤Ж╨╡╨╜╨░ ") + (slot+1)).c_str()),
+          strncpy(f.name, (name[0] ? name : (String("Сцена ") + (slot+1)).c_str()),
                   FAVORITES_NAME_LEN - 1);
           f.name[FAVORITES_NAME_LEN - 1] = '\0';
           Config.saveFavoriteSlot(slot);
-          addLog(String("╨б╨╛╤Е╤А╨░╨╜╨╡╨╜╨╛ ╨▓ ╤Б╨╗╨╛╤В ") + slot);
+          addLog(String("Сохранено в слот ") + slot);
           r->send(200, "application/json", buildFavoritesJson());
         });
     });
@@ -631,7 +630,7 @@ void WebServerManager::setupRoutes() {
           Config.data.isOn           = true;
           Config.save();
           applyCurrentState();
-          addLog(String("╨Ч╨░╨│╤А╤Г╨╢╨╡╨╜╨░ ╤Б╤Ж╨╡╨╜╨░: ") + f.name);
+          addLog(String("Загружена сцена: ") + f.name);
           notifyClients();
           r->send(200, "application/json", buildStatusJson());
         });
@@ -651,13 +650,13 @@ void WebServerManager::setupRoutes() {
             return;
           }
           Config.deleteFavoriteSlot(slot);
-          addLog(String("╨б╨╗╨╛╤В ") + slot + " ╤Г╨┤╨░╨╗╤С╨╜");
+          addLog(String("Слот ") + slot + " удалён");
           r->send(200, "application/json", buildFavoritesJson());
         });
     });
 
   // ===================================================================
-  //  ╨в╨Р╨Щ╨Ь╨Х╨а ╨б╨Э╨Р
+  //  ТАЙМЕР СНА
   // ===================================================================
 
   // --- POST /api/timer ---
@@ -671,15 +670,15 @@ void WebServerManager::setupRoutes() {
           int minutes = doc["minutes"] | 0;
           setSleepTimer((uint32_t)max(0, minutes));
           if (minutes > 0)
-            addLog(String("╨в╨░╨╣╨╝╨╡╤А ╤Б╨╜╨░: ") + minutes + " ╨╝╨╕╨╜");
+            addLog(String("Таймер сна: ") + minutes + " мин");
           else
-            addLog("╨в╨░╨╣╨╝╨╡╤А ╤Б╨╜╨░ ╨╛╤В╨╝╨╡╨╜╤С╨╜");
+            addLog("Таймер сна отменён");
           r->send(200, "application/json", buildStatusJson());
         });
     });
 
   // ===================================================================
-  //  ╨а╨Р╨б╨Я╨Ш╨б╨Р╨Э╨Ш╨Х
+  //  РАСПИСАНИЕ
   // ===================================================================
 
 
@@ -709,7 +708,7 @@ void WebServerManager::setupRoutes() {
           if (!doc["action"].isNull())  s.action  = doc["action"].as<bool>();
           if (!doc["days"].isNull())    s.days    = (uint8_t)((int)doc["days"]);
           Config.saveScheduleSlot(slot);
-          addLog(String("╨а╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡ ╤Б╨╗╨╛╤В ") + slot + " ╨╛╨▒╨╜╨╛╨▓╨╗╨╡╨╜╨╛");
+          addLog(String("Расписание слот ") + slot + " обновлено");
           r->send(200, "application/json", buildSchedulesJson());
         });
     });
@@ -728,12 +727,12 @@ void WebServerManager::setupRoutes() {
             return;
           }
           Config.deleteScheduleSlot(slot);
-          addLog(String("╨а╨░╤Б╨┐╨╕╤Б╨░╨╜╨╕╨╡ ╤Б╨╗╨╛╤В ") + slot + " ╤Г╨┤╨░╨╗╤С╨╜");
+          addLog(String("Расписание слот ") + slot + " удалён");
           r->send(200, "application/json", buildSchedulesJson());
         });
     });
 
-  // --- Captive portal: ╨╜╨╡╨╕╨╖╨▓╨╡╤Б╤В╨╜╤Л╨╡ ╨╝╨░╤А╤И╤А╤Г╤В╤Л -> ╨│╨╗╨░╨▓╨╜╨░╤П ---
+  // --- Captive portal: неизвестные маршруты -> главная ---
   _server.onNotFound([](AsyncWebServerRequest* req) {
     if (Wifi.isAP()) {
       AsyncWebServerResponse* resp =
@@ -749,7 +748,7 @@ void WebServerManager::setupRoutes() {
 void WebServerManager::begin() {
   setupRoutes();
   _server.begin();
-  addLog("╨Т╨╡╨▒-╤Б╨╡╤А╨▓╨╡╤А ╨╖╨░╨┐╤Г╤Й╨╡╨╜");
-  Serial.println(F("[Web] HTTP/WebSocket ╤Б╨╡╤А╨▓╨╡╤А ╨╖╨░╨┐╤Г╤Й╨╡╨╜ ╨╜╨░ ╨┐╨╛╤А╤В╤Г 80"));
+  addLog("Веб-сервер запущен");
+  Serial.println(F("[Web] HTTP/WebSocket сервер запущен на порту 80"));
 }
 
