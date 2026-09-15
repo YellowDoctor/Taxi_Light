@@ -1,5 +1,5 @@
 {
-  "version": "1.5.4",
-  "url": "https://raw.githubusercontent.com/YellowDoctor/Taxi_Light/v1.5.4/firmware.bin",
-  "notes": "Версия 1.5.4: улучшенная читаемость каталога эффектов — увеличен шрифт названий и подписей, расширены цветовые маркеры"
+  "version": "1.5.5",
+  "url": "https://raw.githubusercontent.com/YellowDoctor/Taxi_Light/v1.5.5/firmware.bin",
+  "notes": "Версия 1.5.5: исправлена детекция зарядки без порога 4.05В, добавлена программная компенсация просадки АКБ под нагрузкой"
 }

@@ -3,9 +3,11 @@
 //  - esp_adc_cal: калибровка ADC по заводским данным из eFuse ESP32
 //  - LUT 11 точек: реальная кривая разряда Li-Ion 21700
 //  - EMA-фильтр (α = 0.15): убирает скачки при изменении нагрузки
-//  - Зарядка: 3+ замера подряд с ростом напряжения
+//  - Программная компенсация просадки под нагрузкой светодиодов (IR Drop)
+//  - Детектирование зарядки по скачку шага и тренду (без порога 4.05В)
 // =====================================================================
 #include "BatteryManager.h"
+#include "SettingsManager.h"
 
 BatteryManager Battery;
 
@@ -17,7 +19,7 @@ static const float LUT_PCT[] = { 0,    5,    10,   20,   35,   45,   55,   65,  
 static const int   LUT_SIZE  = sizeof(LUT_V) / sizeof(LUT_V[0]);
 
 // ---------- EMA-фильтр ----------
-static const float EMA_ALPHA = 0.15f;   // чем меньше — тем плавнее (0.1..0.3)
+static const float EMA_ALPHA = 0.15f;   // сглаживание
 
 void BatteryManager::begin() {
   analogReadResolution(12);  // 0..4095
@@ -35,15 +37,26 @@ void BatteryManager::begin() {
     Serial.println(F("[BAT] Калибровка eFuse недоступна, используем формулу"));
   }
 
-
-  // Первый замер — инициализируем EMA текущим значением
+  // Первый замер
   float v = measureRaw();
   _emaVoltage = v;
   _voltage = v;
-  _percent = voltageToPct(v);
+
+  float vSag = Config.data.isOn ? (0.14f * ((float)Config.data.brightness / 255.0f)) : 0.0f;
+  _emaCompVoltage = v + vSag;
+  _percent = voltageToPct(_emaCompVoltage);
+
+  _prevLampOn = Config.data.isOn;
+  _lastLampToggle = millis();
   _lastUpdate = millis();
 
-  Serial.printf("[BAT] Стартовое напряжение: %.3f В (%d%%)\n", _voltage, _percent);
+  // Если при старте напряжение уже высокое — устройство на зарядке
+  if (v >= 4.08f) {
+    _charging = true;
+  }
+
+  Serial.printf("[BAT] Стартовое напряжение: %.3f В (скомпенс: %.3f В, %d%%)\n",
+                _voltage, _emaCompVoltage, _percent);
 }
 
 // ---------- Замер напряжения с калибровкой ----------
@@ -54,7 +67,7 @@ float BatteryManager::measureRaw() {
     // esp_adc_cal даёт результат в милливольтах
     for (uint8_t i = 0; i < BATTERY_SAMPLES; i++) {
       sum += esp_adc_cal_raw_to_voltage(analogRead(BATTERY_PIN), &_adcChars);
-      delayMicroseconds(200);
+      delayMicroseconds(600);
     }
     float pinMv = (float)sum / BATTERY_SAMPLES;
     return (pinMv / 1000.0f) * BATTERY_DIVIDER_RATIO;
@@ -62,7 +75,7 @@ float BatteryManager::measureRaw() {
     // Фолбэк: обычный расчёт
     for (uint8_t i = 0; i < BATTERY_SAMPLES; i++) {
       sum += analogRead(BATTERY_PIN);
-      delayMicroseconds(200);
+      delayMicroseconds(600);
     }
     float pinVoltage = ((float)sum / BATTERY_SAMPLES / 4095.0f) * 3.3f;
     return pinVoltage * BATTERY_DIVIDER_RATIO;
@@ -93,66 +106,97 @@ void BatteryManager::tick() {
 
   float raw = measureRaw();
 
-  // Сохраняем состояние до обновления (для детектирования смены)
-  _prevCharging = _charging;
-
-  // ---- Детектирование зарядки ----
-  // Признаки зарядки WITHOUT CHRG-пина (Вариант A):
-  //   1. Напряжение > 4.05 В (Li-Ion при разряде редко превышает 4.05 В под нагрузкой)
-  //   2. И EMA-тренд растущий (raw > emaVoltage + ε)
-  // Гистерезис: сбросить charging только при V < 4.00 В ИЛИ устойчивом падении
-
-  const float CHG_ON_THRESH   = 4.05f;  // включить режим зарядки
-  const float CHG_OFF_THRESH  = 4.00f;  // выключить режим зарядки (гистерезис)
-  const float CHG_DONE_THRESH = 4.18f;  // "заряд завершён" (TP4056 STDBY ~4.2 В)
-  const float RISE_EPS        = 0.008f; // минимальный рост для учёта
-
-  // Если зарядник только подключили — сбрасываем EMA на raw,
-  // чтобы не ждать несколько минут сглаживания
-  if (!_prevCharging && raw > CHG_ON_THRESH && raw > _emaVoltage + 0.10f) {
-    _emaVoltage = raw;
+  // Отслеживаем переключение питания подсветки для подавления ложных скачков
+  if (Config.data.isOn != _prevLampOn) {
+    _prevLampOn = Config.data.isOn;
+    _lastLampToggle = now;
   }
+  bool lampRecentlyToggled = (now - _lastLampToggle < 20000);
 
-  // EMA-фильтр: новое = α * замер + (1 − α) * старое
-  _emaVoltage = EMA_ALPHA * raw + (1.0f - EMA_ALPHA) * _emaVoltage;
-  _voltage    = _emaVoltage;
-  _percent    = voltageToPct(_voltage);
+  // Компенсация просадки напряжения под нагрузкой светодиодов (IR Drop)
+  // При 34 светодиодах и токе до 1.2А на сопротивлении цепи ~0.15 Ом просадка ~0.14 В
+  float vSag = Config.data.isOn ? (0.14f * ((float)Config.data.brightness / 255.0f)) : 0.0f;
+  float compV = raw + vSag;
 
-  // Тренд: raw растёт относительно EMA
-  bool rising = (raw - _emaVoltage) > RISE_EPS;
+  // EMA фильтрация
+  _emaVoltage     = EMA_ALPHA * raw   + (1.0f - EMA_ALPHA) * _emaVoltage;
+  _emaCompVoltage = EMA_ALPHA * compV + (1.0f - EMA_ALPHA) * _emaCompVoltage;
+
+  _voltage = _emaVoltage;
+  _percent = voltageToPct(_emaCompVoltage);
+
+  // ---- Детектирование зарядки (без барьера 4.05В) ----
+  const float CHG_DONE_THRESH = 4.16f; // Порог полного заряда
+  float deltaComp = compV - _emaCompVoltage;
 
   if (!_charging) {
-    // Включить зарядку: напряжение высокое И тренд вверх
-    if (_emaVoltage >= CHG_ON_THRESH && rising) {
+    // Включение режима зарядки:
+    // 1. Ступенчатый скачок вверх (подключение кабеля дает +30..80 мВ)
+    if (!lampRecentlyToggled && deltaComp >= 0.025f) {
+      _risingCount += 2;
+    }
+    // 2. Устойчивый рост напряжения во времени (тренд вверх при CC-зарядке)
+    else if (deltaComp > 0.002f) {
       if (_risingCount < 255) _risingCount++;
-      if (_risingCount >= 2) _charging = true;
-    } else {
+    }
+    // 3. Если уже высокое напряжение (аккумулятор почти полон на зарядке)
+    else if (_emaVoltage >= 4.08f && deltaComp >= -0.003f) {
+      if (_risingCount < 255) _risingCount++;
+    }
+    // Если напряжение явно падает — сбрасываем счётчик
+    else if (deltaComp < -0.006f) {
       _risingCount = 0;
     }
+
+    if (_risingCount >= 3) {
+      _charging = true;
+      _risingCount = 0;
+      _dropCount = 0;
+      Serial.printf("[BAT] Зарядка включена: %.3f В (скомпенс: %.3f В)\n", _voltage, _emaCompVoltage);
+    }
   } else {
-    // Выключить зарядку: напряжение упало под гистерезис ИЛИ устойчивое падение
-    if (_emaVoltage < CHG_OFF_THRESH || (!rising && raw < _emaVoltage - RISE_EPS)) {
-      _charging    = false;
+    // Выключение режима зарядки (отключение кабеля питания):
+    // 1. Ступенчатый скачок вниз (отключение кабеля дает -30..80 мВ)
+    if (!lampRecentlyToggled && deltaComp <= -0.025f) {
+      _dropCount += 2;
+    }
+    // 2. Устойчивое падение напряжения во времени
+    else if (deltaComp < -0.004f) {
+      if (_dropCount < 255) _dropCount++;
+    }
+    // Напряжение растёт — сбрасываем счётчик падения
+    else if (deltaComp >= 0.002f) {
+      _dropCount = 0;
+    }
+
+    if (_dropCount >= 3) {
+      _charging = false;
+      _charged = false;
+      _dropCount = 0;
       _risingCount = 0;
       _stableCount = 0;
-      _charged     = false;
+      Serial.printf("[BAT] Зарядка отключена: %.3f В\n", _voltage);
     }
   }
 
-  // "Заряд завершён": charging=true, напряжение стабильно ≥ 4.18 В (не растёт)
-  if (_charging && _emaVoltage >= CHG_DONE_THRESH && !rising) {
-    if (_stableCount < 255) _stableCount++;
-    if (_stableCount >= 5) _charged = true;
+  // Определение "Заряд завершён"
+  if (_charging && _emaVoltage >= CHG_DONE_THRESH) {
+    if (fabs(raw - _emaVoltage) < 0.008f) {
+      if (_stableCount < 255) _stableCount++;
+      if (_stableCount >= 5) _charged = true;
+    } else {
+      _stableCount = 0;
+    }
   } else {
     if (!_charging) {
       _stableCount = 0;
-      _charged     = false;
+      _charged = false;
     }
   }
 
-  // Защита от глубокого разряда Li-Ion (< 3.00 В при отсутствии зарядки)
-  // Проверяем > 1.0 В, чтобы исключить неподключенный пин при стендовых тестах
-  if (_voltage > 1.0f && _voltage < 3.00f && !_charging) {
+  // Защита от глубокого разряда Li-Ion (< 3.00 В)
+  // Проверяем скомпенсированное напряжение, чтобы не уснуть ложно при кратковременной просадке от света
+  if (_emaCompVoltage > 1.0f && _emaCompVoltage < 3.00f && !_charging) {
     if (_criticalCount < 255) _criticalCount++;
     if (_criticalCount >= 3) {
       _critical = true;
