@@ -1,5 +1,5 @@
 {
-  "version": "1.5.8",
-  "url": "https://raw.githubusercontent.com/YellowDoctor/Taxi_Light/v1.5.8/firmware.bin",
-  "notes": "Версия 1.5.8: полная поддержка PWA (иконка 512x512 PNG, standalone режим, кэш-устойчивый Service Worker)"
+  "version": "1.5.9",
+  "url": "https://raw.githubusercontent.com/YellowDoctor/Taxi_Light/v1.5.9/firmware.bin",
+  "notes": "Версия 1.5.9: исправлено автоматическое закрытие окна обновления и переход на главную страницу, поддержка PWA"
 }

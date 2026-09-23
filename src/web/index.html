@@ -1488,68 +1488,72 @@ function startOtaProgressPolling(targetVer){
   if(bar)bar.style.width="0%";
   if(pct)pct.textContent="0%";
   if(txt)txt.textContent="Подключение к GitHub...";
-  if(hint)hint.textContent="Шашка горит зелёным (50% яркости). Не выключайте питание!";
+  if(hint)hint.textContent="Шашка скачивает обновление. Не выключайте питание!";
 
-  var offlineCount=0;
-  var waitingReboot=false;
-  var rebootTick=0;
-  var MAX_WAIT=80;
   if(_otaPollTimer)clearInterval(_otaPollTimer);
 
-  _otaPollTimer=setInterval(function(){
-    // ---- Режим ожидания перезагрузки: опрашиваем /api/status ----
-    if(waitingReboot){
-      rebootTick++;
-      if(rebootTick>MAX_WAIT){
-        clearInterval(_otaPollTimer);_otaPollTimer=null;
-        if(txt)txt.textContent="Таймаут ожидания...";
-        if(hint)hint.textContent="Шашка не ответила за 80 сек. Проверьте устройство.";
-        return;
-      }
-      var dots=[".","..","…"][rebootTick%3];
-      if(txt)txt.textContent="Ожидание перезагрузки"+dots;
-      fetch("/api/status",{method:"GET",cache:"no-store"})
-        .then(function(r){return r.json();})
-        .then(function(s){
-          if(s&&s.version){
-            clearInterval(_otaPollTimer);_otaPollTimer=null;
-            closeOtaModal();
-            showTab("home");
-            openOtaSuccessModal(s.version);
-            applyStatus(s);
-          }
-        })
-        .catch(function(){/* ещё перезагружается */});
-      return;
-    }
+  var initialVer=(state&&state.version)||"";
+  var sawUpdating=false;
+  var maxP=0;
+  var offlineCount=0;
 
-    // ---- Режим слежения за прогрессом ----
-    api("/api/ota/status","GET",null,true).then(function(s){
-      offlineCount=0;
-      if(s){
+  function finishSuccess(ver){
+    if(_otaPollTimer){clearInterval(_otaPollTimer);_otaPollTimer=null;}
+    closeOtaModal();
+    showTab("home");
+    openOtaSuccessModal(ver);
+    toast("🎉 Шашка успешно обновлена до v"+ver+"!","ok");
+    api("/api/status","GET",null,true).then(applyStatus).catch(function(){});
+  }
+
+  _otaPollTimer=setInterval(function(){
+    fetch("/api/ota/status",{method:"GET",cache:"no-store"})
+      .then(function(r){return r.json();})
+      .then(function(s){
+        if(!s)return;
+        offlineCount=0;
         var p=s.progress||0;
-        if(bar)bar.style.width=p+"%";
-        if(pct)pct.textContent=p+"%";
+        if(p>maxP)maxP=p;
+
         if(s.isUpdating){
+          sawUpdating=true;
+          if(bar)bar.style.width=p+"%";
+          if(pct)pct.textContent=p+"%";
           if(p<100){
             if(txt)txt.textContent="Скачивание с GitHub: "+p+"%";
             if(hint)hint.textContent="Шашка скачивает обновление ("+p+"%)...";
           }else{
             if(txt)txt.textContent="Запись во Flash (100%)...";
-            if(hint)hint.textContent="Файл получен! Запись во Flash, 3 мигания зелёным и перезагрузка.";
+            if(hint)hint.textContent="Файл получен! Запись во Flash, мигание и перезагрузка...";
+          }
+        }else{
+          // Шашка уже НЕ в режиме обновления -> значит прошилась и перезагрузилась!
+          if((targetVer&&s.currentVersion===targetVer)||(initialVer&&s.currentVersion!==initialVer)||(sawUpdating||maxP>=70)){
+            finishSuccess(s.currentVersion||targetVer);
+            return;
           }
         }
-      }
-    }).catch(function(){
-      offlineCount++;
-      if(bar)bar.style.width="100%";
-      if(pct)pct.textContent="100%";
-      if(txt)txt.textContent="Перезагрузка шашки...";
-      if(hint)hint.textContent="Шашка перезагружается"+(targetVer?" с прошивкой v"+targetVer:"")+"...";
-      if(offlineCount>=2){
-        waitingReboot=true;
-      }
-    });
+      })
+      .catch(function(){
+        // Устройство перезагружается (оффлайн)
+        offlineCount++;
+        if(bar)bar.style.width="100%";
+        if(pct)pct.textContent="100%";
+        if(txt)txt.textContent="Перезагрузка шашки...";
+        if(hint)hint.textContent="Шашка перезагружается с новой прошивкой (подождите 5–8 сек)...";
+
+        // Проверяем /api/status напрямую
+        fetch("/api/status",{method:"GET",cache:"no-store"})
+          .then(function(r){return r.json();})
+          .then(function(ns){
+            if(ns&&ns.version){
+              if((targetVer&&ns.version===targetVer)||(initialVer&&ns.version!==initialVer)||offlineCount>=3){
+                finishSuccess(ns.version);
+              }
+            }
+          })
+          .catch(function(){});
+      });
   },1000);
 }
 
