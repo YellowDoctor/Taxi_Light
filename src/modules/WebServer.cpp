@@ -277,6 +277,14 @@ void WebServerManager::setupRoutes() {
     req->send(resp);
   });
 
+  // --- PNG Icon 512x512 (для Android WebAPK) ---
+  _server.on("/icon-512.png", HTTP_GET, [](AsyncWebServerRequest* req) {
+    AsyncWebServerResponse* resp =
+      req->beginResponse(200, "image/png", ICON512_PNG, ICON512_PNG_LEN);
+    resp->addHeader("Cache-Control", "public, max-age=86400");
+    req->send(resp);
+  });
+
   // --- Service Worker (требуется Chrome для standalone WebAPK) ---
   _server.on("/sw.js", HTTP_GET, [](AsyncWebServerRequest* req) {
     AsyncWebServerResponse* resp =
