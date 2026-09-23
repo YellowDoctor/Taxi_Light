@@ -1,5 +1,5 @@
 {
-  "version": "1.5.6",
-  "url": "https://raw.githubusercontent.com/YellowDoctor/Taxi_Light/v1.5.6/firmware.bin",
-  "notes": "Версия 1.5.6: убраны ненадёжная молния и мигание индикатора аккумулятора"
+  "version": "1.5.7",
+  "url": "https://raw.githubusercontent.com/YellowDoctor/Taxi_Light/v1.5.7/firmware.bin",
+  "notes": "Версия 1.5.7: исправлен флоу OTA-обновления — после перезагрузки шашки автоматически открывается главная страница с уведомлением об успехе"
 }

@@ -1489,9 +1489,39 @@ function startOtaProgressPolling(targetVer){
   if(hint)hint.textContent="Шашка горит зелёным (50% яркости). Не выключайте питание!";
 
   var offlineCount=0;
+  var waitingReboot=false;
+  var rebootTick=0;
+  var MAX_WAIT=80;
   if(_otaPollTimer)clearInterval(_otaPollTimer);
 
   _otaPollTimer=setInterval(function(){
+    // ---- Режим ожидания перезагрузки: опрашиваем /api/status ----
+    if(waitingReboot){
+      rebootTick++;
+      if(rebootTick>MAX_WAIT){
+        clearInterval(_otaPollTimer);_otaPollTimer=null;
+        if(txt)txt.textContent="Таймаут ожидания...";
+        if(hint)hint.textContent="Шашка не ответила за 80 сек. Проверьте устройство.";
+        return;
+      }
+      var dots=[".","..","…"][rebootTick%3];
+      if(txt)txt.textContent="Ожидание перезагрузки"+dots;
+      fetch("/api/status",{method:"GET",cache:"no-store"})
+        .then(function(r){return r.json();})
+        .then(function(s){
+          if(s&&s.version){
+            clearInterval(_otaPollTimer);_otaPollTimer=null;
+            closeOtaModal();
+            showTab("home");
+            openOtaSuccessModal(s.version);
+            applyStatus(s);
+          }
+        })
+        .catch(function(){/* ещё перезагружается */});
+      return;
+    }
+
+    // ---- Режим слежения за прогрессом ----
     api("/api/ota/status","GET",null,true).then(function(s){
       offlineCount=0;
       if(s){
@@ -1513,17 +1543,9 @@ function startOtaProgressPolling(targetVer){
       if(bar)bar.style.width="100%";
       if(pct)pct.textContent="100%";
       if(txt)txt.textContent="Перезагрузка шашки...";
-      if(hint)hint.textContent="Шашка перезагружается с новой прошивкой "+(targetVer?"v"+targetVer:"")+" (подождите 5–8 сек)...";
-
-      if(offlineCount>=4){
-        api("/api/status","GET",null,true).then(function(newStatus){
-          if(newStatus&&newStatus.version){
-            clearInterval(_otaPollTimer);
-            _otaPollTimer=null;
-            closeOtaModal();
-            applyStatus(newStatus);
-          }
-        }).catch(function(){});
+      if(hint)hint.textContent="Шашка перезагружается"+(targetVer?" с прошивкой v"+targetVer:"")+"...";
+      if(offlineCount>=2){
+        waitingReboot=true;
       }
     });
   },1000);
