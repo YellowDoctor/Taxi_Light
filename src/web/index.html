@@ -81,10 +81,7 @@ header .sub{font-size:12px;color:var(--muted)}
 .batt-row{font-size:12px;font-weight:700}
 .batt-chg{font-size:11px;margin-left:3px}
 .batt-volt{font-size:10px;color:var(--muted)}
-@keyframes batt-pulse{0%{opacity:1}50%{opacity:.45}100%{opacity:1}}
-.batt-charging .batt-fill{animation:batt-pulse 1.4s ease-in-out infinite}
-.batt-charging .batt-chg{color:#f59e0b}
-.batt-full .batt-chg{color:#22c55e}
+
 
 /* Ползунок */
 .slider-row{display:flex;align-items:center;gap:12px}
@@ -1367,27 +1364,12 @@ function applyStatus(s){
   $("speed").value=s.speed;
   if($("speedVal")) $("speedVal").textContent=Math.round(s.speed/2.55)+"%";
   if(s.color){$("colorPrev").style.background=s.color;$("colorHex").textContent=s.color.toUpperCase();$("colorPick").value=s.color;}
-  // батарея — 3 состояния: разряжается / заряжается / заряжен
+  // батарея — процент и цвет по уровню заряда
   var pct=s.battery||0;
   $("battPct").textContent=pct;
   $("battFill").style.width=pct+"%";
   $("battVolt").textContent=(s.voltage||0).toFixed(2);
-  var battWrap=$("powerBatt");
-  if(battWrap){
-    battWrap.classList.remove("batt-charging","batt-full");
-    if(s.charged){
-      battWrap.classList.add("batt-full");
-      $("battChg").textContent="✓";
-    } else if(s.charging){
-      battWrap.classList.add("batt-charging");
-      $("battChg").textContent="⚡";
-    } else {
-      $("battChg").textContent="";
-    }
-  }
   var fillColor=pct>50?"#22c55e":(pct>20?"#f59e0b":"#ef4444");
-  if(s.charging||s.charged) fillColor="#f59e0b";
-  if(s.charged && pct>=98) fillColor="#22c55e";
   $("battFill").style.background=fillColor;
 
   // wi-fi: теперь machine-readable коды
